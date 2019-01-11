@@ -6,11 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 public class LensDom {
     final FieldList fieldList;
+    private final String diamond;
     final String fromClassName;
     final String toClassName;
     final String Name;
     final String name;
-    private FieldDetails fieldDetails;
+    final FieldDetails fieldDetails;
 
     public LensDom(FieldList fieldList, String fromClassName, FieldDetails fieldDetails) {
         this.fieldList = fieldList;
@@ -19,11 +20,12 @@ public class LensDom {
         this.name = fieldDetails.name;
         this.fieldDetails = fieldDetails;
         this.Name = Strings.firstLetterUppercase(name);
+        this.diamond = "<" + fromClassName + "," + toClassName + ">";
     }
 
+    String lensHeader() {return "Lens" + diamond + " " + fromClassName + Name + "Lens";}
     public String lensString() {
-        String diamond = "<" + fromClassName + "," + toClassName + ">";
-        return "public static final Lens" + diamond + " " + fromClassName + Name + "Lens=" +
+        return "public static final " + lensHeader() + "=" +
                 "Lens." + diamond + "create(" + fromClassName + "::" + name + ", " + fromClassName + "::with" + Name + ");//" + fieldDetails;
     }
     public String getStringDeclaration() {
@@ -39,6 +41,9 @@ public class LensDom {
     }
 
     public List<String> createForClassOnServer() {
+        return Arrays.asList("", lensHeader() + "=null;", getStringDeclaration() + "{ return null; }", withStringHeader() + "{ return null; }");
+    }
+    public List<String> createForClassOnClient() {
         return Arrays.asList("", lensString(), getString(), withString());
     }
     public List<String> createForInterfacesOnServer(String interfaceName) {
@@ -49,8 +54,10 @@ public class LensDom {
             result.add(getStringDeclaration() + ";");
         if (write)
             result.add(withStringHeader() + ";");
-        if (read && write)
-            result.add(lensString());
+//        if (read && write)
+//            result.add("static " + lensHeader() + "();");
+        if (result.size() > 0)
+            result.add(0, "");
         return result;
     }
 }

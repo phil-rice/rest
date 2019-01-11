@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.utils;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 public class ListUtils {
 
@@ -22,6 +23,12 @@ public class ListUtils {
         List<T> result = new ArrayList<>();
         for (List<T> list : lists)
             result.addAll(list);
+        return result;
+    }
+    public static <T> List<T> optionals(Optional<T>... optionals) {
+        List<T> result = new ArrayList<>();
+        for (Optional<T> list : optionals)
+            list.ifPresent(result::add);
         return result;
     }
     public static <T, T1> List<T1> collect(List<T> list, Function<T, Boolean> filter, Function<T, T1> fn) {

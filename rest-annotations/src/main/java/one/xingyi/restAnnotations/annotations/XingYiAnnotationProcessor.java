@@ -1,11 +1,9 @@
 package one.xingyi.restAnnotations.annotations;
 
+import one.xingyi.restAnnotations.codedom.*;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
-import one.xingyi.restAnnotations.utils.Strings;
 import one.xingyi.restAnnotations.utils.WrappedException;
-import one.xingyi.restAnnotations.codedom.ClassDom;
-import one.xingyi.restAnnotations.codedom.FieldList;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -18,10 +16,11 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
 
-
+    private INames names = INames.defaultNames;
     private Types typeUtils;
     private Elements elementUtils;
     private Filer filer;
@@ -41,21 +40,28 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 //        XingYiField.<Object, Integer>create(p -> p.hashCode(), (p, h) -> p);
         for (Element annotatedElement : env.getElementsAnnotatedWith(XingYi.class)) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
+                PackageAndClassName entityName = names.get(annotatedElement);
                 FieldList fields = FieldList.create(annotatedElement.getEnclosedElements());
-                String interfaceName = annotatedElement.getSimpleName().toString();
-                String packageName = Strings.allButLastSegment(".", annotatedElement.asType().toString());
-                ClassDom classDom = new ClassDom(packageName, interfaceName, fields);
-
-                makeClassFile(packageName, classDom.className, ListUtils.join(classDom.createClass(), "\n"));
-//                for (ClassDom dom : classDom.nested())
-//                    makeClassFile(packageName, dom.interfaceName, ListUtils.join(dom.createInterface(), "\n"));
+                List<String> errors = names.validateEntityName(entityName);
+//                error(annotatedElement, entityName.asString());
+                if (errors.size() > 0) error(annotatedElement, errors.toString());
+                else {
+                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(names, names.serverImplName(entityName), names.interfaceName(entityName), fields);
+                    makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"));
+                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(names, names.clientImplName(entityName), names.interfaceName(entityName), fields);
+                    makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"));
+                    for (OpsInterfaceClassDom dom : classDom.nested()) {
+                        messager.printMessage(Diagnostic.Kind.NOTE, "making interfacedom " + dom.opsName.asString());
+                        makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"));
+                    }
+                }
             }
         }
         return false;
     }
-    private void makeClassFile(String packageName, String className, String classString) {
+    private void makeClassFile(PackageAndClassName packageAndClassName, String classString) {
         WrappedException.wrap(() -> {
-            JavaFileObject builderFile = filer.createSourceFile(packageName + "." + className);
+            JavaFileObject builderFile = filer.createSourceFile(packageAndClassName.asString());
             Files.setText(() -> new PrintWriter(builderFile.openWriter()), classString);
         });
     }

@@ -4,8 +4,7 @@ import one.xingyi.restAnnotations.annotations.XingYi;
 import one.xingyi.restAnnotations.annotations.XingYiField;
 
 @XingYi()
-// this makes all the methods available in person.
-public interface IPerson { // this is no need for Person to extend IPerson. And this simplifies things a lot!
+public interface IPerson {
     @XingYiField(readInterfaces = Interfaces.personNameOps)
     String name(); //
 
