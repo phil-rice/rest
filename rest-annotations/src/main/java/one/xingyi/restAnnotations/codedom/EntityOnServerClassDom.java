@@ -38,7 +38,6 @@ public class EntityOnServerClassDom {
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
         result.add("import " + Lens.class.getName() + ";");
-        result.add("import " + IXingYi.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
         result.add("public class " + packageAndClassName.className + " implements " + interfaceName.className + "{");
         result.addAll(Formating.indent(createFields()));
@@ -48,16 +47,21 @@ public class EntityOnServerClassDom {
         return result;
     }
 
-
     public List<String> createFields() {
-        return Arrays.asList("IXingYi xingYi;");
+        return fields.map(nv -> nv.type + " " + nv.name + ";");
     }
 
     public List<String> createLensForServerClass() {
         return fields.flatMap(tn -> new LensDom(fields, packageAndClassName.className, tn).createForClassOnServer());
     }
 
+
     public List<String> createConstructor() {
-        return Arrays.asList("public " + packageAndClassName.className + "(IXingYi xingYi){ this.xingYi = xingYi;}");
+        List<String> result = new ArrayList<>();
+        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type + " " + nv.name) + "){");
+        result.addAll(fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
+        result.add("}");
+        return result;
     }
+
 }

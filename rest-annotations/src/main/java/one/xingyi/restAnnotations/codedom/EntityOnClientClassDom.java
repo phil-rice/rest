@@ -1,9 +1,11 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.IXingYi;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 public class EntityOnClientClassDom {
     public final FieldList fields;
@@ -35,6 +37,7 @@ public class EntityOnClientClassDom {
         ArrayList<String> result = new ArrayList<>();
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
+        result.add("import " + IXingYi.class.getName() + ";");
         result.add("import " + Lens.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
         result.add("public class " + packageAndClassName.className + " implements " + interfaceName.className + "{");
@@ -47,18 +50,14 @@ public class EntityOnClientClassDom {
 
 
     public List<String> createFields() {
-        return fields.map(nv -> nv.type + " " + nv.name + ";");
+        return Arrays.asList("IXingYi xingYi;");
     }
 
     public List<String> createLensForServerClass() {
-        return fields.flatMap(tn -> new LensDom(fields, packageAndClassName.className, tn).createForClassOnServer());
+        return fields.flatMap(tn -> new LensDom(fields, packageAndClassName.className, tn).createForClassOnClient());
     }
 
     public List<String> createConstructor() {
-        List<String> result = new ArrayList<>();
-        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type + " " + nv.name) + "){");
-        result.addAll(fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
-        result.add("}");
-        return result;
+        return Arrays.asList("public " + packageAndClassName.className + "(IXingYi xingYi){ this.xingYi = xingYi;}");
     }
 }

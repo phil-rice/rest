@@ -41,10 +41,10 @@ public class LensDom {
     }
 
     public List<String> createForClassOnServer() {
-        return Arrays.asList("", lensHeader() + "=null;", getStringDeclaration() + "{ return null; }", withStringHeader() + "{ return null; }");
+        return Arrays.asList("", lensString(), getString(), withString());
     }
     public List<String> createForClassOnClient() {
-        return Arrays.asList("", lensString(), getString(), withString());
+        return Arrays.asList("", lensHeader() + "=null;", getStringDeclaration() + "{ return null; }", withStringHeader() + "{ return null; }");
     }
     public List<String> createForInterfacesOnServer(String interfaceName) {
         List<String> result = new ArrayList<>();
