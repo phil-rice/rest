@@ -1,5 +1,7 @@
-package one.xingyi.restAnnotations;
+package one.xingyi.restAnnotations.utils;
 public class Strings {
+
+    public static final String[] empty = new String[0];
 
     public static String removeOptionalFirst(String first, String value) {
         if (value.startsWith(first))

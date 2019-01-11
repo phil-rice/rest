@@ -1,6 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
-import one.xingyi.restAnnotations.ListUtils;
-import one.xingyi.restAnnotations.Strings;
+import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.Strings;
 
 import javax.lang.model.element.Element;
 import java.util.List;

@@ -1,6 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 
-import one.xingyi.restAnnotations.lens.Lens;
+import one.xingyi.restAnnotations.optics.Lens;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ClassDom {
     }
 
     public List<String> createLens() {
-        return fields.flatMap(tn -> new LensDom(fields, className, tn.type, tn.name).build());
+        return fields.flatMap(tn -> new LensDom(fields, className, tn).build());
     }
     public List<String> createConstructor() {
         List<String> result = new ArrayList<>();

@@ -1,6 +1,6 @@
 package one.xingyi.restExample;
 
-import one.xingyi.restAnnotations.XingYi;
+import one.xingyi.restAnnotations.annotations.XingYi;
 
 
 @XingYi()

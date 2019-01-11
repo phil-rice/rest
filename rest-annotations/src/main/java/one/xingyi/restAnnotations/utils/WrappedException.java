@@ -1,4 +1,4 @@
-package one.xingyi.restAnnotations;
+package one.xingyi.restAnnotations.utils;
 
 import java.util.concurrent.Callable;
 public class WrappedException extends RuntimeException {

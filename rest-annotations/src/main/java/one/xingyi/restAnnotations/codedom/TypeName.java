@@ -1,30 +1,58 @@
 package one.xingyi.restAnnotations.codedom;
-import one.xingyi.restAnnotations.Strings;
+import one.xingyi.restAnnotations.annotations.XingYiField;
+import one.xingyi.restAnnotations.utils.Strings;
 
 import javax.lang.model.element.Element;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 public class TypeName {
     final String type;
     final String name;
+    final List<String> readInterfaces;
+    final List<String> writeInterfaces;
+    final List<String> readWriteInterfaces;
+    final Optional<String> lensName;
+    final Optional<String> javascript;
+    final boolean deprecated;
 
-    public TypeName(String type, String name) {
+    public TypeName(String type, String name, List<String> readInterfaces, List<String> writeInterfaces, List<String> readWriteInterfaces, Optional<String> lensName, Optional<String> javascript, boolean deprecated) {
         this.type = type;
         this.name = name;
+        this.readInterfaces = readInterfaces;
+        this.writeInterfaces = writeInterfaces;
+        this.readWriteInterfaces = readWriteInterfaces;
+        this.lensName = lensName;
+        this.javascript = javascript;
+        this.deprecated = deprecated;
+    }
+    public TypeName mapType(Function<String, String> fn) {
+        return new TypeName(fn.apply(type), name, readInterfaces, writeInterfaces, readWriteInterfaces, lensName, javascript, deprecated);
     }
 
-    public TypeName mapType(Function<String,String> fn){
-        return new TypeName(fn.apply(type), name);
-    }
-
-    public static TypeName create(Element element) {
-        String rawType = element.asType().toString();
-        String cleaned = Strings.removeOptionalFirst("()", rawType);
-        return new TypeName(cleaned, element.getSimpleName().toString());
-    }
     @Override public String toString() {
         return "TypeName{" +
                 "type='" + type + '\'' +
                 ", name='" + name + '\'' +
+                ", readInterfaces=" + readInterfaces +
+                ", writeInterfaces=" + writeInterfaces +
+                ", readWriteInterfaces=" + readWriteInterfaces +
+                ", lensName=" + lensName +
+                ", javascript=" + javascript +
+                ", deprecated=" + deprecated +
                 '}';
+    }
+    public static TypeName create(Element element) {
+        String rawType = element.asType().toString();
+        XingYiField xingYiField = element.getAnnotation(XingYiField.class);
+        String cleaned = Strings.removeOptionalFirst("()", rawType);
+        String name = element.getSimpleName().toString();
+        if (xingYiField == null)
+            return new TypeName(cleaned, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty(), false);
+        else
+            return new TypeName(cleaned, name,
+                    Arrays.asList(xingYiField.readInterfaces()), Arrays.asList(xingYiField.writeInterfaces()), Arrays.asList(xingYiField.interfaces()),
+                    Optional.ofNullable(xingYiField.lens()), Optional.ofNullable(xingYiField.javascript()), xingYiField.deprecated());
     }
 }

@@ -1,4 +1,4 @@
-package one.xingyi.restAnnotations;
+package one.xingyi.restAnnotations.utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -8,6 +8,13 @@ public class ListUtils {
         List<T1> result = new ArrayList<>();
         for (T t : list)
             result.add(fn.apply(t));
+        return result;
+    }
+    public static <T, T1> List<T1> collect(List<T> list, Function<T, Boolean> filter, Function<T, T1> fn) {
+        List<T1> result = new ArrayList<>();
+        for (T t : list)
+            if (filter.apply(t))
+                result.add(fn.apply(t));
         return result;
     }
     public static <T, T1> List<T1> flatMap(List<T> list, Function<T, List<T1>> fn) {

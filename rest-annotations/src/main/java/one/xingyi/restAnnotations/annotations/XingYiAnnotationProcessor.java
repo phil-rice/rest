@@ -1,27 +1,24 @@
-package one.xingyi.restAnnotations;
+package one.xingyi.restAnnotations.annotations;
 
+import one.xingyi.restAnnotations.utils.Files;
+import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.Strings;
+import one.xingyi.restAnnotations.utils.WrappedException;
 import one.xingyi.restAnnotations.codedom.ClassDom;
 import one.xingyi.restAnnotations.codedom.FieldList;
-import one.xingyi.restAnnotations.codedom.LensDom;
-import one.xingyi.restAnnotations.codedom.TypeName;
-import one.xingyi.restAnnotations.lens.Lens;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.ExecutableType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.PrintWriter;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import static one.xingyi.restAnnotations.WrappedException.*;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
 
 
@@ -41,7 +38,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
-//        Lens.<Object, Integer>create(p -> p.hashCode(), (p, h) -> p);
+//        XingYiField.<Object, Integer>create(p -> p.hashCode(), (p, h) -> p);
         for (Element annotatedElement : env.getElementsAnnotatedWith(XingYi.class)) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
                 FieldList fields = FieldList.create(annotatedElement.getEnclosedElements());
@@ -72,7 +69,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override public Set<String> getSupportedAnnotationTypes() {
         Set<String> set = new HashSet<>();
         set.add(XingYi.class.getName());
-        set.add(XingYiLegacy.class.getName());
         return set;
     }
 }
