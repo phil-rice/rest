@@ -44,17 +44,20 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 FieldList fields = FieldList.create(annotatedElement.getEnclosedElements());
                 String interfaceName = annotatedElement.getSimpleName().toString();
                 String packageName = Strings.allButLastSegment(".", annotatedElement.asType().toString());
-                ClassDom dom = new ClassDom(packageName, interfaceName, fields);
-                String classString = ListUtils.join(dom.createClass(), "\n");
-//                LensDom lensDom = new LensDom()
-                WrappedException.wrap(() -> {
-                    JavaFileObject builderFile = filer.createSourceFile(packageName + "." + dom.className);
-//                    error(annotatedElement, "We are here @%s", builderFile.getName());
-                    Files.setText(() -> new PrintWriter(builderFile.openWriter()), "// " + annotatedElement.asType() + "\n//" + fields + "\n\n" + classString);
-                });
+                ClassDom classDom = new ClassDom(packageName, interfaceName, fields);
+
+                makeClassFile(packageName, classDom.className, ListUtils.join(classDom.createClass(), "\n"));
+//                for (ClassDom dom : classDom.nested())
+//                    makeClassFile(packageName, dom.interfaceName, ListUtils.join(dom.createInterface(), "\n"));
             }
         }
         return false;
+    }
+    private void makeClassFile(String packageName, String className, String classString) {
+        WrappedException.wrap(() -> {
+            JavaFileObject builderFile = filer.createSourceFile(packageName + "." + className);
+            Files.setText(() -> new PrintWriter(builderFile.openWriter()), classString);
+        });
     }
 
     private void error(Element e, String msg, Object... args) {

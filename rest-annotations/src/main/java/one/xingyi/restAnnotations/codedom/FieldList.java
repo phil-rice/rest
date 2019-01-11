@@ -8,25 +8,25 @@ import java.util.function.Function;
 public class FieldList {
 
     final List<String> imports;
-    final List<TypeName> fields;
+    final List<FieldDetails> fields;
 
     public static <T extends Element> FieldList create(List<T> elements) {
-        return new FieldList(ListUtils.map(elements, TypeName::create));
+        return new FieldList(ListUtils.map(elements, FieldDetails::create));
     }
 
-    public FieldList(List<TypeName> rawFields) {
+    public FieldList(List<FieldDetails> rawFields) {
         this.fields = ListUtils.map(rawFields, tn -> tn.mapType(t -> Strings.lastSegement("\\.", t)));
         this.imports = ListUtils.unique(ListUtils.map(rawFields, tn -> tn.type));
     }
 
-    public <T> List<T> map(Function<TypeName, T> fn) {
+    public <T> List<T> map(Function<FieldDetails, T> fn) {
         return ListUtils.map(fields, fn);
     }
-    public <T> List<T> flatMap(Function<TypeName, List<T>> fn) {
+    public <T> List<T> flatMap(Function<FieldDetails, List<T>> fn) {
         return ListUtils.flatMap(fields, fn);
     }
-    public <T> String mapJoin(String separator, Function<TypeName, String> fn) {
-        return ListUtils.<TypeName>mapJoin(fields, separator, fn);
+    public <T> String mapJoin(String separator, Function<FieldDetails, String> fn) {
+        return ListUtils.<FieldDetails>mapJoin(fields, separator, fn);
     }
 
     public String createConstructorCall(String name) {

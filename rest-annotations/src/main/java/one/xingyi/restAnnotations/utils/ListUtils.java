@@ -1,4 +1,5 @@
 package one.xingyi.restAnnotations.utils;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -8,6 +9,19 @@ public class ListUtils {
         List<T1> result = new ArrayList<>();
         for (T t : list)
             result.add(fn.apply(t));
+        return result;
+    }
+
+    public static <T> List<T> add(List<T> list, T t) {
+        List<T> result = new ArrayList<>(list.size() + 1);
+        result.addAll(list);
+        result.add(t);
+        return result;
+    }
+    public static <T> List<T> append(List<T>... lists) {
+        List<T> result = new ArrayList<>();
+        for (List<T> list : lists)
+            result.addAll(list);
         return result;
     }
     public static <T, T1> List<T1> collect(List<T> list, Function<T, Boolean> filter, Function<T, T1> fn) {
