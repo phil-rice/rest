@@ -1,6 +1,5 @@
 package one.xingyi.restAnnotations.codedom;
 
-import one.xingyi.restAnnotations.IXingYi;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.optics.Lens;

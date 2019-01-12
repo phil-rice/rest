@@ -1,7 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
-import one.xingyi.restAnnotations.IXingYi;
-import one.xingyi.restAnnotations.XingYiDomain;
+import one.xingyi.restAnnotations.javascript.IXingYi;
+import one.xingyi.restAnnotations.javascript.XingYiDomain;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
@@ -63,6 +63,6 @@ public class EntityOnClientClassDom {
     }
 
     public List<String> createConstructor() {
-        return Arrays.asList("public " + packageAndClassName.className + "(IXingYi xingYi){ this.xingYi = xingYi;}");
+        return Arrays.asList("public " + packageAndClassName.className + "(Object mirror, IXingYi xingYi){ super(mirror); this.xingYi = xingYi;}");
     }
 }
