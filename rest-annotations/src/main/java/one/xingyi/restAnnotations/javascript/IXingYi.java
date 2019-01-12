@@ -1,4 +1,5 @@
 package one.xingyi.restAnnotations.javascript;
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import one.xingyi.restAnnotations.optics.Getter;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.optics.Setter;
@@ -7,11 +8,15 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 public interface IXingYi {
     <T extends XingYiDomain> T parse(Class<T> clazz, String s);
-    <T extends XingYiDomain> Lens<T, String> stringLens(String name);
-    <T1 extends XingYiDomain, T2> Lens<T1, T2> objectLens(String name);
+    <T extends XingYiDomain> Lens<T, String> stringLens(IDomainMaker<T> domainMaker, String name);
+    <T1 extends XingYiDomain, T2> Lens<T1, T2> objectLens(IDomainMaker<T1> domainMaker1, IDomainMaker<T2> domainMaker2, String name);
+    static IXingYi create(String javascript) {
+        return new DefaultXingYi(javascript);
+    }
 }
 
 class XingYiExecutionException extends RuntimeException {
@@ -31,8 +36,9 @@ class DefaultXingYi implements IXingYi {
     final ScriptEngine engine;
     final Invocable inv;
 
-    DefaultXingYi(ScriptEngine engine) {
-        this.engine = engine;
+    DefaultXingYi(String javaScript) {
+        engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6 ");
+        XingYiExecutionException.wrap("initialising", () -> engine.eval(javaScript));
         this.inv = (Invocable) engine;
     }
 
@@ -42,15 +48,14 @@ class DefaultXingYi implements IXingYi {
             return clazz.<T>getConstructor(Object.class, IXingYi.class).newInstance(mirror, this);
         });
     }
-    @Override public <T extends XingYiDomain> Lens<T, String> stringLens(String name) {
+    @Override public <T extends XingYiDomain> Lens<T, String> stringLens(IDomainMaker<T> domainMaker, String name) {
         Getter<T, String> getter = t -> XingYiExecutionException.wrap("stringLens.get" + name, () -> (String) inv.invokeFunction("getL", name, t.mirror));
-        Setter<T, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, () -> (T) inv.invokeFunction("setL", name, t.mirror, s));
+        Setter<T, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, () -> domainMaker.apply(inv.invokeFunction("setL", name, t.mirror, s), this));
         return Lens.create(getter, setter);
     }
-
-    @Override public <T1 extends XingYiDomain, T2> Lens<T1, T2> objectLens(String name) {
-        Getter<T1, T2> getter = t -> XingYiExecutionException.wrap("objectLens.get" + name, () -> (T2) inv.invokeFunction("getL", name, t.mirror));
-        Setter<T1, T2> setter = (t, s) -> XingYiExecutionException.wrap("objectLens.set" + name, () -> (T1) inv.invokeFunction("setL", name, t.mirror, s));
+    @Override public <T1 extends XingYiDomain, T2> Lens<T1, T2> objectLens(IDomainMaker<T1> domainMaker1, IDomainMaker<T2> domainMaker2, String name) {
+        Getter<T1, T2> getter = t -> XingYiExecutionException.<T2>wrap("objectLens.get" + name, () -> domainMaker2.apply(inv.invokeFunction("getL", name, t.mirror), this));
+        Setter<T1, T2> setter = (t, s) -> XingYiExecutionException.<T1>wrap("objectLens.set" + name, () -> domainMaker1.apply(inv.invokeFunction("setL", name, t.mirror, s), this));
         return Lens.create(getter, setter);
     }
 }

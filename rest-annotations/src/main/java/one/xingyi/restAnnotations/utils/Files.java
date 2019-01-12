@@ -1,4 +1,6 @@
 package one.xingyi.restAnnotations.utils;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 public class Files {
@@ -9,6 +11,23 @@ public class Files {
                 printWriter.print(text);
                 printWriter.flush();
             }
+        });
+    }
+
+    public static String getText(String name) {
+        return WrappedException.wrap(() -> {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Files.class.getClassLoader().getResourceAsStream(name)));
+            StringBuilder result = new StringBuilder();
+            try {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+
+            } finally {
+                reader.close();
+            }
+            return result.toString();
         });
     }
 }

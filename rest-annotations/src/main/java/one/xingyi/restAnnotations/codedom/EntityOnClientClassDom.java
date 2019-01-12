@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.javascript.IDomainMaker;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.javascript.XingYiDomain;
 import one.xingyi.restAnnotations.optics.Lens;
@@ -45,13 +46,17 @@ public class EntityOnClientClassDom {
         result.add("import " + Lens.class.getName() + ";");
         result.add("import " + XingYiDomain.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
-        result.add("class " + packageAndClassName.className + " extends XingYiDomain implements " + ListUtils.join(interfaces(), ",") + "{");
+        result.add("public class " + packageAndClassName.className + " extends XingYiDomain implements " + ListUtils.join(interfaces(), ",") + "{");
+//        result.addAll(Formating.indent(createDomainMaker()));
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
         result.addAll(Formating.indent(createLensForServerClass()));
         result.add("}");
         return result;
     }
+//    private List<String> createDomainMaker() {
+//        return Arrays.asList("static IDomainMaker<" + packageAndClassName.className + ">domainMaker(){return (m,x)->new " + packageAndClassName.className + "(m, x);}");
+//    }
 
 
     public List<String> createFields() {
@@ -59,7 +64,10 @@ public class EntityOnClientClassDom {
     }
 
     public List<String> createLensForServerClass() {
-        return fields.flatMap(tn -> new LensDom(fields, packageAndClassName.className, tn).createForClassOnClient(interfaceName));
+        return fields.flatMap(tn -> {
+            String targetClassname = names.clientImplName(packageAndClassName.withName(tn.type)).className;
+            return new LensDom(fields, packageAndClassName.className, tn).createForClassOnClient(interfaceName, targetClassname);
+        });
     }
 
     public List<String> createConstructor() {
