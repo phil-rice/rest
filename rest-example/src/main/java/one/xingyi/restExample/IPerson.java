@@ -15,9 +15,10 @@ public interface IPerson {
     IAddress address();
 
     @XingYiField(deprecated = true)
-    String line1();
-
+    default String line1() {throw new RuntimeException("not implemented");}
+    ;
 
     @XingYiField(deprecated = true)
-    String line2();
+    default String line2() {throw new RuntimeException("not implemented");}
+    ;
 }

@@ -7,6 +7,7 @@ import one.xingyi.restAnnotations.utils.ListUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 public class EntityOnServerClassDom {
     public final FieldList fields;
     public final PackageAndClassName interfaceName;
@@ -38,17 +39,20 @@ public class EntityOnServerClassDom {
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
         result.add("import " + Lens.class.getName() + ";");
+        result.add("import " + Objects.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
         result.add("public class " + packageAndClassName.className + " implements " + interfaceName.className + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
         result.addAll(Formating.indent(createLensForServerClass()));
+        result.addAll(Formating.indent(createEquals()));
+        result.addAll(Formating.indent(createHashcode()));
         result.add("}");
         return result;
     }
 
     public List<String> createFields() {
-        return fields.map(nv -> "final "+  nv.type + " " + nv.name + ";");
+        return fields.map(nv -> "final " + nv.type + " " + nv.name + ";");
     }
 
     public List<String> createLensForServerClass() {
@@ -63,5 +67,29 @@ public class EntityOnServerClassDom {
         result.add("}");
         return result;
     }
+
+    public List<String> createEquals() {
+        List<String> result = new ArrayList<>();
+        result.add("@Override public boolean equals(Object o) {");
+        result.add(Formating.indent + "if (this == o) return true;");
+        result.add(Formating.indent + "if (o == null || getClass() != o.getClass()) return false;");
+        result.add(Formating.indent + packageAndClassName.className + " other = (" + packageAndClassName.className + ") o;");
+        result.add(Formating.indent+ "return "+ fields.mapJoin(" && ", fd ->  "Objects.equals(" + fd.name + ",other." + fd.name + ")") +";");
+        result.add("}");
+        return result;
+    }
+    public List<String> createHashcode() {
+        List<String> result = new ArrayList<>();
+        result.add("@Override public int hashCode() {");
+        result.add(Formating.indent + "return Objects.hash(" + fields.mapJoin(",", fd -> fd.name) +");");
+        result.add("}");
+        return result;
+
+    }
+
+//    @Override public int hashCode() {
+//        return Objects.hash(name, telephone, address);
+//    }
+
 
 }
