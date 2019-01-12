@@ -7,14 +7,11 @@ public class XingYiCallCodeDom {
         else return xingYiObjectCall(interfaceName, setOrGet, lensDom);
     }
 
-    String getLensName(PackageAndClassName interfaceName, LensDom lensDom) {
-        return lensDom.fieldDetails.lensName.orElse(interfaceName.className + "_" + lensDom.name) + "_" + lensDom.toClassName;
-    }
 
     private String xingYiObjectCall(PackageAndClassName interfaceName, String setOrGet, LensDom lensDom) {
-        return "<" + lensDom.fromClassName + "," + lensDom.toClassName + ">object" + setOrGet + "(\"" + getLensName(interfaceName, lensDom) + "\")";
+        return "<" + lensDom.fromClassName + "," + lensDom.toClassName + ">object" + setOrGet + "(\"" + lensDom.fieldDetails.lensName + "\")";
     }
     private String xingYiStringCall(PackageAndClassName interfaceName, String setOrGet, LensDom lensDom) {
-        return "<" + lensDom.fromClassName + ">string" + setOrGet + "(\"" + getLensName(interfaceName, lensDom) + "\")";
+        return "<" + lensDom.fromClassName + ">string" + setOrGet + "(\"" + lensDom.fieldDetails.lensName + "\")";
     }
 }

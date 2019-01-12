@@ -5,6 +5,7 @@ import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.*;
 public class EntityOnServerClassDom {
@@ -38,6 +39,7 @@ public class EntityOnServerClassDom {
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
         result.add("import " + Lens.class.getName() + ";");
+        result.add("import " + Strings.class.getName() + ";");
         result.add("import " + Objects.class.getName() + ";");
         result.add("import " + HasJson.class.getName() + ";");
         result.add("import " + JsonTC.class.getName() + ";");
@@ -48,6 +50,8 @@ public class EntityOnServerClassDom {
         result.addAll(Formating.indent(createLensForServerClass()));
         result.add("");
         result.addAll(Formating.indent(makeJson()));
+        result.add("");
+        result.addAll(Formating.indent(makeJavascript()));
         result.add("");
         result.addAll(Formating.indent(createEquals()));
         result.addAll(Formating.indent(createHashcode()));
@@ -95,7 +99,7 @@ public class EntityOnServerClassDom {
         if (fd.type.equals("String"))
             return fd.name;
         else
-            return "((" + names.serverImplName(packageAndClassName.withName(fd.type)).className + ")"+ fd.name + ").toJson(jsonTc)";
+            return "((" + names.serverImplName(packageAndClassName.withName(fd.type)).className + ")" + fd.name + ").toJson(jsonTc)";
     }
 
     //    public <J> J toJson(JsonTC<J> toJson) {
@@ -108,10 +112,19 @@ public class EntityOnServerClassDom {
     List<String> makeJson() {
         List<String> result = new ArrayList<>();
         result.add("public <J> J toJson(JsonTC<J> jsonTc) {");
-        result.add(Formating.indent + "return jsonTc.makeObject(" + fields.mapJoin(",",fd -> "\"" + fd.name + "\", " + toJson(fd) )+");");
+        result.add(Formating.indent + "return jsonTc.makeObject(" + fields.mapJoin(",", fd -> "\"" + fd.name + "\", " + toJson(fd)) + ");");
         result.add("}");
         return result;
     }
+    List<String> makeJavascript() {
+        List<String> result = new ArrayList<>();
+        result.add("public static final String javascript = " + Strings.quote(""));
+        result.addAll(Formating.indent(fields.map(fd -> "+ " + Strings.quote("function lens_" + fd.lensName + "(){ return lens('" + fd.name + "');};\\n"))));
+        result.add(";");
+        return result;
+    }
+
+
 //    @Override public int hashCode() {
 //        return Objects.hash(name, telephone, address);
 //    }

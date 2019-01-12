@@ -2,8 +2,8 @@ package one.xingyi.restAnnotations.codedom;
 
 import java.util.function.Function;
 public class PackageAndClassName {
-    final String packageName;
-    final String className;
+    public final String packageName;
+    public  final String className;
 
     public PackageAndClassName(String packageName, String className) {
         this.packageName = packageName;

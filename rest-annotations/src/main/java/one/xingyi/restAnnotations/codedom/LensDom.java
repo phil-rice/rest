@@ -46,9 +46,9 @@ public class LensDom {
     }
     public List<String> createForClassOnClient(PackageAndClassName interfaceName) {
         return Arrays.asList("",
-                lensHeader() + "=Lens." + diamond + "create(" + fromClassName + "::" + name + "," + fromClassName + "::with" + Name + ");",
-                getStringDeclaration() + "{ return xingYi." + callCodeDom.xingyiGetCall(interfaceName,"Getter", this) + ".get(this); }",
-                withStringHeader() + "{ return xingYi." + callCodeDom.xingyiGetCall(interfaceName,"Setter", this) + ".set(this, " + name + "); }//" + this);
+                "public " + lensHeader() + "(){ return xingYi." + callCodeDom.xingyiGetCall(interfaceName, "Lens", this) + ";}",
+                getStringDeclaration() + "{ return " + fromClassName + Name + "Lens().get(this); }",
+                withStringHeader() + "{ return " + fromClassName + Name + "Lens().set(this, " + name + "); }");
     }
     public List<String> createForInterfacesOnServer(String interfaceName) {
         List<String> result = new ArrayList<>();

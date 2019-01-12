@@ -17,11 +17,11 @@ public class FieldDetails {
     final List<String> writeInterfaces;
     final List<String> readWriteInterfaces;
     final List<String> allInterfaces;
-    final Optional<String> lensName;
+    final String lensName;
     final Optional<String> javascript;
     final boolean deprecated;
 
-    public FieldDetails(String type, String name, List<String> readInterfaces, List<String> writeInterfaces, List<String> readWriteInterfaces, Optional<String> lensName, Optional<String> javascript, boolean deprecated) {
+    public FieldDetails(String type, String name, List<String> readInterfaces, List<String> writeInterfaces, List<String> readWriteInterfaces, String lensName, Optional<String> javascript, boolean deprecated) {
         this.type = type;
         this.name = name;
         this.readInterfaces = readInterfaces;
@@ -55,17 +55,22 @@ public class FieldDetails {
                 ", deprecated=" + deprecated +
                 '}';
     }
-    public static FieldDetails create(Element element) {
+
+    static String getLensName(String interfaceName, String name, String toClassName, Optional<String> lensName) {
+        return lensName.orElse(interfaceName + "_" + name) + "_" + Strings.lastSegement("\\.",toClassName);
+    }
+
+    public static FieldDetails create(String interfaceName, Element element) {
         String rawType = element.asType().toString();
         XingYiField xingYiField = element.getAnnotation(XingYiField.class);
         String cleaned = Strings.removeOptionalFirst("()", rawType);
         String name = element.getSimpleName().toString();
         if (xingYiField == null)
-            return new FieldDetails(cleaned, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty(), false);
+            return new FieldDetails(cleaned, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), getLensName(interfaceName, name, cleaned, Optional.empty()), Optional.empty(), false);
         else
             return new FieldDetails(cleaned, name,
                     Arrays.asList(xingYiField.readInterfaces()), Arrays.asList(xingYiField.writeInterfaces()), Arrays.asList(xingYiField.interfaces()),
-                    OptionalUtils.fromString(xingYiField.lens()), OptionalUtils.fromString(xingYiField.javascript()), xingYiField.deprecated());
+                    getLensName(interfaceName, name, cleaned, OptionalUtils.fromString(xingYiField.lens())), OptionalUtils.fromString(xingYiField.javascript()), xingYiField.deprecated());
     }
 
 

@@ -11,8 +11,8 @@ public class FieldList {
     final List<FieldDetails> fields;
     final List<FieldDetails> nonDeprecatedfields;
 
-    public static <T extends Element> FieldList create(List<T> elements) {
-        return new FieldList(ListUtils.map(elements, FieldDetails::create));
+    public static <T extends Element> FieldList create(String interfaceName, List<T> elements) {
+        return new FieldList(ListUtils.map(elements, e -> FieldDetails.create(interfaceName, e)));
     }
 
     public FieldList(List<FieldDetails> rawFields) {

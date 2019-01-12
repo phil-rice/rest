@@ -12,8 +12,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import javax.tools.*;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +41,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
                 PackageAndClassName entityName = names.get(annotatedElement);
-                FieldList fields = FieldList.create(annotatedElement.getEnclosedElements());
+                FieldList fields = FieldList.create(entityName.className, annotatedElement.getEnclosedElements());
                 List<String> errors = names.validateEntityName(entityName);
                 if (errors.size() > 0) error(annotatedElement, errors.toString());
                 else {
