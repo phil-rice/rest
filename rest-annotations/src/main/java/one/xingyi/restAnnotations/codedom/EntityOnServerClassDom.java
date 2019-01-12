@@ -48,7 +48,7 @@ public class EntityOnServerClassDom {
     }
 
     public List<String> createFields() {
-        return fields.map(nv -> nv.type + " " + nv.name + ";");
+        return fields.map(nv -> "final "+  nv.type + " " + nv.name + ";");
     }
 
     public List<String> createLensForServerClass() {

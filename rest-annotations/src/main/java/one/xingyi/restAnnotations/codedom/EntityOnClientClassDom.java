@@ -45,7 +45,7 @@ public class EntityOnClientClassDom {
         result.add("import " + Lens.class.getName() + ";");
         result.add("import " + XingYiDomain.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
-        result.add("public class " + packageAndClassName.className + " extends XingYiDomain implements " + ListUtils.join(interfaces(), ",") + "{");
+        result.add("class " + packageAndClassName.className + " extends XingYiDomain implements " + ListUtils.join(interfaces(), ",") + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
         result.addAll(Formating.indent(createLensForServerClass()));
@@ -55,7 +55,7 @@ public class EntityOnClientClassDom {
 
 
     public List<String> createFields() {
-        return Arrays.asList("IXingYi xingYi;");
+        return Arrays.asList("final IXingYi xingYi;");
     }
 
     public List<String> createLensForServerClass() {
