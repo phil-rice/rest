@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.IXingYi;
+import one.xingyi.restAnnotations.XingYiDomain;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
@@ -32,6 +33,9 @@ public class EntityOnClientClassDom {
         return ListUtils.map(nestedOps(), opsName -> new OpsInterfaceClassDom(packageAndClassName.withName(opsName), interfaceName, fields));
     }
 
+    List<String> interfaces() {
+        return ListUtils.unique(ListUtils.add(fields.flatMap(fd -> fd.allInterfaces), interfaceName.className));
+    }
     public List<String> createClass() {
         String packageName = packageAndClassName.packageName;
         ArrayList<String> result = new ArrayList<>();
@@ -39,8 +43,9 @@ public class EntityOnClientClassDom {
         result.addAll(fields.createImports());
         result.add("import " + IXingYi.class.getName() + ";");
         result.add("import " + Lens.class.getName() + ";");
+        result.add("import " + XingYiDomain.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
-        result.add("public class " + packageAndClassName.className + " implements " + interfaceName.className + "{");
+        result.add("public class " + packageAndClassName.className + " extends XingYiDomain implements " + ListUtils.join(interfaces(), ",") + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
         result.addAll(Formating.indent(createLensForServerClass()));
@@ -54,7 +59,7 @@ public class EntityOnClientClassDom {
     }
 
     public List<String> createLensForServerClass() {
-        return fields.flatMap(tn -> new LensDom(fields, packageAndClassName.className, tn).createForClassOnClient());
+        return fields.flatMap(tn -> new LensDom(fields, packageAndClassName.className, tn).createForClassOnClient(interfaceName));
     }
 
     public List<String> createConstructor() {

@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.annotations.XingYiField;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.OptionalUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import javax.lang.model.element.Element;
@@ -64,7 +65,7 @@ public class FieldDetails {
         else
             return new FieldDetails(cleaned, name,
                     Arrays.asList(xingYiField.readInterfaces()), Arrays.asList(xingYiField.writeInterfaces()), Arrays.asList(xingYiField.interfaces()),
-                    Optional.ofNullable(xingYiField.lens()), Optional.ofNullable(xingYiField.javascript()), xingYiField.deprecated());
+                    OptionalUtils.fromString(xingYiField.lens()), OptionalUtils.fromString(xingYiField.javascript()), xingYiField.deprecated());
     }
 
 

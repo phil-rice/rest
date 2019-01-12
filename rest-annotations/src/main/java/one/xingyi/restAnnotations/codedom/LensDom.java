@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 public class LensDom {
+    final static XingYiCallCodeDom callCodeDom = new XingYiCallCodeDom();
     final FieldList fieldList;
     private final String diamond;
     final String fromClassName;
@@ -43,8 +44,11 @@ public class LensDom {
     public List<String> createForClassOnServer() {
         return Arrays.asList("", lensString(), getString(), withString());
     }
-    public List<String> createForClassOnClient() {
-        return Arrays.asList("", lensHeader() + "=null;", getStringDeclaration() + "{ return null; }", withStringHeader() + "{ return null; }");
+    public List<String> createForClassOnClient(PackageAndClassName interfaceName) {
+        return Arrays.asList("",
+                lensHeader() + "=Lens." + diamond + "create(" + fromClassName + "::" + name + "," + fromClassName + "::with" + Name + ");",
+                getStringDeclaration() + "{ return xingYi." + callCodeDom.xingyiGetCall(interfaceName,"Getter", this) + ".get(this); }",
+                withStringHeader() + "{ return xingYi." + callCodeDom.xingyiGetCall(interfaceName,"Setter", this) + ".set(this, " + name + "); }//" + this);
     }
     public List<String> createForInterfacesOnServer(String interfaceName) {
         List<String> result = new ArrayList<>();
@@ -59,5 +63,17 @@ public class LensDom {
         if (result.size() > 0)
             result.add(0, "");
         return result;
+    }
+
+    @Override public String toString() {
+        return "LensDom{" +
+                "fieldList=..." +
+                ", diamond='" + diamond + '\'' +
+                ", fromClassName='" + fromClassName + '\'' +
+                ", toClassName='" + toClassName + '\'' +
+                ", Name='" + Name + '\'' +
+                ", name='" + name + '\'' +
+                ", fieldDetails=" + fieldDetails +
+                '}';
     }
 }
