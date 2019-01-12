@@ -38,12 +38,12 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
 //        XingYiField.<Object, Integer>create(p -> p.hashCode(), (p, h) -> p);
-        for (Element annotatedElement : env.getElementsAnnotatedWith(XingYi.class)) {
+        Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYi.class);
+        for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
                 PackageAndClassName entityName = names.get(annotatedElement);
                 FieldList fields = FieldList.create(annotatedElement.getEnclosedElements());
                 List<String> errors = names.validateEntityName(entityName);
-//                error(annotatedElement, entityName.asString());
                 if (errors.size() > 0) error(annotatedElement, errors.toString());
                 else {
                     EntityOnServerClassDom classDom = new EntityOnServerClassDom(names, names.serverImplName(entityName), names.interfaceName(entityName), fields);
@@ -59,6 +59,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         }
         return false;
     }
+
+
     private void makeClassFile(PackageAndClassName packageAndClassName, String classString) {
         WrappedException.wrap(() -> {
             JavaFileObject builderFile = filer.createSourceFile(packageAndClassName.asString());
