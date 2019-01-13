@@ -1,4 +1,6 @@
 package one.xingYi.restExample;
+import one.xingyi.restAnnotations.entity.Embedded;
+import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.utils.Files;
@@ -10,8 +12,8 @@ public class JavascriptTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person1 person = new Person1("name", address, number);
-    Person1 personOtherName = new Person1("otherName", address, number);
+    Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
+    Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.value(number));
 
     @Test
     public void testGetters() {

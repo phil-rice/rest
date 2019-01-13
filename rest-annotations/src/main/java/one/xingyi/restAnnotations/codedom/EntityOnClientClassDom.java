@@ -54,7 +54,7 @@ public class EntityOnClientClassDom {
 //        result.addAll(Formating.indent(createDomainMaker()));
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
-        result.addAll(Formating.indent(createLensForServerClass()));
+        result.addAll(Formating.indent(createLens()));
         result.add("}");
         return result;
     }
@@ -67,11 +67,11 @@ public class EntityOnClientClassDom {
         return Arrays.asList("final IXingYi xingYi;");
     }
 
-    public List<String> createLensForServerClass() {
+    public List<String> createLens() {
         return fields.flatMap(fd -> {
-            log.info("making lens for server class Field details are" + fd);
+//            log.info("making lens for server class Field details are" + fd);
             String targetClassname = names.clientImplName(packageAndClassName.withName(fd.type.shortName)).className;
-            return new LensDom(fields, packageAndClassName.className, fd).createForClassOnClient(interfaceName, targetClassname);
+            return new LensDom(fields, packageAndClassName.className, fd.type.shortName, fd).createForClassOnClient(targetClassname);
         });
     }
 

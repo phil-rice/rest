@@ -44,7 +44,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
                 PackageAndClassName entityName = names.get(annotatedElement);
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
-                FieldList fields = FieldList.create(log, entityName.className, annotatedElement.getEnclosedElements());
+                FieldList fields = FieldList.create(log, names,entityName.className, annotatedElement.getEnclosedElements());
                 List<String> errors = names.validateEntityName(entityName);
                 if (errors.size() > 0) error(annotatedElement, errors.toString());
                 else {

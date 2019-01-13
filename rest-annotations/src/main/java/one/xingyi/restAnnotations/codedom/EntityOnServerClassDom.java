@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.entity.Embedded;
+import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.optics.Lens;
@@ -42,7 +43,7 @@ public class EntityOnServerClassDom {
         ArrayList<String> result = new ArrayList<>();
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
-        result.add("import " + Embedded.class.getName() + ";");
+        result.add("import " + EmbeddedWithHasJson.class.getName() + ";");
         result.add("import " + Lens.class.getName() + ";");
         result.add("import " + Strings.class.getName() + ";");
         result.add("import " + Objects.class.getName() + ";");
@@ -63,17 +64,17 @@ public class EntityOnServerClassDom {
     }
 
     public List<String> createFields() {
-        return fields.map(nv -> "final " + nv.type.shortName + " " + nv.name + ";");
+        return fields.map(nv -> "final " + nv.type.shortNameWithHasJson + " " + nv.name + ";");
     }
 
     public List<String> createLensForServerClass() {
-        return fields.flatMap(tn -> new LensDom(fields, packageAndClassName.className, tn).createForClassOnServer());
+        return fields.flatMap(fd -> new LensDom(fields, packageAndClassName.className,fd.type.shortNameWithHasJson, fd).createForClassOnServer());
     }
 
 
     public List<String> createConstructor() {
         List<String> result = new ArrayList<>();
-        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type.shortName + " " + nv.name) + "){");
+        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type.shortNameWithHasJson + " " + nv.name) + "){");
         result.addAll(fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
         result.add("}");
         return result;

@@ -14,10 +14,10 @@ public class LensDom {
     final String name;
     final FieldDetails fieldDetails;
 
-    public LensDom(FieldList fieldList, String fromClassName, FieldDetails fieldDetails) {
+    public LensDom(FieldList fieldList, String fromClassName, String toClassName, FieldDetails fieldDetails) {
         this.fieldList = fieldList;
         this.fromClassName = fromClassName;
-        this.toClassName = fieldDetails.type.shortName;
+        this.toClassName = toClassName;
         this.name = fieldDetails.name;
         this.fieldDetails = fieldDetails;
         this.Name = Strings.firstLetterUppercase(name);
@@ -44,9 +44,9 @@ public class LensDom {
     public List<String> createForClassOnServer() {
         return Arrays.asList("", lensString(), getString(), withString());
     }
-    public List<String> createForClassOnClient(PackageAndClassName interfaceName, String targetClassname) {
+    public List<String> createForClassOnClient(String targetClassname) {
         return Arrays.asList("",
-                "public " + lensHeader() + "(){ return xingYi." + callCodeDom.xingyiGetCall(interfaceName, targetClassname,"Lens", this) + ";}",
+                "public " + lensHeader() + "(){ return xingYi." + callCodeDom.xingyiGetCall( targetClassname, "Lens", this) + ";}",
                 getStringDeclaration() + "{ return " + fromClassName + Name + "Lens().get(this); }",
                 withStringHeader() + "{ return " + fromClassName + Name + "Lens().set(this, " + name + "); }");
     }

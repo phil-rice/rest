@@ -15,7 +15,8 @@ public interface INames {
     String serverImplName(String interfaceName);
     default PackageAndClassName serverImplName(PackageAndClassName packageAndClassName) { return packageAndClassName.mapName(this::serverImplName); }
     PackageAndClassName serverCompanionName(PackageAndClassName packageAndClassName);
-    PackageAndClassName clientImplName(PackageAndClassName packageAndClassName);
+    String clientImplName(String interfaceName);
+    default PackageAndClassName clientImplName(PackageAndClassName interfaceName) {return interfaceName.mapName(this::clientImplName);}
 
 
     static INames defaultNames = new DefaultNames();
@@ -47,7 +48,7 @@ class DefaultNames implements INames {
     @Override public PackageAndClassName serverCompanionName(PackageAndClassName packageAndClassName) {
         return packageAndClassName.mapName(e -> e.substring(1) + "ServerCompanion");
     }
-    @Override public PackageAndClassName clientImplName(PackageAndClassName packageAndClassName) {
-        return packageAndClassName.mapName(e -> e.substring(1) + "ClientImpl");
+    @Override public String clientImplName(String interfaceName) {
+        return interfaceName.substring(1) + "ClientImpl";
     }
 }

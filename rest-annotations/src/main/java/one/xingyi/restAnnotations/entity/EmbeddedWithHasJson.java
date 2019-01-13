@@ -6,23 +6,15 @@ import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 
 import java.util.concurrent.CompletableFuture;
-public interface Embedded<T> {
-    /**
-     * Do I already have it?
-     */
-    boolean have();
-    /**
-     * Go get me the thing
-     */
-    CompletableFuture<T> get();
+public interface EmbeddedWithHasJson<T> extends Embedded, HasJson {
 
-    static <T > Embedded value(T t) {return new ActuallyEmbedded<T>(t);}
+    static <T extends HasJson> EmbeddedWithHasJson value(T t) {return new ActuallyEmbeddedWithJson(t);}
 }
 
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class ActuallyEmbedded<T> implements Embedded<T> {
+class ActuallyEmbeddedWithJson<T extends HasJson> implements EmbeddedWithHasJson<T> {
     final T entity;
 
     @Override public boolean have() {
@@ -30,5 +22,8 @@ class ActuallyEmbedded<T> implements Embedded<T> {
     }
     @Override public CompletableFuture<T> get() {
         return CompletableFuture.completedFuture(entity);
+    }
+    @Override public <J> J toJson(JsonTC<J> jsonTc) {
+        return jsonTc.makeObject("_embedded", entity.toJson(jsonTc));
     }
 }

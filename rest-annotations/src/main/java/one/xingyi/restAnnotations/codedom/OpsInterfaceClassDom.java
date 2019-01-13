@@ -32,7 +32,7 @@ public class OpsInterfaceClassDom {
     }
 
     private List<String> createFields() {
-        return fields.flatMap(fd -> new LensDom(fields, opsName.className, fd).createForInterfacesOnServer(opsName.className));
+        return fields.flatMap(fd -> new LensDom(fields, opsName.className, fd.type.shortName,fd).createForInterfacesOnServer(opsName.className));
     }
 
 }

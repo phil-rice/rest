@@ -54,12 +54,12 @@ public class FieldDetails {
         return lensName.orElse(interfaceName + "_" + name) + "_" + toClassName;
     }
 
-    public static FieldDetails create(LoggerAdapter log, String interfaceName, Element element) {
+    public static FieldDetails create(LoggerAdapter log, INames names, String interfaceName, Element element) {
         String rawType = element.asType().toString();
-        TypeDom typeDom = new TypeDom(rawType);
+        TypeDom typeDom = new TypeDom(names, rawType);
         XingYiField xingYiField = element.getAnnotation(XingYiField.class);
         String name = element.getSimpleName().toString();
-        log.info("Making field details. InterfaceName is [" + interfaceName + "] name is [" + name + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
+//        log.info("Making field details. InterfaceName is [" + interfaceName + "] name is [" + name + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
         if (xingYiField == null)
             return new FieldDetails(log, typeDom, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), getLensName(interfaceName, name, typeDom.shortName, Optional.empty()), Optional.empty(), false);
         else

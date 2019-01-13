@@ -14,8 +14,8 @@ public class FieldList {
     final List<FieldDetails> fields;
     final List<FieldDetails> nonDeprecatedfields;
 
-    public static <T extends Element> FieldList create(LoggerAdapter log, String interfaceName, List<T> elements) {
-        return new FieldList(log, ListUtils.map(elements, e -> FieldDetails.create(log, interfaceName, e)));
+    public static <T extends Element> FieldList create(LoggerAdapter log, INames names, String interfaceName, List<T> elements) {
+        return new FieldList(log, ListUtils.map(elements, e -> FieldDetails.create(log, names, interfaceName, e)));
     }
 
 

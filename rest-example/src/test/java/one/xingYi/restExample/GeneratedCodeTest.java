@@ -1,6 +1,8 @@
 package one.xingYi.restExample;
+import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restExample.Address;
+import one.xingyi.restExample.Person;
 import one.xingyi.restExample.TelephoneNumber;
 import org.junit.Test;
 
@@ -9,8 +11,8 @@ public class GeneratedCodeTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person1 person = new Person1("name", address, number);
-    Person1 personOtherName = new Person1("otherName", address, number);
+    Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
+    Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.value(number));
 
     @Test
     public void testCanDoThingsWithPerson() {
