@@ -56,7 +56,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     EntityOnServerClassDom classDom = new EntityOnServerClassDom(log,names, serverImpl, interfaceName, fields);
                     makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
 
-                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(names, clientImplName, interfaceName, fields);
+                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log,names, clientImplName, interfaceName, fields);
                     makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
 
                     CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, serverCompanionname, interfaceName, serverImpl, fields);

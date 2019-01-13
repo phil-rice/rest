@@ -16,13 +16,13 @@ public class EntityOnServerClassDom {
     public INames names;
     public final PackageAndClassName packageAndClassName;
 
-    public EntityOnServerClassDom(LoggerAdapter log,INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
+    public EntityOnServerClassDom(LoggerAdapter log, INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
         this.log = log;
         this.names = names;
         this.packageAndClassName = packageAndClassName;
         this.interfaceName = interfaceName;
         this.fields = fields;
-        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are "+fields);
+        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
     }
 
 //    EntityOnServerClassDom withFields(FieldList fields) {
@@ -55,7 +55,7 @@ public class EntityOnServerClassDom {
         result.addAll(Formating.indent(createLensForServerClass()));
         result.add("");
         result.addAll(Formating.indent(makeJson()));
-          result.add("");
+        result.add("");
         result.addAll(Formating.indent(createEquals()));
         result.addAll(Formating.indent(createHashcode()));
         result.add("}");
@@ -101,17 +101,12 @@ public class EntityOnServerClassDom {
     String toJson(FieldDetails fd) {
         if (fd.type.shortName.equals("String"))
             return fd.name;
+        if (fd.type.embedded){
+            return fd.name + ".toJson(jsonTc)";
+        }
         else
-            return "((" + names.serverImplName(packageAndClassName.withName(fd.type.fullNameOfEntity)).className + ")" + fd.name + ").toJson(jsonTc)";
+            return "((" + names.serverImplName(fd.type.shortName) + ")" + fd.name + ").toJson(jsonTc)";
     }
-
-    //    public <J> J toJson(JsonTC<J> toJson) {
-    //        return toJson("name", toJson.liftString(name),
-    //                "address", ((Address) address).toJson(toJson),
-    //                "telephone", ((TelephoneNumber) telephone).toJson(toJson));
-    //
-    //    }
-
     List<String> makeJson() {
         List<String> result = new ArrayList<>();
         result.add("public <J> J toJson(JsonTC<J> jsonTc) {");

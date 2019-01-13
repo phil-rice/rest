@@ -15,7 +15,7 @@ public class TypeDomTest {
         assertEquals(false, dom.embedded);
     }
 
-    //Information:(11, 8) java: Making field details. InterfaceName is [IPerson] name is [telephone[ rawType is[()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>] typeDom is TypeDom(fullName=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, fullNameOfEntity=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, shortName=ITelephoneNumber>, embedded=false)
+    //Information:(11, 8) java: Making field details. InterfaceName is [IPerson] name is [telephone[ rawType is[()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>] typeDom is TypeDom(fullInterfaceName=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, fullNameOfEntity=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, shortNameOfInterface=ITelephoneNumber>, embedded=false)
     @Test
     public void testTypeDomWithEmbeddedClass() {
         String full = Embedded.class.getName() + "<" + className + ">";
@@ -26,10 +26,8 @@ public class TypeDomTest {
         assertEquals(true, dom.embedded);
     }
 
-@Test
+    @Test
     public void testTypeDomWithRealStrings() {
-        //Information:(11, 8) java: Making field details. InterfaceName is [IPerson] name is [telephone[ rawType is[()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>] typeDom is TypeDom(fullName=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, fullNameOfEntity=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, shortName=ITelephoneNumber>, embedded=false)
-
         String full = "()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>";
         TypeDom dom = new TypeDom(full);
         assertEquals("one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>", dom.fullName);

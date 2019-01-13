@@ -12,7 +12,8 @@ public interface INames {
     List<String> validateEntityName(PackageAndClassName entityName);
 
     PackageAndClassName interfaceName(PackageAndClassName packageAndClassName);
-    PackageAndClassName serverImplName(PackageAndClassName packageAndClassName);
+    String serverImplName(String interfaceName);
+    default PackageAndClassName serverImplName(PackageAndClassName packageAndClassName) { return packageAndClassName.mapName(this::serverImplName); }
     PackageAndClassName serverCompanionName(PackageAndClassName packageAndClassName);
     PackageAndClassName clientImplName(PackageAndClassName packageAndClassName);
 
@@ -40,8 +41,8 @@ class DefaultNames implements INames {
     @Override public PackageAndClassName interfaceName(PackageAndClassName packageAndClassName) {
         return packageAndClassName.mapName(e -> e);
     }
-    @Override public PackageAndClassName serverImplName(PackageAndClassName packageAndClassName) {
-        return packageAndClassName.mapName(e -> e.substring(1));
+    @Override public String serverImplName(String interfaceName) {
+        return interfaceName.substring(1);
     }
     @Override public PackageAndClassName serverCompanionName(PackageAndClassName packageAndClassName) {
         return packageAndClassName.mapName(e -> e.substring(1) + "ServerCompanion");

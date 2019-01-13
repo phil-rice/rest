@@ -1,19 +1,15 @@
 package one.xingyi.restAnnotations.codedom;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.XingYiField;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
-import one.xingyi.restAnnotations.utils.Strings;
 
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 @ToString
 @EqualsAndHashCode
 

@@ -1,7 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.entity.Embedded;
-import one.xingyi.restAnnotations.javascript.IDomainMaker;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.javascript.XingYiDomain;
 import one.xingyi.restAnnotations.optics.Lens;
@@ -13,10 +13,12 @@ import java.util.List;
 public class EntityOnClientClassDom {
     public final FieldList fields;
     public final PackageAndClassName interfaceName;
+    private LoggerAdapter log;
     public INames names;
     public final PackageAndClassName packageAndClassName;
 
-    public EntityOnClientClassDom(INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
+    public EntityOnClientClassDom(LoggerAdapter log,INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
+        this.log = log;
         this.names = names;
         this.packageAndClassName = packageAndClassName;
         this.interfaceName = interfaceName;
@@ -66,9 +68,10 @@ public class EntityOnClientClassDom {
     }
 
     public List<String> createLensForServerClass() {
-        return fields.flatMap(tn -> {
-            String targetClassname = names.clientImplName(packageAndClassName.withName(tn.type.shortName)).className;
-            return new LensDom(fields, packageAndClassName.className, tn).createForClassOnClient(interfaceName, targetClassname);
+        return fields.flatMap(fd -> {
+            log.info("making lens for server class Field details are" + fd);
+            String targetClassname = names.clientImplName(packageAndClassName.withName(fd.type.shortName)).className;
+            return new LensDom(fields, packageAndClassName.className, fd).createForClassOnClient(interfaceName, targetClassname);
         });
     }
 

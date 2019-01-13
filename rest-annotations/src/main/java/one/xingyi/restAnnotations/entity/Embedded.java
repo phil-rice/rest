@@ -2,9 +2,11 @@ package one.xingyi.restAnnotations.entity;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.restAnnotations.marshelling.HasJson;
+import one.xingyi.restAnnotations.marshelling.JsonTC;
 
 import java.util.concurrent.CompletableFuture;
-public interface Embedded<T> {
+public interface Embedded<T> extends HasJson {
     /**
      * If you are an embedded object you need an id
      */
@@ -23,7 +25,7 @@ public interface Embedded<T> {
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class ActuallyEmbedded<T> implements Embedded<T> {
+class ActuallyEmbedded<T extends HasJson> implements Embedded<T> {
     final String id;
     final T entity;
 
@@ -35,5 +37,8 @@ class ActuallyEmbedded<T> implements Embedded<T> {
     }
     @Override public CompletableFuture<T> get() {
         return CompletableFuture.completedFuture(entity);
+    }
+    @Override public <J> J toJson(JsonTC<J> jsonTc) {
+        return jsonTc.makeObject("_embedded", entity.toJson(jsonTc));
     }
 }

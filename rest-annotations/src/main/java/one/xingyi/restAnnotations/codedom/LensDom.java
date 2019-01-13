@@ -1,5 +1,4 @@
 package one.xingyi.restAnnotations.codedom;
-import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.ArrayList;
