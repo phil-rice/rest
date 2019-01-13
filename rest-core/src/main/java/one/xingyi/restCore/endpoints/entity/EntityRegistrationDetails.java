@@ -1,4 +1,4 @@
-package one.xingyi.restCore.xingYiServer.endpoints.entity;
+package one.xingyi.restcore.endpoints.entity;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

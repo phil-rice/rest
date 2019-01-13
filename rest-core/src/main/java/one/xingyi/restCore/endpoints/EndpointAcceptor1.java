@@ -1,4 +1,4 @@
-package one.xingyi.restCore.xingYiServer.endpoints;
+package one.xingyi.restcore.endpoints;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 

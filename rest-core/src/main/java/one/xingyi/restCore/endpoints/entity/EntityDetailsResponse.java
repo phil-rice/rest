@@ -1,12 +1,13 @@
-package one.xingyi.restCore.xingYiServer.endpoints.entity;
+package one.xingyi.restcore.endpoints.entity;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.restCore.xingYiServer.endpoints.EndpointAcceptor1;
-import one.xingyi.restCore.xingYiServer.endpoints.EndpointResponse;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
+import one.xingyi.restcore.endpoints.EndpointAcceptor1;
+import one.xingyi.restcore.endpoints.EndpointResponse;
+
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor

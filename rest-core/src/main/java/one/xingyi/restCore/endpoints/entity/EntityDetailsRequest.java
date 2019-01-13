@@ -1,8 +1,9 @@
-package one.xingyi.restCore.xingYiServer.endpoints.entity;
+package one.xingyi.restcore.endpoints.entity;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.restCore.xingYiServer.endpoints.EndpointRequest;
+import one.xingyi.restcore.endpoints.EndpointRequest;
+
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor

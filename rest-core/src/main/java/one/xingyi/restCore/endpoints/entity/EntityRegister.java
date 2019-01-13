@@ -1,10 +1,13 @@
-package one.xingyi.restCore.xingYiServer.endpoints.entity;
+package one.xingyi.restcore.endpoints.entity;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<EntityDetailsResponse>> {
