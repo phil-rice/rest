@@ -8,4 +8,7 @@ public interface IEntity {
     @XingYiField(readInterfaces = EntityInterfaces.entityUrlPattern)
     String url();
 
+    @XingYiField(readInterfaces = EntityInterfaces.entityInterfaces)
+    String interfaces();
+
 }

@@ -33,6 +33,7 @@ class SimpleXingYiClient implements XingYiClient {
     final Function<ServiceRequest, CompletableFuture<ServiceResponse>> client;
     final IClientFactory[] factories;
     private final IClientFactory factory;
+
     public SimpleXingYiClient(Function<ServiceRequest, CompletableFuture<ServiceResponse>> client, IClientFactory[] factories) {
         this.client = client;
         this.factories = factories;

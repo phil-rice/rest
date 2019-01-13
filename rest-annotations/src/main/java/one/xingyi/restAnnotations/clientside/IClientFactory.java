@@ -24,7 +24,7 @@ class ComposeClientFactory implements IClientFactory {
             acc.addAll(f.supported()); return acc;
         });
     }
-    @Override public <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
+    <Interface> Optional<Interface> applyOnce(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
         for (IClientFactory factory : factories) {
             Optional<Interface> opt = factory.apply(clazz, xingYi, mirror);
             if (opt.isPresent())
@@ -32,4 +32,32 @@ class ComposeClientFactory implements IClientFactory {
         }
         return Optional.empty();
     }
+    @Override public <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
+        return applyOnce(clazz, xingYi, mirror).or(() -> applyInterfaces(clazz, xingYi, mirror));
+    }
+    <Interface> Optional<Interface> applyInterfaces(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
+        for (IClientFactory factory : factories) {
+            Optional<Interface> opt = checkFactoryForInterfaces(clazz, xingYi, mirror, factory);
+            System.out.println("   opt afterchecking multiple: " + opt);
+            if (opt.isPresent())
+                return opt;
+        }
+        return Optional.empty();
+    }
+
+    <Interface> Optional<Interface> checkFactoryForInterfaces(Class<Interface> clazz, IXingYi xingYi, Object mirror, IClientFactory factory) {
+        List<Class<?>> interfaces = Arrays.asList(clazz.getInterfaces());
+        Interface iSaved = null;
+        for (Class<?> i : interfaces) {
+            Optional opt = factory.apply(i, xingYi, mirror);
+            System.out.println("   opt: " + opt + "i " + i + " isaved" + iSaved + " supported" + factory.supported());
+            if (!opt.isPresent())
+                return Optional.empty();
+            if (iSaved != null && opt.get().getClass() != iSaved.getClass()) //TODO this is very messy: making too many objects. Need to split up client factory must be same object
+                return Optional.empty();
+            iSaved = (Interface) opt.get();
+        }
+        return Optional.of(iSaved);
+    }
+
 }

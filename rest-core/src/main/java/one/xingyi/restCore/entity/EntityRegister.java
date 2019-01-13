@@ -5,10 +5,8 @@ import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restcore.xingYiServer.Entity;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Entity>> {
@@ -39,6 +37,9 @@ class SimpleEntityRegister implements EntityRegister {
         EntityRegistrationDetails details = register.get(entityDetailsRequest.entityName);
         if (details == null)
             throw new EntityNotKnownException(entityDetailsRequest.entityName, Arrays.asList(register.keySet().toArray(new String[0])));
-        return CompletableFuture.completedFuture(new Entity(details.urlPattern));
+        List<Class> classes = Arrays.asList(details.companion.supported().toArray(new Class[0]));
+        List<String> supported = ListUtils.map(classes,Class::getName);
+        Collections.sort(supported);
+        return CompletableFuture.completedFuture(new Entity(details.urlPattern, supported.toString()));
     }
 }

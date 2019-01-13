@@ -2,13 +2,9 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.clientside.IClientFactory;
-import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.javascript.IXingYi;
-import one.xingyi.restAnnotations.javascript.XingYiDomain;
-import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
-import java.lang.reflect.Array;
 import java.util.*;
 public class CompanionOnClientClassDom {
     private PackageAndClassName clientName;
@@ -36,14 +32,13 @@ public class CompanionOnClientClassDom {
         result.add("import " + Set.class.getName() + ";");
         result.add("import " + clientName.asString() + ";");
         result.add("public class " + companionName.className + " implements IClientFactory{");
-        result.addAll(Formating.indent(createSet()));
+        result.addAll(Formating.indent(createSupported()));
         result.addAll(Formating.indent(createMethod()));
         result.add("}");
         return result;
     }
-    List<String> createSet() {
+    List<String> createSupported() {
         return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");
-
     }
 
     List<String> createMethod() {
