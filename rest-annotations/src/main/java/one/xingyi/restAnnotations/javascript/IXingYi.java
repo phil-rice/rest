@@ -6,17 +6,12 @@ import one.xingyi.restAnnotations.optics.Setter;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 public interface IXingYi {
-    <T extends XingYiDomain> T parse(Class<T> clazz, String s);
+    Object parse(String s);
     <T extends XingYiDomain> Lens<T, String> stringLens(IDomainMaker<T> domainMaker, String name);
     <T1 extends XingYiDomain, T2> Lens<T1, T2> objectLens(IDomainMaker<T1> domainMaker1, IDomainMaker<T2> domainMaker2, String name);
-    static IXingYi create(String javascript) {
-        return new DefaultXingYi(javascript);
-    }
 }
 
 class XingYiExecutionException extends RuntimeException {
@@ -42,12 +37,7 @@ class DefaultXingYi implements IXingYi {
         this.inv = (Invocable) engine;
     }
 
-    @Override public <T extends XingYiDomain> T parse(Class<T> clazz, String s) {
-        return XingYiExecutionException.wrap("parse", () -> {
-            Object mirror = inv.invokeFunction("parse", s);
-            return clazz.<T>getConstructor(Object.class, IXingYi.class).newInstance(mirror, this);
-        });
-    }
+    @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse", () -> inv.invokeFunction("parse", s)); }
     @Override public <T extends XingYiDomain> Lens<T, String> stringLens(IDomainMaker<T> domainMaker, String name) {
         Getter<T, String> getter = t -> XingYiExecutionException.wrap("stringLens.get" + name, () -> (String) inv.invokeFunction("getL", name, t.mirror));
         Setter<T, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, () -> domainMaker.apply(inv.invokeFunction("setL", name, t.mirror, s), this));

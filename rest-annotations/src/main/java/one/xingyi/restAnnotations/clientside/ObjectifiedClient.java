@@ -10,7 +10,7 @@ import java.util.function.Function;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class XingYiClient<Req, Res> implements Function<Req, CompletableFuture<Res>> {
+public class ObjectifiedClient<Req, Res> implements Function<Req, CompletableFuture<Res>> {
     final Function<ServiceRequest, CompletableFuture<ServiceResponse>> service;
     final Function<Req, ServiceRequest> toServiceRequest;
     final Function<ServiceResponse, Res> toServiceResponse;

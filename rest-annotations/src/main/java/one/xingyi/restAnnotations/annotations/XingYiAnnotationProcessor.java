@@ -44,7 +44,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
                 PackageAndClassName entityName = names.get(annotatedElement);
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
-                FieldList fields = FieldList.create(log, names,entityName.className, annotatedElement.getEnclosedElements());
+                FieldList fields = FieldList.create(log, names, entityName.className, annotatedElement.getEnclosedElements());
                 List<String> errors = names.validateEntityName(entityName);
                 if (errors.size() > 0) error(annotatedElement, errors.toString());
                 else {
@@ -52,15 +52,19 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     PackageAndClassName interfaceName = names.interfaceName(entityName);
                     PackageAndClassName clientImplName = names.clientImplName(entityName);
                     PackageAndClassName serverCompanionname = names.serverCompanionName(entityName);
+                    PackageAndClassName clientCompanionname = names.clientCompanionName(entityName);
 
-                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(log,names, serverImpl, interfaceName, fields);
+                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, serverImpl, interfaceName, fields);
                     makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
 
-                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log,names, clientImplName, interfaceName, fields);
+                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, clientImplName, interfaceName, fields);
                     makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
 
                     CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, serverCompanionname, interfaceName, serverImpl, fields);
                     makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
+
+                    CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names, clientCompanionname, clientImplName, fields);
+                    makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
 
                     for (OpsInterfaceClassDom dom : classDom.nested()) {
                         messager.printMessage(Diagnostic.Kind.NOTE, "making interfacedom " + dom.opsName.asString());

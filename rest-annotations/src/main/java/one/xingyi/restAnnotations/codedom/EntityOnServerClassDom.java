@@ -25,10 +25,9 @@ public class EntityOnServerClassDom {
         log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
     }
 
-    List<String> nestedOps() { return ListUtils.unique(fields.flatMap(tn -> tn.allInterfaces())); }
 
     public List<OpsInterfaceClassDom> nested() {
-        return ListUtils.map(nestedOps(), opsName -> new OpsInterfaceClassDom(packageAndClassName.withName(opsName), interfaceName, fields));
+        return ListUtils.map(fields.nestedOps(), opsName -> new OpsInterfaceClassDom(packageAndClassName.withName(opsName), interfaceName, fields));
     }
 
     public List<String> createClass() {

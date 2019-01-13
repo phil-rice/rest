@@ -2,23 +2,35 @@ package one.xingyi.restcore.endpoints;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
+import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
+import one.xingyi.restcore.xingyiclient.IJavascriptFetcher;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+
+import static one.xingyi.restAnnotations.clientside.IXingYiResponseSplitter.marker;
 public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> {
+
+    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> withoutOptional(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
+        return sr -> original.apply(sr).thenApply(Optional::get);
+    }
     static <From extends EndpointRequest, To extends EndpointResponse> EndPoint simple(EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new SimpleEndPoint<>(acceptor, fn);
     }
     static <J, From extends EndpointRequest, To extends HasJson> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn);
+    }
+    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint javascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, Companion<Interface, To> companion) {
+        return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn, companion);
     }
 
 
@@ -92,8 +104,25 @@ class JsonEndPoint<From extends EndpointRequest, To extends HasJson> implements 
 
     //wow this is a bit of dogs dinner
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
-        return acceptor.apply(serviceRequest).
-                map(from -> fn.apply(from).thenApply(to -> Optional.of(ServiceResponse.json(jsonTc, status, to)))).
-                orElse(CompletableFuture.completedFuture(Optional.empty()));
+        return OptionalUtils.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> ServiceResponse.json(jsonTc, status, to)));
+    }
+}
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson> implements EndPoint {
+
+    final JsonTC<? extends Object> jsonTc;
+    final int status;
+    final EndpointAcceptor1<From> acceptor;
+    final Function<From, CompletableFuture<To>> fn;
+    final Companion<Interface, To> companion;
+
+    //wow this is a bit of dogs dinner
+    @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
+        return OptionalUtils.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> {
+            String javascript = Files.getText("header.js") + companion.javascript();
+            return ServiceResponse.javascriptAndJson(jsonTc, 200, to, javascript);
+        }));
     }
 }

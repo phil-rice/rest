@@ -25,10 +25,13 @@ public class FieldList {
         this.nonDeprecatedfields = ListUtils.filter(fields, fd -> !fd.deprecated);
     }
 
+    List<String> nestedOps() { return ListUtils.unique(flatMap(tn -> tn.allInterfaces())); }
+
+
     public <T> List<T> map(Function<FieldDetails, T> fn) { return ListUtils.map(nonDeprecatedfields, fn); }
-//    public <T> List<T> mapincDeprecated(Function<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }
+    //    public <T> List<T> mapincDeprecated(Function<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }
     public <T> List<T> flatMap(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(nonDeprecatedfields, fn); }
-//    public <T> List<T> flatMapincDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }
+    //    public <T> List<T> flatMapincDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }
     public <T> String mapJoin(String separator, Function<FieldDetails, String> fn) { return ListUtils.<FieldDetails>mapJoin(nonDeprecatedfields, separator, fn); }
 
     public String createConstructorCall(String name) {
