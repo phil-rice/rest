@@ -2,6 +2,8 @@ package one.xingyi.restAnnotations.http;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.restAnnotations.marshelling.HasJson;
+import one.xingyi.restAnnotations.marshelling.JsonTC;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +16,9 @@ public class ServiceResponse {
     public final String body;
     public final List<Header> headers;
 
+    public static <J> ServiceResponse json(JsonTC<J> jsonTc, int status, HasJson entity) {
+        return new ServiceResponse(status, jsonTc.toJson(entity), Arrays.asList(new Header("Content-type", "application/json")));
+    }
 
     public static ServiceResponse html(int status, String body) {
         return new ServiceResponse(status, body, Arrays.asList(new Header("Content-type", "text/html")));

@@ -30,6 +30,7 @@ public class HttpUtils {
             result.ifPresentOrElse(WrappedException.<ServiceResponse>wrapConsumer(x -> write(exchange, x)),
                     () -> WrappedException.wrap(() -> write(exchange, ServiceResponse.html(404, "Not found. " + exchange.getRequestURI()))));
         } catch (Exception e) {
+            e.printStackTrace();
             WrappedException.wrap(() -> {
                         ServiceResponse serviceResponse = ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
                         write(exchange, serviceResponse);

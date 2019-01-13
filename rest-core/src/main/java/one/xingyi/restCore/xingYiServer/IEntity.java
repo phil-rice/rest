@@ -1,4 +1,4 @@
-package one.xingyi.restCore.xingYiServer;
+package one.xingyi.restcore.xingYiServer;
 import one.xingyi.restAnnotations.annotations.XingYi;
 import one.xingyi.restAnnotations.annotations.XingYiField;
 

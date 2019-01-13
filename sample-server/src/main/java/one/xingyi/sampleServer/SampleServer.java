@@ -1,5 +1,7 @@
 package one.xingyi.sampleServer;
 import one.xingyi.restAnnotations.http.ServiceResponse;
+import one.xingyi.restAnnotations.marshelling.JsonObject;
+import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.server.EndpointHandler;
 import one.xingyi.restAnnotations.server.HttpUtils;
 import one.xingyi.restAnnotations.server.SimpleServer;
@@ -21,7 +23,8 @@ public class SampleServer {
 
         EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact("get", "/keepalive"), ServiceResponse.html(200, "Alive"));
 
-        EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(register);
+        JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
+        EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
 
         EndPoint all = EndPoint.printlnLog(EndPoint.compose(index, keepalive, entityDetailsEndPoint));
         SimpleServer server = new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(all), 9000);

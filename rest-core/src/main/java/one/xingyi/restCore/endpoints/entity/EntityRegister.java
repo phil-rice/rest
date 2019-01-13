@@ -3,6 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restcore.xingYiServer.Entity;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -10,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<EntityDetailsResponse>> {
+public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Entity>> {
 
     static EntityRegister register(List<EntityRegistrationDetails> details) {
         return new SimpleEntityRegister(details);
     }
     static EntityRegister simple(Companion<?, ?>... companions) {
         return new SimpleEntityRegister(ListUtils.map(Arrays.asList(companions),
-                c -> new EntityRegistrationDetails(c.entityName(), "/" + c.entityName() + "/<id>", c)));
+                c -> new EntityRegistrationDetails(c.entityName(), "/" + c.entityName().toLowerCase() + "/<id>", c)));
     }
 }
 
@@ -34,10 +35,10 @@ class SimpleEntityRegister implements EntityRegister {
 
     }
 
-    @Override public CompletableFuture<EntityDetailsResponse> apply(EntityDetailsRequest entityDetailsRequest) {
+    @Override public CompletableFuture<Entity> apply(EntityDetailsRequest entityDetailsRequest) {
         EntityRegistrationDetails details = register.get(entityDetailsRequest.entityName);
         if (details == null)
             throw new EntityNotKnownException(entityDetailsRequest.entityName, Arrays.asList(register.keySet().toArray(new String[0])));
-        return CompletableFuture.completedFuture(new EntityDetailsResponse(details));
+        return CompletableFuture.completedFuture(new Entity(details.urlPattern));
     }
 }
