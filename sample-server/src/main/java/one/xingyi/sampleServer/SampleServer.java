@@ -8,10 +8,10 @@ import one.xingyi.restAnnotations.server.SimpleServer;
 import one.xingyi.restExample.AddressServerCompanion;
 import one.xingyi.restExample.PersonServerCompanion;
 import one.xingyi.restExample.TelephoneNumberServerCompanion;
-import one.xingyi.restcore.endpoints.EndPoint;
-import one.xingyi.restcore.endpoints.EndpointAcceptor0;
-import one.xingyi.restcore.endpoints.entity.EntityDetailsEndpoint;
-import one.xingyi.restcore.endpoints.entity.EntityRegister;
+import one.xingyi.restAnnotations.endpoints.EndPoint;
+import one.xingyi.restAnnotations.endpoints.EndpointAcceptor0;
+import one.xingyi.restcore.entity.EntityDetailsEndpoint;
+import one.xingyi.restcore.entity.EntityRegister;
 
 public class SampleServer {
 

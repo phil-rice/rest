@@ -24,20 +24,20 @@ public class HttpUtils {
         Streams.sendAll(exchange.getResponseBody(), bytes);
     }
 
-    public static void process(HttpExchange exchange, Callable<Optional<ServiceResponse>> response) {
-        try {
-            Optional<ServiceResponse> result = response.call();
-            result.ifPresentOrElse(WrappedException.<ServiceResponse>wrapConsumer(x -> write(exchange, x)),
-                    () -> WrappedException.wrap(() -> write(exchange, ServiceResponse.html(404, "Not found. " + exchange.getRequestURI()))));
-        } catch (Exception e) {
-            e.printStackTrace();
-            WrappedException.wrap(() -> {
-                        ServiceResponse serviceResponse = ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
-                        write(exchange, serviceResponse);
-                    }
-            );
-        }
-    }
+//    public static void process(HttpExchange exchange, Callable<Optional<ServiceResponse>> response) {
+//        try {
+//            Optional<ServiceResponse> result = response.call();
+//            result.ifPresentOrElse(WrappedException.<ServiceResponse>wrapConsumer(x -> write(exchange, x)),
+//                    () -> WrappedException.wrap(() -> write(exchange, ServiceResponse.html(404, "Not found. " + exchange.getRequestURI()))));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            WrappedException.wrap(() -> {
+//                        ServiceResponse serviceResponse = ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
+//                        write(exchange, serviceResponse);
+//                    }
+//            );
+//        }
+//    }
 
 
 //    def id(httpExchange:HttpExchange, prefix:String):

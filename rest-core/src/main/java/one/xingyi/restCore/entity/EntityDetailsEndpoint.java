@@ -1,9 +1,9 @@
-package one.xingyi.restcore.endpoints.entity;
+package one.xingyi.restcore.entity;
 
 
 import one.xingyi.restAnnotations.marshelling.JsonTC;
-import one.xingyi.restcore.endpoints.EndPoint;
-import one.xingyi.restcore.endpoints.EndpointAcceptor1;
+import one.xingyi.restAnnotations.endpoints.EndPoint;
+import one.xingyi.restAnnotations.endpoints.EndpointAcceptor1;
 import one.xingyi.restcore.xingYiServer.Entity;
 import one.xingyi.restcore.xingYiServer.EntityServerCompanion;
 

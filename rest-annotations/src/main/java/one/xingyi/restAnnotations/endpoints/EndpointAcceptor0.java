@@ -1,4 +1,4 @@
-package one.xingyi.restcore.endpoints;
+package one.xingyi.restAnnotations.endpoints;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 
 import java.util.function.Function;

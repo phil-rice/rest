@@ -1,4 +1,4 @@
-package one.xingyi.restcore.endpoints;
+package one.xingyi.restAnnotations.endpoints;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -9,20 +9,43 @@ import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
-import one.xingyi.restcore.xingyiclient.IJavascriptFetcher;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-
-import static one.xingyi.restAnnotations.clientside.IXingYiResponseSplitter.marker;
 public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> {
 
-    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> withoutOptional(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
-        return sr -> original.apply(sr).thenApply(Optional::get);
+    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
+        return sr -> {
+            try {
+                return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.html(404, "Not found. " + sr))).exceptionally(e -> internalError(e));
+            } catch (Exception e) {
+                System.out.println("Dumping error from inside completable future in toKliesli");
+                e.printStackTrace();
+                return CompletableFuture.completedFuture(internalError(e));
+            }
+        };
     }
+    static ServiceResponse internalError(Throwable e) {
+        return ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
+    }
+
+
+    // try {
+    //            Optional<ServiceResponse> result = response.call();
+    //            result.ifPresentOrElse(WrappedException.<ServiceResponse>wrapConsumer(x -> write(exchange, x)),
+    //                    () -> WrappedException.wrap(() -> write(exchange, ServiceResponse.html(404, "Not found. " + exchange.getRequestURI()))));
+    //        } catch (Exception e) {
+    //            e.printStackTrace();
+    //            WrappedException.wrap(() -> {
+    //                        ServiceResponse serviceResponse = ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
+    //                        write(exchange, serviceResponse);
+    //                    }
+    //            );
+    //        }
+
     static <From extends EndpointRequest, To extends EndpointResponse> EndPoint simple(EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new SimpleEndPoint<>(acceptor, fn);
     }

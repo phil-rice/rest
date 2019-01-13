@@ -5,9 +5,11 @@ import com.sun.net.httpserver.HttpHandler;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.restAnnotations.endpoints.EndPoint;
 import one.xingyi.restAnnotations.http.Header;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
+import one.xingyi.restAnnotations.utils.WrappedException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,13 +21,18 @@ import java.util.function.Function;
 
 @ToString
 @EqualsAndHashCode
-@RequiredArgsConstructor
+
 public class EndpointHandler implements HttpHandler {
 
     final Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> fn;
+    private final Function<ServiceRequest, CompletableFuture<ServiceResponse>> kleisli;
+    public EndpointHandler(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> fn) {
+        this.fn = fn;
+        this.kleisli = EndPoint.toKliesli(fn);
+    }
 
-    @Override public void handle(HttpExchange exchange) {
-        HttpUtils.process(exchange, () -> fn.apply(makeServiceRequest(exchange)).get());
+    @Override public void handle(HttpExchange exchange) throws IOException {
+        HttpUtils.write(exchange, WrappedException.wrapCallable(() -> kleisli.apply(makeServiceRequest(exchange)).get()));
     }
 
     ServiceRequest makeServiceRequest(HttpExchange exchange) throws IOException {
