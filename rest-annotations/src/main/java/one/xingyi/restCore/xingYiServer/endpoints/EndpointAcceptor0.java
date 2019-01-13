@@ -1,8 +1,6 @@
-package one.xingyi.restAnnotations.endpoints;
+package one.xingyi.restCore.xingYiServer.endpoints;
 import one.xingyi.restAnnotations.http.ServiceRequest;
-import one.xingyi.restAnnotations.utils.OptionalUtils;
 
-import java.util.Optional;
 import java.util.function.Function;
 public interface EndpointAcceptor0 extends Function<ServiceRequest, Boolean> {
 

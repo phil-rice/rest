@@ -39,6 +39,8 @@ public class CompanionOnServerClassDom {
         result.add("final String javascript = " + Strings.quote(""));
         result.addAll(Formating.indent(fields.map(fd -> "+ " + Strings.quote("function lens_" + fd.lensName + "(){ return lens('" + fd.name + "');};\\n"))));
         result.add(";");
+        result.add("public String interfaceName() { return " + Strings.quote(interfaceName.className) + "; } ");
+        result.add("public String entityName() { return " + Strings.quote(entityName.className) + "; } ");
         result.add("public String javascript() { return javascript; } ");
         return result;
     }

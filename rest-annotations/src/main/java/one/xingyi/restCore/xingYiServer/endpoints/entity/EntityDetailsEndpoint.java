@@ -1,7 +1,7 @@
-package one.xingyi.restAnnotations.endpoints.entity;
+package one.xingyi.restCore.xingYiServer.endpoints.entity;
 
-import one.xingyi.restAnnotations.endpoints.EndPoint;
-import one.xingyi.restAnnotations.endpoints.EndpointAcceptor1;
+import one.xingyi.restCore.xingYiServer.endpoints.EndPoint;
+import one.xingyi.restCore.xingYiServer.endpoints.EndpointAcceptor1;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
