@@ -25,21 +25,11 @@ public class EntityOnClientClassDom {
         this.fields = fields;
     }
 
-//    EntityOnClientClassDom withFields(FieldList fields) {
-//        return new EntityOnClientClassDom(names, packageAndClassName, interfaceName, fields);
-//    }
-//    EntityOnClientClassDom withPackageAndClassName(PackageAndClassName packageAndClassName, PackageAndClassName interfaceName) {
-//        return new EntityOnClientClassDom(names, packageAndClassName, interfaceName, fields);
-//    }
-
-//    List<String> nestedOps() { return ListUtils.unique(fields.flatMap(tn -> tn.allInterfaces())); }
-//    public List<OpsInterfaceClassDom> nested() {
-//        return ListUtils.map(nestedOps(), opsName -> new OpsInterfaceClassDom(packageAndClassName.withName(opsName), interfaceName, fields));
-//    }
 
     List<String> interfaces() {
         return ListUtils.unique(ListUtils.add(fields.flatMap(fd -> fd.allInterfaces()), interfaceName.className));
     }
+
     public List<String> createClass() {
         String packageName = packageAndClassName.packageName;
         ArrayList<String> result = new ArrayList<>();
@@ -51,17 +41,12 @@ public class EntityOnClientClassDom {
         result.add("import " + Embedded.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
         result.add("public class " + packageAndClassName.className + " extends XingYiDomain implements " + ListUtils.join(interfaces(), ",") + "{");
-//        result.addAll(Formating.indent(createDomainMaker()));
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
         result.addAll(Formating.indent(createLens()));
         result.add("}");
         return result;
     }
-//    private List<String> createDomainMaker() {
-//        return Arrays.asList("static IDomainMaker<" + companionName.className + ">domainMaker(){return (m,x)->new " + companionName.className + "(m, x);}");
-//    }
-
 
     public List<String> createFields() {
         return Arrays.asList("final IXingYi xingYi;");
@@ -69,9 +54,7 @@ public class EntityOnClientClassDom {
 
     public List<String> createLens() {
         return fields.flatMap(fd -> {
-//            log.info("making lens for server class Field details are" + fd);
-            String targetClassname = names.clientImplName(packageAndClassName.withName(fd.type.shortName)).className;
-            return new LensDom(fields, packageAndClassName.className, fd.type.shortName, fd).createForClassOnClient(targetClassname);
+            return new LensDom(fields, packageAndClassName.className, fd.type.shortName, fd).createForClassOnClient();
         });
     }
 

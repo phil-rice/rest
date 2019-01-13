@@ -1,7 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
-import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
@@ -26,14 +25,8 @@ public class EntityOnServerClassDom {
         log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
     }
 
-//    EntityOnServerClassDom withFields(FieldList fields) {
-//        return new EntityOnServerClassDom(log, names, packageAndClassName, interfaceName, fields);
-//    }
-//    EntityOnServerClassDom withPackageAndClassName(PackageAndClassName packageAndClassName, PackageAndClassName interfaceName) {
-//        return new EntityOnServerClassDom(log,names, packageAndClassName, interfaceName, fields);
-//    }
-
     List<String> nestedOps() { return ListUtils.unique(fields.flatMap(tn -> tn.allInterfaces())); }
+
     public List<OpsInterfaceClassDom> nested() {
         return ListUtils.map(nestedOps(), opsName -> new OpsInterfaceClassDom(packageAndClassName.withName(opsName), interfaceName, fields));
     }
@@ -53,7 +46,7 @@ public class EntityOnServerClassDom {
         result.add("public class " + packageAndClassName.className + " implements HasJson, " + interfaceName.className + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
-        result.addAll(Formating.indent(createLensForServerClass()));
+        result.addAll(Formating.indent(createLens()));
         result.add("");
         result.addAll(Formating.indent(makeJson()));
         result.add("");
@@ -67,8 +60,8 @@ public class EntityOnServerClassDom {
         return fields.map(nv -> "final " + nv.type.shortNameWithHasJson + " " + nv.name + ";");
     }
 
-    public List<String> createLensForServerClass() {
-        return fields.flatMap(fd -> new LensDom(fields, packageAndClassName.className,fd.type.shortNameWithHasJson, fd).createForClassOnServer());
+    public List<String> createLens() {
+        return fields.flatMap(fd -> new LensDom(fields, packageAndClassName.className, fd.type.shortNameWithHasJson, fd).createForClassOnServer());
     }
 
 
@@ -102,10 +95,9 @@ public class EntityOnServerClassDom {
     String toJson(FieldDetails fd) {
         if (fd.type.shortName.equals("String"))
             return fd.name;
-        if (fd.type.embedded){
+        if (fd.type.embedded) {
             return fd.name + ".toJson(jsonTc)";
-        }
-        else
+        } else
             return "((" + names.serverImplName(fd.type.shortName) + ")" + fd.name + ").toJson(jsonTc)";
     }
     List<String> makeJson() {
@@ -115,11 +107,6 @@ public class EntityOnServerClassDom {
         result.add("}");
         return result;
     }
-
-
-//    @Override public int hashCode() {
-//        return Objects.hash(name, telephone, address);
-//    }
 
 
 }

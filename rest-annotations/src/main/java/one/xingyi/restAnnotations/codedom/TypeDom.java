@@ -29,7 +29,7 @@ public class TypeDom {
             this.fullNameOfEntity = this.fullName;
             this.shortName = Strings.lastSegement("\\.", this.fullName);
             this.shortNameWithHasJson = shortName;
-            this.clientImplName = shortName;
+            this.clientImplName = names.clientImplName(shortName);
             this.embedded = false;
         }
     }
