@@ -1,0 +1,12 @@
+package one.xingyi.restAnnotations.endpoints;
+import one.xingyi.restAnnotations.http.ServiceRequest;
+import one.xingyi.restAnnotations.utils.OptionalUtils;
+
+import java.util.Optional;
+import java.util.function.Function;
+public interface EndpointAcceptor0 extends Function<ServiceRequest, Boolean> {
+
+    static <From> EndpointAcceptor0 exact(String method, String path) {
+        return sr -> sr.method.equalsIgnoreCase(method) && sr.url.equalsIgnoreCase(path);
+    }
+}

@@ -49,9 +49,7 @@ public class EntityOnServerClassDom {
         result.addAll(Formating.indent(createLensForServerClass()));
         result.add("");
         result.addAll(Formating.indent(makeJson()));
-        result.add("");
-        result.addAll(Formating.indent(makeJavascript()));
-        result.add("");
+          result.add("");
         result.addAll(Formating.indent(createEquals()));
         result.addAll(Formating.indent(createHashcode()));
         result.add("}");
@@ -113,13 +111,6 @@ public class EntityOnServerClassDom {
         result.add("public <J> J toJson(JsonTC<J> jsonTc) {");
         result.add(Formating.indent + "return jsonTc.makeObject(" + fields.mapJoin(",", fd -> "\"" + fd.name + "\", " + toJson(fd)) + ");");
         result.add("}");
-        return result;
-    }
-    List<String> makeJavascript() {
-        List<String> result = new ArrayList<>();
-        result.add("public static final String javascript = " + Strings.quote(""));
-        result.addAll(Formating.indent(fields.map(fd -> "+ " + Strings.quote("function lens_" + fd.lensName + "(){ return lens('" + fd.name + "');};\\n"))));
-        result.add(";");
         return result;
     }
 

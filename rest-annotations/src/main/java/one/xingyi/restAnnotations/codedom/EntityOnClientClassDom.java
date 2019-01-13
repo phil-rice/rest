@@ -55,7 +55,7 @@ public class EntityOnClientClassDom {
         return result;
     }
 //    private List<String> createDomainMaker() {
-//        return Arrays.asList("static IDomainMaker<" + packageAndClassName.className + ">domainMaker(){return (m,x)->new " + packageAndClassName.className + "(m, x);}");
+//        return Arrays.asList("static IDomainMaker<" + companionName.className + ">domainMaker(){return (m,x)->new " + companionName.className + "(m, x);}");
 //    }
 
 

@@ -15,7 +15,7 @@ public class Files {
     }
 
     public static String getText(String name) {
-        return WrappedException.wrap(() -> {
+        return WrappedException.wrapCallable(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(Files.class.getClassLoader().getResourceAsStream(name)));
             StringBuilder result = new StringBuilder();
             try {

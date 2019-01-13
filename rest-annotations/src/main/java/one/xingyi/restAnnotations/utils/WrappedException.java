@@ -1,12 +1,14 @@
 package one.xingyi.restAnnotations.utils;
 
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.function.Function;
 public class WrappedException extends RuntimeException {
 
     public WrappedException(Throwable cause) {
         super(cause);
     }
-    public static <T> T wrap(Callable<T> callable) {
+    public static <T> T wrapCallable(Callable<T> callable) {
         try {
             return callable.call();
         } catch (RuntimeException e) {
@@ -14,6 +16,28 @@ public class WrappedException extends RuntimeException {
         } catch (Exception e) {
             throw new WrappedException(e);
         }
+    }
+    public static <T> Consumer<T> wrapConsumer(ConsumerWithException<T> consumer) {
+        return t -> {
+            try {
+                consumer.accept(t);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new WrappedException(e);
+            }
+        };
+    }
+    public static <T1, T2> Function<T1, T2> wrapFn(Function<T1, T2> fn) {
+        return from -> {
+            try {
+                return fn.apply(from);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new WrappedException(e);
+            }
+        };
     }
     public static void wrap(RunnableWithException runnable) {
         try {

@@ -45,13 +45,23 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 List<String> errors = names.validateEntityName(entityName);
                 if (errors.size() > 0) error(annotatedElement, errors.toString());
                 else {
-                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(names, names.serverImplName(entityName), names.interfaceName(entityName), fields);
-                    makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"));
-                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(names, names.clientImplName(entityName), names.interfaceName(entityName), fields);
-                    makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"));
+                    PackageAndClassName serverImpl = names.serverImplName(entityName);
+                    PackageAndClassName interfaceName = names.interfaceName(entityName);
+                    PackageAndClassName clientImplName = names.clientImplName(entityName);
+                    PackageAndClassName serverCompanionname = names.serverCompanionName(entityName);
+
+                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(names, serverImpl, interfaceName, fields);
+                    makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
+
+                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(names, clientImplName, interfaceName, fields);
+                    makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
+
+                    CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, serverCompanionname, interfaceName, entityName, fields);
+                    makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
+
                     for (OpsInterfaceClassDom dom : classDom.nested()) {
                         messager.printMessage(Diagnostic.Kind.NOTE, "making interfacedom " + dom.opsName.asString());
-                        makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"));
+                        makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
                     }
                 }
             }
@@ -60,9 +70,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
 
-    private void makeClassFile(PackageAndClassName packageAndClassName, String classString) {
+    private void makeClassFile(PackageAndClassName packageAndClassName, String classString, Element element) {
         WrappedException.wrap(() -> {
             JavaFileObject builderFile = filer.createSourceFile(packageAndClassName.asString());
+            messager.printMessage(Diagnostic.Kind.NOTE, "making  " + packageAndClassName + "->" + builderFile.toUri());
             Files.setText(() -> new PrintWriter(builderFile.openWriter()), classString);
         });
     }

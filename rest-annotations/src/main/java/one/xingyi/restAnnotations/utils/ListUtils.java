@@ -3,6 +3,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 public class ListUtils {
 
@@ -11,6 +12,14 @@ public class ListUtils {
         for (T t : list)
             result.add(fn.apply(t));
         return result;
+    }
+
+    public static <Acc, V> Acc foldLeft(Acc zero, List<V> list, BiFunction<Acc, V, Acc> fn) {
+        Acc acc = zero;
+        for (V v : list) {
+            acc = fn.apply(acc, v);
+        }
+        return acc;
     }
 
     public static <T> List<T> add(List<T> list, T t) {

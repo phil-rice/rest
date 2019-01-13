@@ -13,6 +13,7 @@ public interface INames {
 
     PackageAndClassName interfaceName(PackageAndClassName packageAndClassName);
     PackageAndClassName serverImplName(PackageAndClassName packageAndClassName);
+    PackageAndClassName serverCompanionName(PackageAndClassName packageAndClassName);
     PackageAndClassName clientImplName(PackageAndClassName packageAndClassName);
 
 
@@ -31,8 +32,8 @@ class DefaultNames implements INames {
     @Override public List<String> validateEntityName(PackageAndClassName packageAndClassName) {
         return packageAndClassName.className.startsWith("I") ? Arrays.asList() : Arrays.asList("Doesn't start with an 'I'");
     }
-//    @Override public List<String> validateOpsName(PackageAndClassName packageAndClassName) {
-//        String opsName = packageAndClassName.className;
+    //    @Override public List<String> validateOpsName(PackageAndClassName companionName) {
+//        String opsName = companionName.className;
 //        return opsName.startsWith("I") ? Arrays.asList() : Arrays.asList("'" + opsName + "' doesn't start with an 'i'");
 //
 //    }
@@ -41,6 +42,9 @@ class DefaultNames implements INames {
     }
     @Override public PackageAndClassName serverImplName(PackageAndClassName packageAndClassName) {
         return packageAndClassName.mapName(e -> e.substring(1));
+    }
+    @Override public PackageAndClassName serverCompanionName(PackageAndClassName packageAndClassName) {
+        return packageAndClassName.mapName(e -> e.substring(1) + "ServerCompanion");
     }
     @Override public PackageAndClassName clientImplName(PackageAndClassName packageAndClassName) {
         return packageAndClassName.mapName(e -> e.substring(1) + "ClientImpl");
