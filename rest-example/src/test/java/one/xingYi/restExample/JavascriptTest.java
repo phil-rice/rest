@@ -10,8 +10,8 @@ public class JavascriptTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("name", address, number);
-    Person personOtherName = new Person("otherName", address, number);
+    Person1 person = new Person1("name", address, number);
+    Person1 personOtherName = new Person1("otherName", address, number);
 
     @Test
     public void testGetters() {

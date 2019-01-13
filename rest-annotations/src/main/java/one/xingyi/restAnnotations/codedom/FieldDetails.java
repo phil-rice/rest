@@ -1,27 +1,35 @@
 package one.xingyi.restAnnotations.codedom;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.XingYiField;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+@ToString
+@EqualsAndHashCode
 
 public class FieldDetails {
-    final String type;
+    @ToString.Exclude
+    final LoggerAdapter log;
+    final TypeDom type;
     final String name;
     final List<String> readInterfaces;
     final List<String> writeInterfaces;
     final List<String> readWriteInterfaces;
-    final List<String> allInterfaces;
     final String lensName;
     final Optional<String> javascript;
     final boolean deprecated;
-
-    public FieldDetails(String type, String name, List<String> readInterfaces, List<String> writeInterfaces, List<String> readWriteInterfaces, String lensName, Optional<String> javascript, boolean deprecated) {
+    public FieldDetails(LoggerAdapter log, TypeDom type, String name, List<String> readInterfaces, List<String> writeInterfaces, List<String> readWriteInterfaces, String lensName, Optional<String> javascript, boolean deprecated) {
+        this.log = log;
         this.type = type;
         this.name = name;
         this.readInterfaces = readInterfaces;
@@ -30,7 +38,10 @@ public class FieldDetails {
         this.lensName = lensName;
         this.javascript = javascript;
         this.deprecated = deprecated;
-        this.allInterfaces = ListUtils.unique(ListUtils.append(readInterfaces, writeInterfaces, readWriteInterfaces));
+        log.info("In field details " + this);
+    }
+    public List<String> allInterfaces() {
+        return ListUtils.unique(ListUtils.append(readInterfaces, writeInterfaces, readWriteInterfaces));
     }
     public boolean shouldHaveRead(String interfaceName) {
         return readWriteInterfaces.contains(interfaceName) || readInterfaces.contains(interfaceName);
@@ -39,38 +50,26 @@ public class FieldDetails {
         return readWriteInterfaces.contains(interfaceName) || writeInterfaces.contains(interfaceName);
     }
 
-    public FieldDetails mapType(Function<String, String> fn) {
-        return new FieldDetails(fn.apply(type), name, readInterfaces, writeInterfaces, readWriteInterfaces, lensName, javascript, deprecated);
-    }
-
-    @Override public String toString() {
-        return "FieldDetails{" +
-                "type='" + type + '\'' +
-                ", name='" + name + '\'' +
-                ", readInterfaces=" + readInterfaces +
-                ", writeInterfaces=" + writeInterfaces +
-                ", readWriteInterfaces=" + readWriteInterfaces +
-                ", lensName=" + lensName +
-                ", javascript=" + javascript +
-                ", deprecated=" + deprecated +
-                '}';
-    }
+//    public FieldDetails mapType(Function<String, String> fn) {
+//        return new FieldDetails(log, fn.apply(type), name, readInterfaces, writeInterfaces, readWriteInterfaces, lensName, javascript, deprecated);
+//    }
 
     static String getLensName(String interfaceName, String name, String toClassName, Optional<String> lensName) {
-        return lensName.orElse(interfaceName + "_" + name) + "_" + Strings.lastSegement("\\.",toClassName);
+        return lensName.orElse(interfaceName + "_" + name) + "_" + toClassName;
     }
 
-    public static FieldDetails create(String interfaceName, Element element) {
+    public static FieldDetails create(LoggerAdapter log, String interfaceName, Element element) {
         String rawType = element.asType().toString();
+        TypeDom typeDom = new TypeDom(rawType);
         XingYiField xingYiField = element.getAnnotation(XingYiField.class);
-        String cleaned = Strings.removeOptionalFirst("()", rawType);
         String name = element.getSimpleName().toString();
+        log.info("Making field details. InterfaceName is [" + interfaceName + "] name is [" + name + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
         if (xingYiField == null)
-            return new FieldDetails(cleaned, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), getLensName(interfaceName, name, cleaned, Optional.empty()), Optional.empty(), false);
+            return new FieldDetails(log, typeDom, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), getLensName(interfaceName, name, typeDom.shortName, Optional.empty()), Optional.empty(), false);
         else
-            return new FieldDetails(cleaned, name,
+            return new FieldDetails(log, typeDom, name,
                     Arrays.asList(xingYiField.readInterfaces()), Arrays.asList(xingYiField.writeInterfaces()), Arrays.asList(xingYiField.interfaces()),
-                    getLensName(interfaceName, name, cleaned, OptionalUtils.fromString(xingYiField.lens())), OptionalUtils.fromString(xingYiField.javascript()), xingYiField.deprecated());
+                    getLensName(interfaceName, name, typeDom.shortName, OptionalUtils.fromString(xingYiField.lens())), OptionalUtils.fromString(xingYiField.javascript()), xingYiField.deprecated());
     }
 
 

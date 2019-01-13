@@ -9,6 +9,21 @@ public class Strings {
         else return value;
     }
 
+    public static String removeOptionalLast(String last, String value) {
+        if (value.endsWith(last))
+            return value.substring(0, value.length() - last.length());
+        return value;
+    }
+
+    public static String extractFromOptionalEnvelope(String start, String end, String s) {
+        int startIndex = s.indexOf(start);
+        int endOfStart = startIndex + start.length() + 1;
+        int endIndex = s.indexOf(end, endOfStart);
+        if (startIndex == -1 || endIndex == -1)
+            return s;
+        return s.substring(endOfStart, endIndex);
+    }
+
     public static String lastSegement(String separator, String s) {
         String[] split = s.split(separator);
         return split.length == 0 ? "" : split[split.length - 1];

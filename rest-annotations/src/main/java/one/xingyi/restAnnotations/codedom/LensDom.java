@@ -1,4 +1,5 @@
 package one.xingyi.restAnnotations.codedom;
+import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class LensDom {
     public LensDom(FieldList fieldList, String fromClassName, FieldDetails fieldDetails) {
         this.fieldList = fieldList;
         this.fromClassName = fromClassName;
-        this.toClassName = fieldDetails.type;
+        this.toClassName = fieldDetails.type.shortName;
         this.name = fieldDetails.name;
         this.fieldDetails = fieldDetails;
         this.Name = Strings.firstLetterUppercase(name);

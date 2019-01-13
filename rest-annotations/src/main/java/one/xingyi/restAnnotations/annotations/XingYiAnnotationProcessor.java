@@ -1,8 +1,10 @@
 package one.xingyi.restAnnotations.annotations;
 
+import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.codedom.*;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.Strings;
 import one.xingyi.restAnnotations.utils.WrappedException;
 
 import javax.annotation.processing.*;
@@ -41,7 +43,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
                 PackageAndClassName entityName = names.get(annotatedElement);
-                FieldList fields = FieldList.create(entityName.className, annotatedElement.getEnclosedElements());
+                LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
+                FieldList fields = FieldList.create(log, entityName.className, annotatedElement.getEnclosedElements());
                 List<String> errors = names.validateEntityName(entityName);
                 if (errors.size() > 0) error(annotatedElement, errors.toString());
                 else {
@@ -50,7 +53,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     PackageAndClassName clientImplName = names.clientImplName(entityName);
                     PackageAndClassName serverCompanionname = names.serverCompanionName(entityName);
 
-                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(names, serverImpl, interfaceName, fields);
+                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(log,names, serverImpl, interfaceName, fields);
                     makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
 
                     EntityOnClientClassDom clientDom = new EntityOnClientClassDom(names, clientImplName, interfaceName, fields);

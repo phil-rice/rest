@@ -1,5 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.optics.Lens;
@@ -8,26 +10,29 @@ import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.*;
 public class EntityOnServerClassDom {
+    private LoggerAdapter log;
     public final FieldList fields;
     public final PackageAndClassName interfaceName;
     public INames names;
     public final PackageAndClassName packageAndClassName;
 
-    public EntityOnServerClassDom(INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
+    public EntityOnServerClassDom(LoggerAdapter log,INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
+        this.log = log;
         this.names = names;
         this.packageAndClassName = packageAndClassName;
         this.interfaceName = interfaceName;
         this.fields = fields;
+        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are "+fields);
     }
 
-    EntityOnServerClassDom withFields(FieldList fields) {
-        return new EntityOnServerClassDom(names, packageAndClassName, interfaceName, fields);
-    }
-    EntityOnServerClassDom withPackageAndClassName(PackageAndClassName packageAndClassName, PackageAndClassName interfaceName) {
-        return new EntityOnServerClassDom(names, packageAndClassName, interfaceName, fields);
-    }
+//    EntityOnServerClassDom withFields(FieldList fields) {
+//        return new EntityOnServerClassDom(log, names, packageAndClassName, interfaceName, fields);
+//    }
+//    EntityOnServerClassDom withPackageAndClassName(PackageAndClassName packageAndClassName, PackageAndClassName interfaceName) {
+//        return new EntityOnServerClassDom(log,names, packageAndClassName, interfaceName, fields);
+//    }
 
-    List<String> nestedOps() { return ListUtils.unique(fields.flatMap(tn -> tn.allInterfaces)); }
+    List<String> nestedOps() { return ListUtils.unique(fields.flatMap(tn -> tn.allInterfaces())); }
     public List<OpsInterfaceClassDom> nested() {
         return ListUtils.map(nestedOps(), opsName -> new OpsInterfaceClassDom(packageAndClassName.withName(opsName), interfaceName, fields));
     }
@@ -37,6 +42,7 @@ public class EntityOnServerClassDom {
         ArrayList<String> result = new ArrayList<>();
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
+        result.add("import " + Embedded.class.getName() + ";");
         result.add("import " + Lens.class.getName() + ";");
         result.add("import " + Strings.class.getName() + ";");
         result.add("import " + Objects.class.getName() + ";");
@@ -57,7 +63,7 @@ public class EntityOnServerClassDom {
     }
 
     public List<String> createFields() {
-        return fields.map(nv -> "final " + nv.type + " " + nv.name + ";");
+        return fields.map(nv -> "final " + nv.type.shortName + " " + nv.name + ";");
     }
 
     public List<String> createLensForServerClass() {
@@ -67,7 +73,7 @@ public class EntityOnServerClassDom {
 
     public List<String> createConstructor() {
         List<String> result = new ArrayList<>();
-        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type + " " + nv.name) + "){");
+        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type.shortName + " " + nv.name) + "){");
         result.addAll(fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
         result.add("}");
         return result;
@@ -93,10 +99,10 @@ public class EntityOnServerClassDom {
     }
 
     String toJson(FieldDetails fd) {
-        if (fd.type.equals("String"))
+        if (fd.type.shortName.equals("String"))
             return fd.name;
         else
-            return "((" + names.serverImplName(packageAndClassName.withName(fd.type)).className + ")" + fd.name + ").toJson(jsonTc)";
+            return "((" + names.serverImplName(packageAndClassName.withName(fd.type.fullNameOfEntity)).className + ")" + fd.name + ").toJson(jsonTc)";
     }
 
     //    public <J> J toJson(JsonTC<J> toJson) {
