@@ -51,7 +51,7 @@ public class FieldDetails {
 //    }
 
     static String getLensName(String interfaceName, String name, String toClassName, Optional<String> lensName) {
-        return lensName.orElse(interfaceName + "_" + name) + "_" + toClassName;
+        return lensName.orElse(interfaceName + "_" + name) + "_" + toClassName.replace("<","").replace(">","");
     }
 
     public static FieldDetails create(LoggerAdapter log, INames names, String interfaceName, Element element) {

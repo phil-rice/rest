@@ -22,12 +22,12 @@ public class GeneratedCodeTest {
 
     @Test
     public void testGeneratedJson_map() {
-        assertEquals("{name=name, address={line1=someLine1, line2=someLine2}, telephone={number=someNumber}}",
+        assertEquals("{name=name, address={line1=someLine1, line2=someLine2}, telephone={_embedded={number=someNumber}}}",
                 JsonTC.forMaps.toJson(person));
     }
     @Test
     public void testGeneratedJson_string() {
-        assertEquals("{'name':'name','address':{'line1':'someLine1','line2':'someLine2'},'telephone':{'number':'someNumber'}}",
+        assertEquals("{'name':'name','address':{'line1':'someLine1','line2':'someLine2'},'telephone':{'_embedded':{'number':'someNumber'}}}",
                 JsonTC.cheapJson.toJson(person).replace('"', '\''));
     }
 }
