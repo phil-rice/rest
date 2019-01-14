@@ -2,8 +2,6 @@ package one.xingyi.restAnnotations.codedom;
 
 import org.junit.Test;
 
-import org.mockito.Mockito;
-
 import javax.lang.model.element.Element;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +18,7 @@ public class DefaultNamesTest {
         when(element.asType().toString()).thenReturn(sampleType);
         when(element.getSimpleName().toString()).thenReturn(sampleSimpleName);
 
-       assertEquals(new PackageAndClassName("one.xingyi.restcore.xingYiServer", "IEntity"),names.get(element));
+       assertEquals(new PackageAndClassName("one.xingyi.restcore.xingYiServer", "IEntity"),names.getEntity(element));
     }
 
 }

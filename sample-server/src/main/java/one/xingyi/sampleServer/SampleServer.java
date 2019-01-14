@@ -18,10 +18,10 @@ public class SampleServer {
     public static void main(String[] args) {
         EntityRegister register = EntityRegister.simple(PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
 
-        EndPoint index = EndPoint.function(EndpointAcceptor0.exact("get", "/"),
+        EndPoint index = EndPoint.function(EndpointAcceptor0.exact("getEntity", "/"),
                 sr -> ServiceResponse.html(200, "made it: you sent" + sr));
 
-        EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact("get", "/keepalive"), ServiceResponse.html(200, "Alive"));
+        EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact("getEntity", "/keepalive"), ServiceResponse.html(200, "Alive"));
 
         JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
         EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);

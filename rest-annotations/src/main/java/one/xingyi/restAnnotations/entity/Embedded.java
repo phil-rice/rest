@@ -12,7 +12,7 @@ public interface Embedded<T> {
      */
     boolean have();
     /**
-     * Go get me the thing
+     * Go getEntity me the thing
      */
     CompletableFuture<T> get();
 

@@ -38,7 +38,7 @@ abstract public class AbstractAnnotationProcessor extends AbstractProcessor {
         Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYiCompositeInterface.class);
         for (Element element : elements) {
             if (element.getKind() == ElementKind.INTERFACE) {
-                PackageAndClassName entityName = names.get(element);
+                PackageAndClassName entityName = names.getEntity(element);
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, element);
                 error(element, "got here");
             process(element, entityName, log);

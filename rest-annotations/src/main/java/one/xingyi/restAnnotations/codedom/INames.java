@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface INames {
 
-    PackageAndClassName get(Element element);
+    PackageAndClassName getEntity(Element element);
     List<String> validateEntityName(PackageAndClassName entityName);
 
     PackageAndClassName interfaceName(PackageAndClassName packageAndClassName);
@@ -29,7 +29,7 @@ public interface INames {
 
 class DefaultNames implements INames {
 
-    @Override public PackageAndClassName get(Element element) {
+    @Override public PackageAndClassName getEntity(Element element) {
         String packageName = Strings.allButLastSegment(".", element.asType().toString());
         String interfaceName = element.getSimpleName().toString();
         return new PackageAndClassName(packageName, interfaceName);

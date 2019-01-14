@@ -24,7 +24,7 @@ import lombok.ToString;
 public interface GetEntityEndpoint {
 
     static <E> EndpointAcceptor1<EntityDetailsRequest> acceptor(Companion<?, E> companion) {
-        return EndpointAcceptor1.nameThenId("get", companion.entityName(), EntityDetailsRequest::new);
+        return EndpointAcceptor1.nameThenId("getEntity", companion.entityName(), EntityDetailsRequest::new);
     }
 
     static <J, E extends HasJson> EndPoint getEntityEndpoint(JsonTC<J> jsonTC, Companion<?, E> companion, Function<String, CompletableFuture<E>> fn) {

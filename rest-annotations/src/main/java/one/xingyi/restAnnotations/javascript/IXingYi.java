@@ -41,12 +41,12 @@ class DefaultXingYi implements IXingYi {
 
     @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse", () -> inv.invokeFunction("parse", s)); }
     @Override public <T extends XingYiDomain> Lens<T, String> stringLens(IDomainMaker<T> domainMaker, String name) {
-        Getter<T, String> getter = t -> XingYiExecutionException.wrap("stringLens.get" + name, () -> (String) inv.invokeFunction("getL", name, t.mirror));
+        Getter<T, String> getter = t -> XingYiExecutionException.wrap("stringLens.getEntity" + name, () -> (String) inv.invokeFunction("getL", name, t.mirror));
         Setter<T, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, () -> domainMaker.apply(inv.invokeFunction("setL", name, t.mirror, s), this));
         return Lens.create(getter, setter);
     }
     @Override public <T1 extends XingYiDomain, T2> Lens<T1, T2> objectLens(IDomainMaker<T1> domainMaker1, IDomainMaker<T2> domainMaker2, String name) {
-        Getter<T1, T2> getter = t -> XingYiExecutionException.<T2>wrap("objectLens.get" + name, () -> domainMaker2.apply(inv.invokeFunction("getL", name, t.mirror), this));
+        Getter<T1, T2> getter = t -> XingYiExecutionException.<T2>wrap("objectLens.getEntity" + name, () -> domainMaker2.apply(inv.invokeFunction("getL", name, t.mirror), this));
         Setter<T1, T2> setter = (t, s) -> XingYiExecutionException.<T1>wrap("objectLens.set" + name, () -> domainMaker1.apply(inv.invokeFunction("setL", name, t.mirror, s), this));
         return Lens.create(getter, setter);
     }

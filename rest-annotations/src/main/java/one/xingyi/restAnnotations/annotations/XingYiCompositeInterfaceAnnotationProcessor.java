@@ -1,9 +1,8 @@
 package one.xingyi.restAnnotations.annotations;
 
-import com.sun.jdi.InterfaceType;
 import one.xingyi.restAnnotations.LoggerAdapter;
-import one.xingyi.restAnnotations.codedom.CompositeInterfaceClassCodeDom;
-import one.xingyi.restAnnotations.codedom.FieldList;
+import one.xingyi.restAnnotations.codedom.CompositeCompanionClassCodeDom;
+import one.xingyi.restAnnotations.codedom.CompositeImplClassDom;
 import one.xingyi.restAnnotations.codedom.INames;
 import one.xingyi.restAnnotations.codedom.PackageAndClassName;
 import one.xingyi.restAnnotations.utils.Files;
@@ -15,14 +14,11 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.*;
 public class XingYiCompositeInterfaceAnnotationProcessor extends AbstractProcessor {
     private INames names = INames.defaultNames;
@@ -47,18 +43,24 @@ public class XingYiCompositeInterfaceAnnotationProcessor extends AbstractProcess
         Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYiCompositeInterface.class);
         for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
-                PackageAndClassName entityName = names.get(annotatedElement);
-                PackageAndClassName implementationname = names.clientMultipleInterfacesName(entityName);
-                PackageAndClassName clientName = names.clientImplName(entityName);
+                PackageAndClassName multipleInterfaceName = names.getEntity(annotatedElement);
+                XingYiCompositeInterface annotation = annotatedElement.getAnnotation(XingYiCompositeInterface.class);
+
+                PackageAndClassName rootEntityName = new PackageAndClassName(annotation.value());
+                PackageAndClassName rootCompanionName = names.clientCompanionName(rootEntityName);
+                PackageAndClassName rootImplName = names.clientImplName(rootEntityName);
+
+                PackageAndClassName multipleImplName = names.clientMultipleInterfacesName(multipleInterfaceName);
+                PackageAndClassName multipleCompanionName = names.clientCompanionName(multipleInterfaceName);
+
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
 
-                XingYiCompositeInterface annotation = annotatedElement.getAnnotation(XingYiCompositeInterface.class);
-                String companionClassName = annotation.value();
-//                List<List<Name>> interfaceNames = ListUtils.map(typeElement.getInterfaces(), i -> ListUtils.map(((TypeElement) i).getEnclosedElements(), e -> e.getSimpleName()));
 
-                FieldList fields = FieldList.create(log, names, entityName.className, annotatedElement.getEnclosedElements());
-                List<String> strings = new CompositeInterfaceClassCodeDom(log, names, entityName.className,implementationname, companionClassName, Arrays.asList()).createClass();
-                makeClassFile(implementationname, ListUtils.join(strings, "\n"), annotatedElement);
+                CompositeImplClassDom impl = new CompositeImplClassDom(log, names, multipleInterfaceName, multipleImplName, rootImplName, Arrays.asList());
+                makeClassFile(multipleImplName, ListUtils.join(impl.createClass(), "\n"), annotatedElement);
+
+                CompositeCompanionClassCodeDom companionDom = new CompositeCompanionClassCodeDom(log, names,multipleInterfaceName,multipleImplName, multipleCompanionName, rootCompanionName, rootImplName);
+                makeClassFile(multipleCompanionName, ListUtils.join(companionDom.createClass(), "\n"), annotatedElement);
             }
         }
         return false;

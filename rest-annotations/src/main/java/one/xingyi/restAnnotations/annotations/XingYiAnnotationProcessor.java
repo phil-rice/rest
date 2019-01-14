@@ -4,7 +4,6 @@ import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.codedom.*;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
-import one.xingyi.restAnnotations.utils.Strings;
 import one.xingyi.restAnnotations.utils.WrappedException;
 
 import javax.annotation.processing.*;
@@ -42,7 +41,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYi.class);
         for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
-                PackageAndClassName entityName = names.get(annotatedElement);
+                PackageAndClassName entityName = names.getEntity(annotatedElement);
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
                 FieldList fields = FieldList.create(log, names, entityName.className, annotatedElement.getEnclosedElements());
                 List<String> errors = names.validateEntityName(entityName);

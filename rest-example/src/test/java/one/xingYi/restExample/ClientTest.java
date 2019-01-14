@@ -28,24 +28,6 @@ import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 public class ClientTest {
-    IClientFactory testMultipleBodge = new IClientFactory() {
-        @Override public Set<Class<?>> supported() {
-            return Set.of(ITestMultiple.class);
-        }
-        @Override public Function<Class<?>, Optional<IClientMaker>> findCompanion() {
-            return clazz -> {
-                if (supported().contains(clazz))
-                    return Optional.of(new IClientMaker() {
-                        @Override public <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
-                            return Optional.of((Interface) new TestMultipleMultipleInterfacesImpl(mirror, xingYi));
-                        }
-                    });
-                return Optional.empty();
-            };
-        }
-    };
-
-
     String urlPrefix = "http://someHostAndPort";
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
@@ -69,7 +51,7 @@ public class ClientTest {
             EntityClientCompanion.companion,
             PersonClientCompanion.companion,
             AddressClientCompanion.companion,
-            testMultipleBodge);
+            TestMultipleClientCompanion.companion); //TODO Perhaps this can be automated?
 
     @Test
     public void testGetUsingUrl() throws ExecutionException, InterruptedException {
@@ -93,7 +75,7 @@ public class ClientTest {
     @Test
     public void testGetAddress() throws ExecutionException, InterruptedException {
         assertEquals(Optional.of(address), addressStore.read("add1").get());
-        assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'), IXingYiResponseSplitter.splitter.apply(getAddressEndpoint.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
+        assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'), IXingYiResponseSplitter.splitter.apply(getAddressEndpoint.apply(new ServiceRequest("getEntity", "/address/add1", Arrays.asList(), "")).get().get()).data);
         assertEquals("someLine1", client.get(IAddressLine12Ops.class, "add1", IAddressLine12Ops::line1).get());
     }
 
@@ -101,12 +83,12 @@ public class ClientTest {
 
     @Test
     public void testWithMultipleInterfaces() throws ExecutionException, InterruptedException {
-        assertEquals("name/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0,6)).get());
+        assertEquals("name/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
         //solution to this is to have a @XingYiMulti annotation and create instance which can delegate. Actually pretty straightforwards...
     }
     @Test
     public void testWithMultipleInterfaces2() throws ExecutionException, InterruptedException {
-        assertEquals("name/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0,6)).get());
+        assertEquals("name/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
         //solution to this is to have a @XingYiMulti annotation and create instance which can delegate. Actually pretty straightforwards...
     }
 }
