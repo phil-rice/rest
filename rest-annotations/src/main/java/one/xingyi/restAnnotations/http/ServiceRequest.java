@@ -3,6 +3,8 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.net.URI;
+import java.net.URLDecoder;
 import java.util.List;
 
 @ToString
@@ -19,7 +21,7 @@ public class ServiceRequest {
     public int segmentsCount() {return urlSegments().length;}
     public String[] urlSegments() {
         if (urlSegments == null)
-            urlSegments = url.split("/");
+            urlSegments = URI.create(URLDecoder.decode(url)).getPath().split("/");
         return urlSegments;
     }
     public String lastSegment() { return urlSegments()[urlSegments().length - 1]; }

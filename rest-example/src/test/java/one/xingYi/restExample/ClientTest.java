@@ -24,31 +24,42 @@ import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 public class ClientTest {
+    String urlPrefix = "http://someHostAndPort";
+
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
     Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
     IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
+    IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 
     JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
 
     EntityRegister register = EntityRegister.simple(EntityServerCompanion.companion, PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
     EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
-
     EndPoint getPersonEndpoint = GetEntityEndpoint.getEntityEndpoint(jsonTC, PersonServerCompanion.companion, personStore::read);
-    Function<ServiceRequest, CompletableFuture<ServiceResponse>> fakeHttpClient = EndPoint.toKliesli(EndPoint.compose(entityDetailsEndPoint, getPersonEndpoint));
-    XingYiClient client = XingYiClient.using(fakeHttpClient, EntityClientCompanion.companion, PersonClientCompanion.companion);
+    EndPoint getAddressEndpoint = GetEntityEndpoint.getEntityEndpoint(jsonTC, AddressServerCompanion.companion, addressStore::read);
+
+    Function<ServiceRequest, CompletableFuture<ServiceResponse>> fakeHttpClient = EndPoint.toKliesli(EndPoint.compose(entityDetailsEndPoint, getPersonEndpoint,getAddressEndpoint));
+    XingYiClient client = XingYiClient.using(urlPrefix, fakeHttpClient, EntityClientCompanion.companion, PersonClientCompanion.companion, AddressClientCompanion.companion);
 
     @Test
     public void testGetUsingUrl() throws ExecutionException, InterruptedException {
-        assertEquals("/person/<id>", client.primitiveGet(IEntityUrlPattern.class, "localhost:9000/person", e -> e.url()).get());
-        assertEquals("/address/<id>", client.primitiveGet(IEntityUrlPattern.class, "localhost:9000/address", e -> e.url()).get());
-        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, "localhost:9000/person", e -> e.interfaces()).get());
+        assertEquals("/person/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/person", e -> e.url()).get());
+        assertEquals("/address/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/address", e -> e.url()).get());
+        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, urlPrefix + "/person", e -> e.interfaces()).get());
+    }
 
+    @Test
+    public void testGetUrlPattern() throws ExecutionException, InterruptedException {
+        assertEquals("/entity/<id>", client.getUrlPattern(IEntityUrlPattern.class).get());
+        assertEquals("/person/<id>", client.getUrlPattern(IPersonNameOps.class).get());
+        assertEquals("/address/<id>", client.getUrlPattern(IAddressLine12Ops.class).get());
     }
 
     @Test
     public void testGetPerson() throws ExecutionException, InterruptedException {
-        assertEquals("name", client.primitiveGet(IPersonNameOps.class, "localhost:9000/person/id1", e -> e.name()).get());
+        assertEquals("name", client.get(IPersonNameOps.class, "id1", IPersonNameOps::name).get());
+        assertEquals("someLine1", client.get(IAddressLine12Ops.class, "add1", IAddressLine12Ops::line1).get());
 
     }
 
