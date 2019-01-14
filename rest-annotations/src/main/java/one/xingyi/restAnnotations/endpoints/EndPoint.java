@@ -46,9 +46,6 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     //            );
     //        }
 
-    static <From extends EndpointRequest, To extends EndpointResponse> EndPoint simple(EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
-        return new SimpleEndPoint<>(acceptor, fn);
-    }
     static <J, From extends EndpointRequest, To extends HasJson> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn);
     }
@@ -100,21 +97,21 @@ class ComposeEndPoints implements EndPoint {
     }
 }
 
-@ToString
-@EqualsAndHashCode
-@RequiredArgsConstructor
-class SimpleEndPoint<From extends EndpointRequest, To extends EndpointResponse> implements EndPoint {
-
-    final EndpointAcceptor1<From> acceptor;
-    final Function<From, CompletableFuture<To>> fn;
-
-    //wow this is a bit of dogs dinner
-    @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
-        return acceptor.apply(serviceRequest).
-                map(from -> fn.apply(from).thenApply(to -> Optional.of(to.serviceResponse()))).
-                orElse(CompletableFuture.completedFuture(Optional.empty()));
-    }
-}
+//@ToString
+//@EqualsAndHashCode
+//@RequiredArgsConstructor
+//class SimpleEndPoint<From extends EndpointRequest, To extends EndpointResponse> implements EndPoint {
+//
+//    final EndpointAcceptor1<From> acceptor;
+//    final Function<From, CompletableFuture<To>> fn;
+//
+//    //wow this is a bit of dogs dinner
+//    @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
+//        return acceptor.apply(serviceRequest).
+//                map(from -> fn.apply(from).thenApply(to -> Optional.of(to.serviceResponse()))).
+//                orElse(CompletableFuture.completedFuture(Optional.empty()));
+//    }
+//}
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
@@ -141,7 +138,7 @@ class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To exte
     final Function<From, CompletableFuture<To>> fn;
     final Companion<Interface, To> companion;
 
-    //wow this is a bit of dogs dinner
+
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         return OptionalUtils.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> {
             String javascript = Files.getText("header.js") + companion.javascript();

@@ -2,12 +2,14 @@ package one.xingyi.restAnnotations.clientside;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.restAnnotations.codedom.CompanionOnClientClassDom;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
 import java.util.*;
 public interface IClientFactory {
     Set<Class<?>> supported();
+
     <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror);
 
     static IClientFactory compose(IClientFactory... factories) { return new ComposeClientFactory(Arrays.asList(factories)); }
@@ -57,7 +59,7 @@ class ComposeClientFactory implements IClientFactory {
                 return Optional.empty();
             iSaved = (Interface) opt.get();
         }
-        return Optional.of(iSaved);
+        return Optional.ofNullable(iSaved);
     }
 
 }

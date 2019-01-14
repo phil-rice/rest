@@ -53,6 +53,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     PackageAndClassName clientImplName = names.clientImplName(entityName);
                     PackageAndClassName serverCompanionname = names.serverCompanionName(entityName);
                     PackageAndClassName clientCompanionname = names.clientCompanionName(entityName);
+                    XingYi annotation = annotatedElement.getAnnotation(XingYi.class);
+                    BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(serverImpl.className,annotation.bookmarked(), annotation.urlPattern());
 
                     EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, serverImpl, interfaceName, fields);
                     makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
@@ -60,10 +62,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, clientImplName, interfaceName, fields);
                     makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
 
-                    CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, serverCompanionname, interfaceName, serverImpl, fields);
+                    CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, serverCompanionname, interfaceName, serverImpl, fields,bookmarkAndUrlPattern);
                     makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
 
-                    CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names, clientCompanionname, clientImplName, fields);
+                    CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names, clientCompanionname, clientImplName, fields, bookmarkAndUrlPattern);
                     makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
 
                     for (OpsInterfaceClassDom dom : classDom.nested()) {

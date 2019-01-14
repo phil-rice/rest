@@ -9,4 +9,7 @@ public interface EndpointAcceptor1<From> extends Function<ServiceRequest, Option
     static <From> EndpointAcceptor1<From> justOneThing(String method, Function<String, From> fn) {
         return sr -> OptionalUtils.from(sr.segmentsCount() == 2 && method.equalsIgnoreCase(sr.method), () -> fn.apply(sr.lastSegment()));
     }
+    static <From> EndpointAcceptor1<From> nameThenId(String method, String name, Function<String, From> fn) {
+        return sr -> OptionalUtils.from(sr.segmentsCount() == 3 && name.equalsIgnoreCase(sr.urlSegments()[1]) && method.equalsIgnoreCase(sr.method), () -> fn.apply(sr.lastSegment()));
+    }
 }

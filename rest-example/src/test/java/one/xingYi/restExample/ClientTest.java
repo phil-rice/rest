@@ -1,10 +1,13 @@
 package one.xingYi.restExample;
+import one.xingyi.restAnnotations.access.IEntityStore;
+import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.marshelling.JsonObject;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restExample.*;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
+import one.xingyi.restcore.access.GetEntityEndpoint;
 import one.xingyi.restcore.entity.EntityDetailsEndpoint;
 import one.xingyi.restcore.entity.EntityRegister;
 import one.xingyi.restcore.xingYiServer.EntityClientCompanion;
@@ -14,32 +17,47 @@ import one.xingyi.restcore.xingYiServer.IEntityUrlPattern;
 import one.xingyi.restcore.xingyiclient.XingYiClient;
 import org.junit.Test;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 public class ClientTest {
+    TelephoneNumber number = new TelephoneNumber("someNumber");
+    Address address = new Address("someLine1", "someLine2");
+    Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
+    IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
 
     JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
+
     EntityRegister register = EntityRegister.simple(EntityServerCompanion.companion, PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
     EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
-    Function<ServiceRequest, CompletableFuture<ServiceResponse>> fakeHttpClient = EndPoint.toKliesli(entityDetailsEndPoint);
-    XingYiClient client = XingYiClient.using(fakeHttpClient, new EntityClientCompanion());
+
+    EndPoint getPersonEndpoint = GetEntityEndpoint.getEntityEndpoint(jsonTC, PersonServerCompanion.companion, personStore::read);
+    Function<ServiceRequest, CompletableFuture<ServiceResponse>> fakeHttpClient = EndPoint.toKliesli(EndPoint.compose(entityDetailsEndPoint, getPersonEndpoint));
+    XingYiClient client = XingYiClient.using(fakeHttpClient, EntityClientCompanion.companion, PersonClientCompanion.companion);
 
     @Test
     public void testGetUsingUrl() throws ExecutionException, InterruptedException {
-        assertEquals("/person/<id>", client.getFromUrl(IEntityUrlPattern.class, "localhost:9000/person", e -> e.url()).get());
-        assertEquals("/address/<id>", client.getFromUrl(IEntityUrlPattern.class, "localhost:9000/address", e -> e.url()).get());
-        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.getFromUrl(IEntityInterfaces.class, "localhost:9000/person", e -> e.interfaces()).get());
+        assertEquals("/person/<id>", client.primitiveGet(IEntityUrlPattern.class, "localhost:9000/person", e -> e.url()).get());
+        assertEquals("/address/<id>", client.primitiveGet(IEntityUrlPattern.class, "localhost:9000/address", e -> e.url()).get());
+        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, "localhost:9000/person", e -> e.interfaces()).get());
 
     }
+
+    @Test
+    public void testGetPerson() throws ExecutionException, InterruptedException {
+        assertEquals("name", client.primitiveGet(IPersonNameOps.class, "localhost:9000/person/id1", e -> e.name()).get());
+
+    }
+
 
     interface TestMultiple extends IEntityUrlPattern, IEntityInterfaces {}
 
-    @Test
-    public void testWithMultipleInterfaces() throws ExecutionException, InterruptedException {
-        assertEquals("", client.getFromUrl(TestMultiple.class, "localhost:9000/person", e -> e.interfaces()).get());
-        //solution to this is to have a @XingYiMulti annotation and create instance which can delegate. Actually pretty straightforwards...
-    }
+//    @Test
+//    public void testWithMultipleInterfaces() throws ExecutionException, InterruptedException {
+//        assertEquals("", client.primitiveGet(TestMultiple.class, "localhost:9000/person", e -> e.interfaces()).get());
+//        //solution to this is to have a @XingYiMulti annotation and create instance which can delegate. Actually pretty straightforwards...
+//    }
 }

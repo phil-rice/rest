@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientFactory;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.utils.ListUtils;
@@ -9,16 +10,18 @@ import java.util.*;
 public class CompanionOnClientClassDom {
     private PackageAndClassName clientName;
     public final FieldList fields;
+    private BookmarkAndUrlPattern bookmarkAndUrlPattern;
     private LoggerAdapter log;
     public INames names;
     public final PackageAndClassName companionName;
 
-    public CompanionOnClientClassDom(LoggerAdapter log, INames names, PackageAndClassName companionName, PackageAndClassName clientName, FieldList fields) {
+    public CompanionOnClientClassDom(LoggerAdapter log, INames names, PackageAndClassName companionName, PackageAndClassName clientName, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
         this.log = log;
         this.names = names;
         this.companionName = companionName;
         this.clientName = clientName;
         this.fields = fields;
+        this.bookmarkAndUrlPattern = bookmarkAndUrlPattern;
     }
 
 
@@ -26,16 +29,22 @@ public class CompanionOnClientClassDom {
         String packageName = companionName.packageName;
         ArrayList<String> result = new ArrayList<>();
         result.add("package " + packageName + ";");
-        result.add("import " + IClientFactory.class.getName() + ";");
+        result.add("import " + IClientCompanion.class.getName() + ";");
         result.add("import " + Optional.class.getName() + ";");
         result.add("import " + IXingYi.class.getName() + ";");
         result.add("import " + Set.class.getName() + ";");
         result.add("import " + clientName.asString() + ";");
-        result.add("public class " + companionName.className + " implements IClientFactory{");
+        result.add("public class " + companionName.className + " implements IClientCompanion{");
+        result.add(Formating.indent + "final static public " + companionName.className + " companion=new " + companionName.className + "();");
         result.addAll(Formating.indent(createSupported()));
         result.addAll(Formating.indent(createMethod()));
+        result.addAll(Formating.indent(createBookmark()));
         result.add("}");
         return result;
+    }
+
+    List<String> createBookmark() {
+        return Arrays.asList("public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
     }
     List<String> createSupported() {
         return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");

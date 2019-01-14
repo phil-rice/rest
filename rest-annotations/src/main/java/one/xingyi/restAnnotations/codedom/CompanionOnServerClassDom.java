@@ -12,15 +12,17 @@ public class CompanionOnServerClassDom {
     public INames names;
     public final PackageAndClassName entityName;
     public final FieldList fields;
+    private BookmarkAndUrlPattern bookmarkAndUrlPattern;
     public final PackageAndClassName interfaceName;
     public final PackageAndClassName companionName;
 
-    public CompanionOnServerClassDom(INames names, PackageAndClassName companionName, PackageAndClassName interfaceName, PackageAndClassName entityName, FieldList fields) {
+    public CompanionOnServerClassDom(INames names, PackageAndClassName companionName, PackageAndClassName interfaceName, PackageAndClassName entityName, FieldList fields,BookmarkAndUrlPattern bookmarkAndUrlPattern) {
         this.names = names;
         this.companionName = companionName;
         this.interfaceName = interfaceName;
         this.entityName = entityName;
         this.fields = fields;
+        this.bookmarkAndUrlPattern = bookmarkAndUrlPattern;
     }
 
     public List<String> createClass() {
@@ -30,6 +32,7 @@ public class CompanionOnServerClassDom {
         result.add("import " + Companion.class.getName() + ";");
         result.add("import " + Set.class.getName() + ";");
         result.add("public class " + companionName.className + " implements Companion<" + interfaceName.className + ", " + entityName.className + ">{");
+     result.addAll(Formating.indent(createBookmark()));
         result.add("");
         result.add(Formating.indent + "final static public " + companionName.className + " companion=new " + companionName.className + "();");
         result.add("");
@@ -38,6 +41,9 @@ public class CompanionOnServerClassDom {
         result.addAll(Formating.indent(createSupported()));
         result.add("}");
         return result;
+    }
+    List<String> createBookmark() {
+        return Arrays.asList("public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
     }
     List<String> createSupported() {
         return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");

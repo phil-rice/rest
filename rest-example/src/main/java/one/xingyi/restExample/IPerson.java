@@ -7,7 +7,7 @@ import one.xingyi.restAnnotations.entity.Embedded;
 import java.util.HashMap;
 import java.util.Map;
 
-@XingYi()
+@XingYi(urlPattern = "/person")
 public interface IPerson {
     @XingYiField(readInterfaces = Interfaces.personNameOps)
     String name(); //

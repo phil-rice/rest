@@ -9,6 +9,7 @@ import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.javascript.IXingYiFactory;
+import one.xingyi.restcore.xingYiServer.IEntityUrlPattern;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,10 @@ public interface XingYiClient {
         return new SimpleXingYiClient(client, factories);
     }
 
-    <Interface, Result> CompletableFuture<Result> getFromUrl(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn);
+    default <Interface, Result> CompletableFuture<Result> get(Class<Interface> interfaceClass, Function<Interface, Result> fn) {
+        return primitiveGet(IEntityUrlPattern.class, "/person", e -> e.url()).thenCompose(url -> primitiveGet(interfaceClass, url, fn));
+    }
+    <Interface, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn);
 }
 
 
@@ -40,7 +44,7 @@ class SimpleXingYiClient implements XingYiClient {
         this.factory = IClientFactory.compose(factories);
     }
     @Override
-    public <Interface, Result> CompletableFuture<Result> getFromUrl(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
+    public <Interface, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
         ServiceRequest sr = new ServiceRequest("get", url, List.of(), "");
         return client.apply(sr).thenApply(sRes -> fn.apply(processResult(interfaceClass, sRes)));
     }
