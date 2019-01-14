@@ -26,7 +26,7 @@ public class JavaHttpClientTest {
         SimpleServer server = new SimpleServer(executor, new EndpointHandler(endpoint), 9000);
         server.start();
         try {
-            CompletableFuture<ServiceResponse> future = JavaHttpClient.client.apply(new ServiceRequest("getEntity", "http://localhost:9000/something", Arrays.asList(), ""));
+            CompletableFuture<ServiceResponse> future = JavaHttpClient.client.apply(new ServiceRequest("get", "http://localhost:9000/something", Arrays.asList(), ""));
             System.out.println(future.get());
         } finally {
             server.stop();

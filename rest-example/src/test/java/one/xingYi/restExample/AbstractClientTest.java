@@ -81,7 +81,7 @@ abstract class AbstractClientTest {
     @Test
     public void testGetAddress() throws ExecutionException, InterruptedException {
         assertEquals(Optional.of(address), addressStore.read("add1").get());
-        assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'), IXingYiResponseSplitter.splitter.apply(getAddressEndpoint.apply(new ServiceRequest("getEntity", "/address/add1", Arrays.asList(), "")).get().get()).data);
+        assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'), IXingYiResponseSplitter.splitter.apply(getAddressEndpoint.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
         assertEquals("someLine1", client.get(IAddressLine12Ops.class, "add1", IAddressLine12Ops::line1).get());
     }
 

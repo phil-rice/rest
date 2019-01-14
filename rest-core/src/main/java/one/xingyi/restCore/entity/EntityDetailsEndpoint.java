@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public interface EntityDetailsEndpoint {
-    EndpointAcceptor1<EntityDetailsRequest> acceptor = EndpointAcceptor1.justOneThing("getEntity", EntityDetailsRequest::new);
+    EndpointAcceptor1<EntityDetailsRequest> acceptor = EndpointAcceptor1.justOneThing("get", EntityDetailsRequest::new);
 
     EntityServerCompanion companion = new EntityServerCompanion();
 

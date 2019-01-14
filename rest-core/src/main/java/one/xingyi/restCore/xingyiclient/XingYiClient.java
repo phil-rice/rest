@@ -48,7 +48,7 @@ class SimpleXingYiClient implements XingYiClient {
     }
     @Override
     public <Interface extends IXingYiOps<?>, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
-        ServiceRequest sr = new ServiceRequest("getEntity", url, List.of(), "");
+        ServiceRequest sr = new ServiceRequest("get", url, List.of(), "");
         return client.apply(sr).thenApply(sRes -> fn.apply(processResult(interfaceClass, sRes)));
     }
     @Override public <Interface> CompletableFuture<String> getUrlPattern(Class<Interface> interfaceClass) {
