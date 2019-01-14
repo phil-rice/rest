@@ -10,7 +10,7 @@ public class SampleClient {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         XingYiClient client = XingYiClient.using("http://localhost:9000/",JavaHttpClient.client, new PersonClientCompanion());
-        CompletableFuture<String> response = client.primitiveGet(IEntityUrlPattern.class, "localhost:9000/person", e -> e.toString());
+        CompletableFuture<String> response = client.primitiveGet(IEntityUrlPattern.class, "http://localhost:9000/person", e -> e.toString());
         System.out.println(response.get());
     }
 }

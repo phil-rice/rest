@@ -30,4 +30,5 @@ public class ProperClientTest extends AbstractClientTest {
         }
         return JavaHttpClient.client;
     }
+    @Override protected String expectedHost() { return "http://localhost:9000"; }
 }

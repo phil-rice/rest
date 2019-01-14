@@ -16,4 +16,5 @@ public @interface XingYiField {
     String lens() default "";
     String javascript() default "";
     boolean deprecated() default false;
+    boolean templatedJson() default false;
 }

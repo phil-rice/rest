@@ -39,9 +39,9 @@ public class EndpointHandler implements HttpHandler {
         String method = exchange.getRequestMethod().toLowerCase();
         String body = Streams.readAll(exchange.getRequestBody());
         String uri = exchange.getRequestURI().toString();
-        Headers responseHeaders = exchange.getResponseHeaders();
+        Headers req = exchange.getRequestHeaders();
         List<Header> headers = new ArrayList<>();
-        for (Map.Entry<String, List<String>> e : responseHeaders.entrySet()) {
+        for (Map.Entry<String, List<String>> e : req.entrySet()) {
             for (String v : e.getValue())
                 headers.add(new Header(e.getKey(), v));
         }

@@ -12,11 +12,13 @@ import one.xingyi.restAnnotations.endpoints.EndPoint;
 import one.xingyi.restAnnotations.endpoints.EndpointAcceptor0;
 import one.xingyi.restcore.entity.EntityDetailsEndpoint;
 import one.xingyi.restcore.entity.EntityRegister;
+import one.xingyi.restcore.xingYiServer.Entity;
+import one.xingyi.restcore.xingYiServer.EntityServerCompanion;
 
 public class SampleServer {
 
     public static void main(String[] args) {
-        EntityRegister register = EntityRegister.simple(PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
+        EntityRegister register = EntityRegister.simple(EntityServerCompanion.companion,PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
 
         EndPoint index = EndPoint.function(EndpointAcceptor0.exact("getEntity", "/"),
                 sr -> ServiceResponse.html(200, "made it: you sent" + sr));

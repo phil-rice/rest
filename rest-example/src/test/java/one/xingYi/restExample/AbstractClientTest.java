@@ -50,7 +50,7 @@ abstract class AbstractClientTest {
     EndPoint composed = EndPoint.compose(getAddressEndpoint, entityDetailsEndPoint, getPersonEndpoint);
 
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
-
+    abstract protected String expectedHost();
 
     XingYiClient client = XingYiClient.using(urlPrefix, httpClient(),
             EntityClientCompanion.companion,
@@ -61,16 +61,16 @@ abstract class AbstractClientTest {
 
     @Test
     public void testGetUsingUrl() throws ExecutionException, InterruptedException {
-        assertEquals("/person/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/person", e -> e.url()).get());
-        assertEquals("/address/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/address", e -> e.url()).get());
+        assertEquals(expectedHost() + "/person/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/person", e -> e.url()).get());
+        assertEquals(expectedHost() + "/address/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/address", e -> e.url()).get());
         assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, urlPrefix + "/person", e -> e.interfaces()).get());
     }
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {
-        assertEquals("/entity/<id>", client.getUrlPattern(IEntityUrlPattern.class).get());
-        assertEquals("/person/<id>", client.getUrlPattern(IPersonNameOps.class).get());
-        assertEquals("/address/<id>", client.getUrlPattern(IAddressLine12Ops.class).get());
+        assertEquals(expectedHost() + "/entity/<id>", client.getUrlPattern(IEntityUrlPattern.class).get());
+        assertEquals(expectedHost() + "/person/<id>", client.getUrlPattern(IPersonNameOps.class).get());
+        assertEquals(expectedHost() + "/address/<id>", client.getUrlPattern(IAddressLine12Ops.class).get());
     }
 
     @Test

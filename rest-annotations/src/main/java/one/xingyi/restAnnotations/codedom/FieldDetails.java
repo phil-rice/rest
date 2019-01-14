@@ -24,7 +24,8 @@ public class FieldDetails {
     final String lensName;
     final Optional<String> javascript;
     final boolean deprecated;
-    public FieldDetails(LoggerAdapter log, TypeDom type, String name, List<String> readInterfaces, List<String> writeInterfaces, List<String> readWriteInterfaces, String lensName, Optional<String> javascript, boolean deprecated) {
+    final boolean templatedJson;
+    public FieldDetails(LoggerAdapter log, TypeDom type, String name, List<String> readInterfaces, List<String> writeInterfaces, List<String> readWriteInterfaces, String lensName, Optional<String> javascript, boolean deprecated, boolean templatedJson) {
         this.log = log;
         this.type = type;
         this.name = name;
@@ -35,6 +36,7 @@ public class FieldDetails {
         this.javascript = javascript;
         this.deprecated = deprecated;
 //        log.info("In field details " + this);
+        this.templatedJson = templatedJson;
     }
     public List<String> allInterfaces() {
         return ListUtils.unique(ListUtils.append(readInterfaces, writeInterfaces, readWriteInterfaces));
@@ -51,7 +53,7 @@ public class FieldDetails {
 //    }
 
     static String getLensName(String interfaceName, String name, String toClassName, Optional<String> lensName) {
-        return lensName.orElse(interfaceName + "_" + name) + "_" + toClassName.replace("<","").replace(">","");
+        return lensName.orElse(interfaceName + "_" + name) + "_" + toClassName.replace("<", "").replace(">", "");
     }
 
     public static FieldDetails create(LoggerAdapter log, INames names, String interfaceName, Element element) {
@@ -61,11 +63,11 @@ public class FieldDetails {
         String name = element.getSimpleName().toString();
 //        log.info("Making field details. InterfaceName is [" + interfaceName + "] name is [" + name + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
         if (xingYiField == null)
-            return new FieldDetails(log, typeDom, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), getLensName(interfaceName, name, typeDom.shortName, Optional.empty()), Optional.empty(), false);
+            return new FieldDetails(log, typeDom, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), getLensName(interfaceName, name, typeDom.shortName, Optional.empty()), Optional.empty(), false, false);
         else
             return new FieldDetails(log, typeDom, name,
                     Arrays.asList(xingYiField.readInterfaces()), Arrays.asList(xingYiField.writeInterfaces()), Arrays.asList(xingYiField.interfaces()),
-                    getLensName(interfaceName, name, typeDom.shortName, OptionalUtils.fromString(xingYiField.lens())), OptionalUtils.fromString(xingYiField.javascript()), xingYiField.deprecated());
+                    getLensName(interfaceName, name, typeDom.shortName, OptionalUtils.fromString(xingYiField.lens())), OptionalUtils.fromString(xingYiField.javascript()), xingYiField.deprecated(), xingYiField.templatedJson());
     }
 
 

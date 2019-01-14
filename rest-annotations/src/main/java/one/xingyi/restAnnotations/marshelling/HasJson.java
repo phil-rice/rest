@@ -1,6 +1,6 @@
 package one.xingyi.restAnnotations.marshelling;
-public interface HasJson {
-    <J> J toJson(JsonTC<J> jsonTc);
-    default <J> String toJsonString(JsonTC<J> jsonTc) { return jsonTc.fromJ(toJson(jsonTc)); }
+public interface HasJson<Context> {
+    <J> J toJson(JsonTC<J> jsonTc, Context context);
+    default <J> String toJsonString(JsonTC<J> jsonTc, Context context) { return jsonTc.fromJ(toJson(jsonTc, context)); }
 
 }

@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
+import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.optics.Lens;
@@ -41,8 +42,9 @@ public class EntityOnServerClassDom {
         result.add("import " + Objects.class.getName() + ";");
         result.add("import " + HasJson.class.getName() + ";");
         result.add("import " + JsonTC.class.getName() + ";");
+        result.add("import " + ContextForJson.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
-        result.add("public class " + packageAndClassName.className + " implements HasJson, " + interfaceName.className + "{");
+        result.add("public class " + packageAndClassName.className + " implements HasJson<ContextForJson>, " + interfaceName.className + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
         result.addAll(Formating.indent(createLens()));
@@ -92,16 +94,20 @@ public class EntityOnServerClassDom {
     }
 
     String toJson(FieldDetails fd) {
-        if (fd.type.shortName.equals("String"))
-            return fd.name;
+        if (fd.type.shortName.equals("String")) {
+            if (fd.templatedJson)
+                return fd.name + ".replace(\"<host>\", context.protocolAndHost())";
+            else
+                return fd.name;
+        }
         if (fd.type.embedded) {
-            return fd.name + ".toJson(jsonTc)";
+            return fd.name + ".toJson(jsonTc,context)";
         } else
-            return "((" + names.serverImplName(fd.type.shortName) + ")" + fd.name + ").toJson(jsonTc)";
+            return "((" + names.serverImplName(fd.type.shortName) + ")" + fd.name + ").toJson(jsonTc,context)";
     }
     List<String> makeJson() {
         List<String> result = new ArrayList<>();
-        result.add("public <J> J toJson(JsonTC<J> jsonTc) {");
+        result.add("public <J> J toJson(JsonTC<J> jsonTc, ContextForJson context) {");
         result.add(Formating.indent + "return jsonTc.makeObject(" + fields.mapJoin(",", fd -> "\"" + fd.name + "\", " + toJson(fd)) + ");");
         result.add("}");
         return result;

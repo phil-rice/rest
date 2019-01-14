@@ -6,6 +6,7 @@ import one.xingyi.restAnnotations.http.ServiceResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public class ClientTest extends AbstractClientTest {
+public class FakeClientTest extends AbstractClientTest {
     @Override protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(composed); }
+    @Override protected String expectedHost() { return ""; }
 }

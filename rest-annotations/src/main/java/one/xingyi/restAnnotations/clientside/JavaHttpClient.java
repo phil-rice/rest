@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 public interface JavaHttpClient {
 
@@ -19,12 +20,15 @@ public interface JavaHttpClient {
             req -> HttpClient.newHttpClient().sendAsync(req, HttpResponse.BodyHandlers.ofString());
 
     Function<ServiceRequest, HttpRequest> toJavaHttp = sr -> {
-        HttpRequest.Builder b1 = HttpRequest.newBuilder().
+      try{  HttpRequest.Builder b1 = HttpRequest.newBuilder().
                 method(sr.method, HttpRequest.BodyPublishers.ofString(sr.body)).
                 uri(sr.url);
 
         HttpRequest.Builder b2 = ListUtils.foldLeft(b1, sr.headers, (b, h) -> b.header(h.name, h.value));
-        return b2.build();
+        return b2.build();}
+      catch (Exception e){
+          throw new RuntimeException("Trying to use Java Client with " + sr, e);
+      }
     };
 
     Function<HttpResponse<String>, ServiceResponse> toServiceResponse = hr -> {

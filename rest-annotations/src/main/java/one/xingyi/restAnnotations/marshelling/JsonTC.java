@@ -2,8 +2,8 @@ package one.xingyi.restAnnotations.marshelling;
 import java.util.LinkedHashMap;
 public interface JsonTC<J> {
 
-    default String toJson(HasJson hasJson) {
-        return fromJ(hasJson.toJson(this));
+    default <Context> String toJson(HasJson<Context> hasJson, Context context) {
+        return fromJ(hasJson.toJson(this, context));
     }
 
     /**

@@ -16,7 +16,7 @@ public interface EntityRegister extends Function<EntityDetailsRequest, Completab
     }
     static EntityRegister simple(Companion<?, ?>... companions) {
         return new SimpleEntityRegister(ListUtils.map(Arrays.asList(companions),
-                c -> new EntityRegistrationDetails(c.entityName(), "/" + c.entityName().toLowerCase() + "/<id>", c)));
+                c -> new EntityRegistrationDetails(c.entityName(), "<host>/" + c.entityName().toLowerCase() + "/<id>", c)));
     }
 }
 

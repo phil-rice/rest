@@ -5,7 +5,7 @@ import one.xingyi.restAnnotations.annotations.XingYiField;
 
 @XingYi() // this makes all the methods available in person.
 public interface IEntity {
-    @XingYiField(readInterfaces = EntityInterfaces.entityUrlPattern)
+    @XingYiField(readInterfaces = EntityInterfaces.entityUrlPattern, templatedJson = true)
     String url();
 
     @XingYiField(readInterfaces = EntityInterfaces.entityInterfaces)

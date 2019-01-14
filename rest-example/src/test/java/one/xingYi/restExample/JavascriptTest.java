@@ -1,12 +1,16 @@
 package one.xingYi.restExample;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
+import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.javascript.IXingYiFactory;
+import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restExample.*;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 public class JavascriptTest {
@@ -16,6 +20,8 @@ public class JavascriptTest {
     Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
     Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.value(number));
 
+    ServiceRequest serviceRequest = new ServiceRequest("get", "http://somehost", Arrays.asList(), "");
+    ContextForJson context = new ContextForJson(serviceRequest);
     @Test
     public void testGetters() {
         String javascript = Files.getText("header.js") +
@@ -23,7 +29,7 @@ public class JavascriptTest {
                 AddressServerCompanion.companion.javascript() +
                 TelephoneNumberServerCompanion.companion.javascript();
         IXingYi xingYi = IXingYiFactory.xingYi.apply(javascript);
-        String json = person.toJsonString(JsonTC.cheapJson);
+        String json = person.toJsonString(JsonTC.cheapJson, context);
         Object mirror = xingYi.parse(json);
         PersonClientImpl client = new PersonClientImpl(mirror, xingYi);
         assertEquals("name", client.name());
@@ -37,7 +43,7 @@ public class JavascriptTest {
                 AddressServerCompanion.companion.javascript() +
                 TelephoneNumberServerCompanion.companion.javascript();
         IXingYi xingYi = IXingYiFactory.xingYi.apply(javascript);
-        String json = person.toJsonString(JsonTC.cheapJson);
+        String json = person.toJsonString(JsonTC.cheapJson,context);
         Object mirror = xingYi.parse(json);
         PersonClientImpl client = new PersonClientImpl(mirror, xingYi);
         assertEquals("name", client.name());

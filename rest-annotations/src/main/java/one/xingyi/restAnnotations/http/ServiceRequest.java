@@ -2,11 +2,13 @@ package one.xingyi.restAnnotations.http;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.OptionalUtils;
 
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @ToString
 @EqualsAndHashCode
@@ -33,4 +35,10 @@ public class ServiceRequest {
     public String lastSegment() { return urlSegments().get(urlSegments().size() - 1); }
 
 
+    public Optional<String> header(String header) {
+        for (Header h : headers)
+            if (h.name.equalsIgnoreCase(header))
+                return Optional.of(h.value);
+        return Optional.empty();
+    }
 }

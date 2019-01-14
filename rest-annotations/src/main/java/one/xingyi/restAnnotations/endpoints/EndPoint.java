@@ -5,6 +5,7 @@ import lombok.ToString;
 import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
+import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.utils.Files;
@@ -121,7 +122,7 @@ class JsonEndPoint<From extends EndpointRequest, To extends HasJson> implements 
 
     //wow this is a bit of dogs dinner
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
-        return OptionalUtils.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> ServiceResponse.json(jsonTc, status, to)));
+        return OptionalUtils.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> ServiceResponse.json(jsonTc, new ContextForJson(serviceRequest), status, to)));
     }
 }
 @ToString
@@ -139,7 +140,7 @@ class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To exte
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         return OptionalUtils.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> {
             String javascript = Files.getText("header.js") + companion.javascript();
-            return ServiceResponse.javascriptAndJson(jsonTc, 200, to, javascript);
+            return ServiceResponse.javascriptAndJson(jsonTc,new ContextForJson(serviceRequest), 200, to, javascript);
         }));
     }
 }
@@ -161,7 +162,7 @@ class OptionalJavascriptAndJsonEndPoint<From extends EndpointRequest, Interface,
         From from = optFrom.get();
         return fn.apply(from).thenApply(x -> x.map(to -> {
             String javascript = Files.getText("header.js") + companion.javascript();
-            return ServiceResponse.javascriptAndJson(jsonTc, 200, to, javascript);
+            return ServiceResponse.javascriptAndJson(jsonTc,new ContextForJson(serviceRequest), 200, to, javascript);
         }));
 
 
