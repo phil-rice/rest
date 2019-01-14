@@ -32,9 +32,11 @@ class DefaultXingYi implements IXingYi {
     final Invocable inv;
 
     DefaultXingYi(String javaScript) {
+        long time = System.nanoTime();
         engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6 ");
         XingYiExecutionException.wrap("initialising", () -> engine.eval(javaScript));
         this.inv = (Invocable) engine;
+        System.out.println("Duration: " + (System.nanoTime() - time)/1000000);
     }
 
     @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse", () -> inv.invokeFunction("parse", s)); }

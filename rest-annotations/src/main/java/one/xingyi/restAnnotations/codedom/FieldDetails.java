@@ -34,7 +34,7 @@ public class FieldDetails {
         this.lensName = lensName;
         this.javascript = javascript;
         this.deprecated = deprecated;
-        log.info("In field details " + this);
+//        log.info("In field details " + this);
     }
     public List<String> allInterfaces() {
         return ListUtils.unique(ListUtils.append(readInterfaces, writeInterfaces, readWriteInterfaces));

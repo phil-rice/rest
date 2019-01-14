@@ -22,7 +22,7 @@ public class EntityOnServerClassDom {
         this.packageAndClassName = packageAndClassName;
         this.interfaceName = interfaceName;
         this.fields = fields;
-        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
+//        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
     }
 
 

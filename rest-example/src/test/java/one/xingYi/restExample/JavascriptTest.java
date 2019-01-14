@@ -30,5 +30,19 @@ public class JavascriptTest {
         assertEquals("someLine1", client.address().line1());
     }
 
+    @Test
+    public void testGetters2() {
+        String javascript = Files.getText("header.js") +
+                PersonServerCompanion.companion.javascript() +
+                AddressServerCompanion.companion.javascript() +
+                TelephoneNumberServerCompanion.companion.javascript();
+        IXingYi xingYi = IXingYiFactory.xingYi.apply(javascript);
+        String json = person.toJsonString(JsonTC.cheapJson);
+        Object mirror = xingYi.parse(json);
+        PersonClientImpl client = new PersonClientImpl(mirror, xingYi);
+        assertEquals("name", client.name());
+        assertEquals("someLine1", client.address().line1());
+    }
+
 
 }

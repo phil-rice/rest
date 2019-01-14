@@ -69,7 +69,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
 
                     for (OpsInterfaceClassDom dom : classDom.nested()) {
-                        messager.printMessage(Diagnostic.Kind.NOTE, "making interfacedom " + dom.opsName.asString());
+//                        messager.printMessage(Diagnostic.Kind.NOTE, "making interfacedom " + dom.opsName.asString());
                         makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
                     }
                 }
@@ -82,7 +82,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     private void makeClassFile(PackageAndClassName packageAndClassName, String classString, Element element) {
         WrappedException.wrap(() -> {
             JavaFileObject builderFile = filer.createSourceFile(packageAndClassName.asString());
-            messager.printMessage(Diagnostic.Kind.NOTE, "making  " + packageAndClassName + "->" + builderFile.toUri());
+//            messager.printMessage(Diagnostic.Kind.NOTE, "making  " + packageAndClassName + "->" + builderFile.toUri());
             Files.setText(() -> new PrintWriter(builderFile.openWriter()), classString);
         });
     }

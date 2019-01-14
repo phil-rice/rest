@@ -1,11 +1,7 @@
 package one.xingyi.restcore.xingyiclient;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.restAnnotations.clientside.DataAndJavaScript;
-import one.xingyi.restAnnotations.clientside.IClientCompanion;
-import one.xingyi.restAnnotations.clientside.IClientFactory;
-import one.xingyi.restAnnotations.clientside.IXingYiResponseSplitter;
+import one.xingyi.restAnnotations.clientside.*;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.javascript.IXingYi;
@@ -13,7 +9,6 @@ import one.xingyi.restAnnotations.javascript.IXingYiFactory;
 import one.xingyi.restcore.xingYiServer.IEntityUrlPattern;
 
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -22,11 +17,11 @@ import java.util.function.Supplier;
 public interface XingYiClient {
 
 
-    <Interface, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn);
+    <Interface extends IXingYiOps<?>, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn);
 
     <Interface> CompletableFuture<String> getUrlPattern(Class<Interface> interfaceClass);
 
-    default <Interface, Result> CompletableFuture<Result> get(Class<Interface> interfaceClass, String id, Function<Interface, Result> fn) {
+    default <Interface extends IXingYiOps<?>, Result> CompletableFuture<Result> get(Class<Interface> interfaceClass, String id, Function<Interface, Result> fn) {
         return getUrlPattern(interfaceClass).thenCompose(url -> primitiveGet(interfaceClass, url.replace("<id>", URLEncoder.encode(id)), fn));
     }
     static XingYiClient using(String hostAndPort, Function<ServiceRequest, CompletableFuture<ServiceResponse>> client, IClientFactory... factories) {
@@ -52,13 +47,15 @@ class SimpleXingYiClient implements XingYiClient {
         this.factory = IClientFactory.compose(factories);
     }
     @Override
-    public <Interface, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
+    public <Interface extends IXingYiOps<?>, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
         ServiceRequest sr = new ServiceRequest("get", url, List.of(), "");
         return client.apply(sr).thenApply(sRes -> fn.apply(processResult(interfaceClass, sRes)));
     }
     @Override public <Interface> CompletableFuture<String> getUrlPattern(Class<Interface> interfaceClass) {
-        IClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
-        return primitiveGet(IEntityUrlPattern.class, hostAndPort + companion.bookmark(), IEntityUrlPattern::url);
+        IClientMaker companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
+        if (companion instanceof IClientCompanion)
+            return primitiveGet(IEntityUrlPattern.class, hostAndPort + ((IClientCompanion) companion).bookmark(), IEntityUrlPattern::url);
+        else throw new IllegalStateException("Cannot call this method with interface " + interfaceClass.getName() + " because there is no 'companion' object for it" );
     }
 
     <Interface> Interface processResult(Class<Interface> interfaceClass, ServiceResponse serviceResponse) {

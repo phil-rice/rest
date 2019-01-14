@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.clientside.IClientCompanion;
+import one.xingyi.restAnnotations.clientside.IClientMaker;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
@@ -31,6 +32,7 @@ public class CompanionOnClientClassDom {
         ArrayList<String> result = new ArrayList<>();
         result.add("package " + packageName + ";");
         result.add("import " + IClientCompanion.class.getName() + ";");
+        result.add("import " + IClientMaker.class.getName() + ";");
         result.add("import " + Optional.class.getName() + ";");
         result.add("import " + IXingYi.class.getName() + ";");
         result.add("import " + Set.class.getName() + ";");
@@ -55,7 +57,7 @@ public class CompanionOnClientClassDom {
     }
     List<String> createFindCompanion() {
         return Arrays.asList(
-                "@Override public Function<Class<?>, Optional<IClientCompanion>> findCompanion() {",
+                "@Override public Function<Class<?>, Optional<IClientMaker>> findCompanion() {",
                 Formating.indent + "return clazz -> OptionalUtils.from(supported().contains(clazz), () -> this);",
                 "};");
 

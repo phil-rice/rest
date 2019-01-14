@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.clientside.IXingYiOps;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
@@ -24,8 +25,10 @@ public class OpsInterfaceClassDom {
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
         result.add("import " + Lens.class.getName() + ";");
+        result.add("import " + IXingYiOps.class.getName() + ";");
         result.add("import " + Embedded.class.getName() + ";");
-        result.add("public interface " + opsName.className + "{");
+        result.add("import " + entityName.asString() + ";");
+        result.add("public interface " + opsName.className + " extends IXingYiOps<" + entityName.className+">{");
         result.addAll(Formating.indent(createFields()));
         result.add("}");
         return result;
