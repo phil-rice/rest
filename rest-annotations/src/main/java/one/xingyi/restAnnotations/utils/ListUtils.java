@@ -1,4 +1,6 @@
 package one.xingyi.restAnnotations.utils;
+import one.xingyi.restAnnotations.functions.FunctionWithError;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +10,15 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 public class ListUtils {
 
-    public static <T, T1> List<T1> map(List<T> list, Function<T, T1> fn) {
-        List<T1> result = new ArrayList<>();
-        for (T t : list)
-            result.add(fn.apply(t));
-        return result;
+    public static <T, T1> List<T1> map(List<T> list, FunctionWithError<T, T1> fn) {
+        try {
+            List<T1> result = new ArrayList<>();
+            for (T t : list)
+                result.add(fn.apply(t));
+            return result;
+        } catch (Exception e) {
+            throw new WrappedException(e);
+        }
     }
 
     public static <Acc, V> Acc foldLeft(Acc zero, List<V> list, BiFunction<Acc, V, Acc> fn) {

@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.entity.Embedded;
+import one.xingyi.restAnnotations.functions.FunctionWithError;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
@@ -28,7 +29,7 @@ public class FieldList {
     List<String> nestedOps() { return ListUtils.unique(flatMap(tn -> tn.allInterfaces())); }
 
 
-    public <T> List<T> map(Function<FieldDetails, T> fn) { return ListUtils.map(nonDeprecatedfields, fn); }
+    public <T> List<T> map(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(nonDeprecatedfields, fn); }
     //    public <T> List<T> mapincDeprecated(Function<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }
     public <T> List<T> flatMap(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(nonDeprecatedfields, fn); }
     //    public <T> List<T> flatMapincDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }

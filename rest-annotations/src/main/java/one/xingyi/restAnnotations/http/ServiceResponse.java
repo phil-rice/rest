@@ -8,6 +8,7 @@ import one.xingyi.restAnnotations.marshelling.JsonTC;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @ToString
 @EqualsAndHashCode
@@ -28,4 +29,5 @@ public class ServiceResponse {
         return new ServiceResponse(status, body, Arrays.asList(new Header("Content-type", "text/html")));
 
     }
+    public static ServiceResponse notFound(String msg) { return ServiceResponse.html(404, msg); }
 }

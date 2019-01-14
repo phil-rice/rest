@@ -1,5 +1,6 @@
 package one.xingYi.restExample;
 import one.xingyi.restAnnotations.access.IEntityStore;
+import one.xingyi.restAnnotations.clientside.IXingYiResponseSplitter;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
@@ -17,7 +18,9 @@ import one.xingyi.restcore.xingYiServer.IEntityUrlPattern;
 import one.xingyi.restcore.xingyiclient.XingYiClient;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -36,10 +39,11 @@ public class ClientTest {
 
     EntityRegister register = EntityRegister.simple(EntityServerCompanion.companion, PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
     EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
-    EndPoint getPersonEndpoint = GetEntityEndpoint.getEntityEndpoint(jsonTC, PersonServerCompanion.companion, personStore::read);
-    EndPoint getAddressEndpoint = GetEntityEndpoint.getEntityEndpoint(jsonTC, AddressServerCompanion.companion, addressStore::read);
+    EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, PersonServerCompanion.companion, personStore::read);
+    EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, AddressServerCompanion.companion, addressStore::read);
 
-    Function<ServiceRequest, CompletableFuture<ServiceResponse>> fakeHttpClient = EndPoint.toKliesli(EndPoint.compose(entityDetailsEndPoint, getPersonEndpoint,getAddressEndpoint));
+    EndPoint composed = EndPoint.compose(getAddressEndpoint, entityDetailsEndPoint, getPersonEndpoint);
+    Function<ServiceRequest, CompletableFuture<ServiceResponse>> fakeHttpClient = EndPoint.toKliesli(composed);
     XingYiClient client = XingYiClient.using(urlPrefix, fakeHttpClient, EntityClientCompanion.companion, PersonClientCompanion.companion, AddressClientCompanion.companion);
 
     @Test
@@ -48,6 +52,7 @@ public class ClientTest {
         assertEquals("/address/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/address", e -> e.url()).get());
         assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, urlPrefix + "/person", e -> e.interfaces()).get());
     }
+
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {
@@ -59,8 +64,15 @@ public class ClientTest {
     @Test
     public void testGetPerson() throws ExecutionException, InterruptedException {
         assertEquals("name", client.get(IPersonNameOps.class, "id1", IPersonNameOps::name).get());
-        assertEquals("someLine1", client.get(IAddressLine12Ops.class, "add1", IAddressLine12Ops::line1).get());
 
+    }
+
+    @Test
+    public void testGetAddress() throws ExecutionException, InterruptedException {
+        assertEquals(Optional.of(address), addressStore.read("add1").get());
+        assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'), IXingYiResponseSplitter.splitter.apply(getAddressEndpoint.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
+
+        assertEquals("someLine1", client.get(IAddressLine12Ops.class, "add1", IAddressLine12Ops::line1).get());
     }
 
 

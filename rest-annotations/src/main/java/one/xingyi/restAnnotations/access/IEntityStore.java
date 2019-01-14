@@ -1,9 +1,9 @@
 package one.xingyi.restAnnotations.access;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface IEntityStore<T> extends IEntityRead<T> {
@@ -24,7 +24,7 @@ class MapEntityStore<T> implements IEntityStore<T> {
         this.map = map;
         this.read = IEntityRead.map(lock, map);
     }
-    @Override public CompletableFuture<T> read(String id) {
+    @Override public CompletableFuture<Optional<T>> read(String id) {
         return read.read(id);
     }
 }

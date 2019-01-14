@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class JavaHttpClientTest {
     Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> endpoint =
             sr -> {
-                System.out.println(sr.toString());
+//                System.out.println(sr.toString());
                 return CompletableFuture.completedFuture(Optional.of(ServiceResponse.html(200, "made it: you sent" + sr)));
             };
 

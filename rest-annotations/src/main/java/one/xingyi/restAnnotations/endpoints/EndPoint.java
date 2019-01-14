@@ -17,10 +17,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> {
 
+    //    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> wrapWithFakeHostHeader(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
+//
+//    }
     static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
         return sr -> {
             try {
-                return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.html(404, "Not found. " + sr))).exceptionally(e -> internalError(e));
+                return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.notFound(sr.toString()))).exceptionally(e -> internalError(e));
             } catch (Exception e) {
                 System.out.println("Dumping error from inside completable future in toKliesli");
                 e.printStackTrace();
@@ -33,24 +36,14 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     }
 
 
-    // try {
-    //            Optional<ServiceResponse> result = response.call();
-    //            result.ifPresentOrElse(WrappedException.<ServiceResponse>wrapConsumer(x -> write(exchange, x)),
-    //                    () -> WrappedException.wrap(() -> write(exchange, ServiceResponse.html(404, "Not found. " + exchange.getRequestURI()))));
-    //        } catch (Exception e) {
-    //            e.printStackTrace();
-    //            WrappedException.wrap(() -> {
-    //                        ServiceResponse serviceResponse = ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
-    //                        write(exchange, serviceResponse);
-    //                    }
-    //            );
-    //        }
-
     static <J, From extends EndpointRequest, To extends HasJson> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn);
     }
     static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint javascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, Companion<Interface, To> companion) {
         return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn, companion);
+    }
+    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint optionalJavascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, Companion<Interface, To> companion) {
+        return new OptionalJavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn, companion);
     }
 
 
@@ -83,11 +76,15 @@ class ComposeEndPoints implements EndPoint {
         if (index >= endpoints.size())
             return CompletableFuture.completedFuture(Optional.empty());
         EndPoint endPoint = endpoints.get(index);
+//        System.out.println("Evaluating " + endPoint + "\nagainst " + serviceRequest.urlSegments());
         return endPoint.apply(serviceRequest).thenCompose(op -> {
-            if (op.isEmpty())
+            if (op.isEmpty()) {
+//                System.out.println("  didn't match");
                 return recurse(serviceRequest, index + 1);
-            else
+            } else {
+//                System.out.println("  matched: " + op);
                 return CompletableFuture.completedFuture(op);
+            }
         });
 
     }
@@ -144,5 +141,29 @@ class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To exte
             String javascript = Files.getText("header.js") + companion.javascript();
             return ServiceResponse.javascriptAndJson(jsonTc, 200, to, javascript);
         }));
+    }
+}
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+class OptionalJavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson> implements EndPoint {
+
+    final JsonTC<? extends Object> jsonTc;
+    final int status;
+    final EndpointAcceptor1<From> acceptor;
+    final Function<From, CompletableFuture<Optional<To>>> fn;
+    final Companion<Interface, To> companion;
+
+
+    @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
+        Optional<From> optFrom = acceptor.apply(serviceRequest);
+        if (optFrom.isEmpty()) return CompletableFuture.completedFuture(Optional.empty());
+        From from = optFrom.get();
+        return fn.apply(from).thenApply(x -> x.map(to -> {
+            String javascript = Files.getText("header.js") + companion.javascript();
+            return ServiceResponse.javascriptAndJson(jsonTc, 200, to, javascript);
+        }));
+
+
     }
 }
