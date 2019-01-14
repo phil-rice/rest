@@ -3,6 +3,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 public class ListUtils {
@@ -19,6 +20,10 @@ public class ListUtils {
         for (V v : list) {
             acc = fn.apply(acc, v);
         }
+        return acc;
+    }
+    public static <Acc, V> Acc aggLeft(Acc acc, List<V> list, BiConsumer<Acc, V> fn) {
+        for (V v : list) fn.accept(acc, v);
         return acc;
     }
 
