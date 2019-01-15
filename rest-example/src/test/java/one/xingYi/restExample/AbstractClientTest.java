@@ -44,8 +44,8 @@ abstract class AbstractClientTest {
 
     EntityRegister register = EntityRegister.simple(EntityServerCompanion.companion, PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
     EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
-    EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, PersonServerCompanion.companion, personStore::read);
-    EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, AddressServerCompanion.companion, addressStore::read);
+    EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, PersonServerCompanion.companion, personStore::read);
+    EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, AddressServerCompanion.companion, addressStore::read);
 
     EndPoint composed = EndPoint.compose(getAddressEndpoint, entityDetailsEndPoint, getPersonEndpoint);
 

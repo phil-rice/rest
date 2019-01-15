@@ -40,11 +40,11 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static <J, From extends EndpointRequest, To extends HasJson> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn);
     }
-    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint javascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, Companion<Interface, To> companion) {
-        return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn, companion);
+    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint javascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, String javascript) {
+        return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,  Files.getText("header.js") + javascript);
     }
-    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint optionalJavascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, Companion<Interface, To> companion) {
-        return new OptionalJavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn, companion);
+    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint optionalJavascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, String javascript) {
+        return new OptionalJavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,  Files.getText("header.js") + javascript);
     }
 
 
@@ -134,13 +134,12 @@ class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To exte
     final int status;
     final EndpointAcceptor1<From> acceptor;
     final Function<From, CompletableFuture<To>> fn;
-    final Companion<Interface, To> companion;
+    final String javascript;
 
 
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         return OptionalUtils.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> {
-            String javascript = Files.getText("header.js") + companion.javascript();
-            return ServiceResponse.javascriptAndJson(jsonTc,new ContextForJson(serviceRequest), 200, to, javascript);
+            return ServiceResponse.javascriptAndJson(jsonTc, new ContextForJson(serviceRequest), 200, to, javascript);
         }));
     }
 }
@@ -153,16 +152,14 @@ class OptionalJavascriptAndJsonEndPoint<From extends EndpointRequest, Interface,
     final int status;
     final EndpointAcceptor1<From> acceptor;
     final Function<From, CompletableFuture<Optional<To>>> fn;
-    final Companion<Interface, To> companion;
-
+    final String javascript;
 
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         Optional<From> optFrom = acceptor.apply(serviceRequest);
         if (optFrom.isEmpty()) return CompletableFuture.completedFuture(Optional.empty());
         From from = optFrom.get();
         return fn.apply(from).thenApply(x -> x.map(to -> {
-            String javascript = Files.getText("header.js") + companion.javascript();
-            return ServiceResponse.javascriptAndJson(jsonTc,new ContextForJson(serviceRequest), 200, to, javascript);
+            return ServiceResponse.javascriptAndJson(jsonTc, new ContextForJson(serviceRequest), 200, to, javascript);
         }));
 
 

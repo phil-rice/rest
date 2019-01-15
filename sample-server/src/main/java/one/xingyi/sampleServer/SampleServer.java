@@ -40,8 +40,8 @@ public class SampleServer {
     //This serves the bookmarked urls used by the entities
     EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
 
-    EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, PersonServerCompanion.companion, personStore::read);
-    EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, AddressServerCompanion.companion, addressStore::read);
+    EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, PersonServerCompanion.companion, personStore::read);
+    EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, AddressServerCompanion.companion, addressStore::read);
 
     //These are just for debugging
     EndPoint index = EndPoint.function(EndpointAcceptor0.exact("get", "/"), sr -> ServiceResponse.html(200, "made it: you sent" + sr));

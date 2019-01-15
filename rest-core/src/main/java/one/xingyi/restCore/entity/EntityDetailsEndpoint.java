@@ -15,7 +15,7 @@ public interface EntityDetailsEndpoint {
 
     EntityServerCompanion companion = new EntityServerCompanion();
 
-    static <J> EndPoint entityDetailsEndPoint(JsonTC<J> jsonTC, Function<EntityDetailsRequest, CompletableFuture<Entity>> fn) {
-        return EndPoint.javascriptAndJson(jsonTC, 200, acceptor, fn, companion);
+    static <J> EndPoint entityDetailsEndPoint(JsonTC<J> jsonTC, EntityRegister entityRegister) {
+        return EndPoint.javascriptAndJson(jsonTC, 200, acceptor, entityRegister, entityRegister.javascript());
     }
 }
