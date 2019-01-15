@@ -20,36 +20,41 @@ import java.util.Map;
 
 public class SampleServer {
 
+    //These are the 'fake' backend values. Normally this would be a link to a database or another microservice
+    TelephoneNumber number = new TelephoneNumber("someNumber");
+    Address address = new Address("someLine1", "someLine2");
+    Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
+    IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
+    IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
+
+    //How we do Json. This uses a really quick and dirty Json printer
+    JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
+
+    //objects that the backend will be serving up. This is needed for the entity details end points so it knows how to tell the client where to find them
+    EntityRegister register = EntityRegister.simple(
+            EntityServerCompanion.companion,
+            PersonServerCompanion.companion,
+            AddressServerCompanion.companion,
+            TelephoneNumberServerCompanion.companion);
+
+    //This serves the bookmarked urls used by the entities
+    EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
+
+    EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, PersonServerCompanion.companion, personStore::read);
+    EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, AddressServerCompanion.companion, addressStore::read);
+
+    //These are just for debugging
+    EndPoint index = EndPoint.function(EndpointAcceptor0.exact("get", "/"), sr -> ServiceResponse.html(200, "made it: you sent" + sr));
+    EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact("get", "/keepalive"), ServiceResponse.html(200, "Alive"));
+
+    //Now the actual server
+    EndPoint composed = EndPoint.compose(index, keepalive, entityDetailsEndPoint, getAddressEndpoint, getPersonEndpoint, getAddressEndpoint);
+    EndPoint all = EndPoint.printlnLog(composed);
+
+    //Every up until this point has been independent of the web framework used. Endpoint handler is the 'wrapper' that lifts the endpoint into this framework
+    SimpleServer server = new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(composed), 9000);
+
     public static void main(String[] args) {
-        String urlPrefix = "http://localhost:9000";
-
-        TelephoneNumber number = new TelephoneNumber("someNumber");
-        Address address = new Address("someLine1", "someLine2");
-        Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
-        IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
-        IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
-
-        JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
-
-        EntityRegister register = EntityRegister.simple(
-                EntityServerCompanion.companion,
-                PersonServerCompanion.companion,
-                AddressServerCompanion.companion,
-                TelephoneNumberServerCompanion.companion);
-        EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
-
-
-        EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, PersonServerCompanion.companion, personStore::read);
-        EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, AddressServerCompanion.companion, addressStore::read);
-
-        EndPoint index = EndPoint.function(EndpointAcceptor0.exact("get", "/"), sr -> ServiceResponse.html(200, "made it: you sent" + sr));
-        EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact("get", "/keepalive"), ServiceResponse.html(200, "Alive"));
-
-        EndPoint composed = EndPoint.compose(entityDetailsEndPoint, getAddressEndpoint, getPersonEndpoint, getAddressEndpoint);//, index, keepalive);
-
-
-        EndPoint all = EndPoint.printlnLog(composed);
-        SimpleServer server = new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(composed), 9000);
-        server.start();
+        new SampleServer().server.start();
     }
 }
