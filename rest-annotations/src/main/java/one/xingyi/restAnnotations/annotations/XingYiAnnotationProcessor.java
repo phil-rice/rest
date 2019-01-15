@@ -19,7 +19,6 @@ import javax.tools.*;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
 
@@ -58,8 +57,11 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     XingYi annotation = annotatedElement.getAnnotation(XingYi.class);
                     BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
                     EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, entityNames, fields);
-                    for (OpsInterfaceClassDom dom : classDom.nested()) { //needs to be earlier as this makes classes other use
+                    for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
                         makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+                    }
+                    for (OpsCompanionClassDom dom : classDom.nestedOpCompanions()) { //needs to be earlier as this makes classes other use
+                        makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
                     }
                     makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
                     EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, entityNames, fields);

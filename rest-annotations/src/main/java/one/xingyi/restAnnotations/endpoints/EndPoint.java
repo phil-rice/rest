@@ -41,10 +41,10 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn);
     }
     static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint javascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, String javascript) {
-        return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,  Files.getText("header.js") + javascript);
+        return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,   javascript);
     }
     static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint optionalJavascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, String javascript) {
-        return new OptionalJavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,  Files.getText("header.js") + javascript);
+        return new OptionalJavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,  javascript);
     }
 
 

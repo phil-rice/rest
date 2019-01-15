@@ -7,6 +7,7 @@ import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.names.EntityNames;
 import one.xingyi.restAnnotations.names.INames;
+import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.Strings;
@@ -14,6 +15,7 @@ import one.xingyi.restAnnotations.utils.Strings;
 import java.util.*;
 public class EntityOnServerClassDom {
     private LoggerAdapter log;
+    private EntityNames entityNames;
     public final FieldList fields;
     public final PackageAndClassName interfaceName;
     public INames names;
@@ -24,13 +26,17 @@ public class EntityOnServerClassDom {
         this.names = names;
         this.packageAndClassName = entityNames.serverImplementation;
         this.interfaceName = entityNames.entityInterface;
+        this.entityNames = entityNames;
         this.fields = fields;
 //        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
     }
 
 
-    public List<OpsInterfaceClassDom> nested() {
-        return ListUtils.map(fields.nestedOps(), opsName -> new OpsInterfaceClassDom(packageAndClassName.withName(opsName), interfaceName, fields));
+    public List<OpsInterfaceClassDom> nestedOps() {
+        return ListUtils.map(fields.nestedOps(), opsName -> new OpsInterfaceClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
+    }
+    public List<OpsCompanionClassDom> nestedOpCompanions() {
+        return ListUtils.map(fields.nestedOps(), opsName -> new OpsCompanionClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
     }
 
     public List<String> createClass() {
@@ -60,7 +66,7 @@ public class EntityOnServerClassDom {
     }
 
     public List<String> createFields() {
-        return fields.map(nv -> "final " + nv.type.shortNameWithHasJson + " " + nv.name + ";//" + nv.type.comment);
+        return fields.map(nv -> "final " + nv.type.shortNameWithHasJson + " " + nv.name + ";//" + nv.type);
     }
 
     public List<String> createLens() {

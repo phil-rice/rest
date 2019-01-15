@@ -40,8 +40,8 @@ class DefaultNames implements INames {
         return packageAndClassName.className.startsWith("I") ? Arrays.asList() : Arrays.asList("Doesn't start with an 'I'");
     }
     //    @Override public List<String> validateOpsName(PackageAndClassName companionName) {
-//        String opsName = companionName.className;
-//        return opsName.startsWith("I") ? Arrays.asList() : Arrays.asList("'" + opsName + "' doesn't start with an 'i'");
+//        String companionName = companionName.className;
+//        return companionName.startsWith("I") ? Arrays.asList() : Arrays.asList("'" + companionName + "' doesn't start with an 'i'");
 //
 //    }
     @Override public PackageAndClassName interfaceName(PackageAndClassName packageAndClassName) {

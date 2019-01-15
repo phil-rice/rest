@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.clientside.IXingYiOps;
 import one.xingyi.restAnnotations.entity.Embedded;
+import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
@@ -13,9 +14,10 @@ public class OpsInterfaceClassDom {
     public final PackageAndClassName opsName;
     public final PackageAndClassName entityName;
     public final FieldList fields;
-    public OpsInterfaceClassDom(PackageAndClassName opsName, PackageAndClassName entityName, FieldList fields) {
-        this.opsName = opsName;
-        this.entityName = entityName;
+
+    public OpsInterfaceClassDom(OpsNames opsNames, FieldList fields) {
+        this.opsName = opsNames.opsInterface;
+        this.entityName = opsNames.entityNames.clientImplementation;
         this.fields = fields;
     }
 

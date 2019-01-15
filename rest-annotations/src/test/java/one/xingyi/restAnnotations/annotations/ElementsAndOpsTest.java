@@ -14,11 +14,11 @@ public class ElementsAndOpsTest {
     ElementsAndOps ops = new ElementsAndOps(Arrays.asList(
             new ElementAndOps(new PackageAndClassName("one.xingyi.restExample.IPerson"),
                     Arrays.asList("IPersonNameOps", "IPersonAddressOps", "IPersonTelephoneNumberOps"),
-                    Arrays.asList()),
+                    Arrays.asList("java.lang.String, one.xingyi.restExample.IAddress, one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>")),
             new ElementAndOps(new PackageAndClassName("one.xingyi.restExample.IAddress"),
                     Arrays.asList("IAddressLine12Ops", "IAddressLine12Ops"),
-                    Arrays.asList()),
-            new ElementAndOps(new PackageAndClassName("one.xingyi.restExample.ITelephoneNumber"), Arrays.asList(), Arrays.asList())));
+                    Arrays.asList("java.lang.String")),
+            new ElementAndOps(new PackageAndClassName("one.xingyi.restExample.ITelephoneNumber"), Arrays.asList(), Arrays.asList("java.lang.String"))));
 
     @Test
     public void testAllowed() {

@@ -55,7 +55,7 @@ public class LensDom {
         boolean read = fieldDetails.shouldHaveRead(interfaceName);
         boolean write = fieldDetails.shouldHaveWrite(interfaceName);
         if (read)
-            result.add(getStringDeclaration() + ";");
+            result.add(getStringDeclaration() + ";//lens_" + fieldDetails.lensName);
         if (write)
             result.add(withStringHeader() + ";");
 //        if (read && write)

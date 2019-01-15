@@ -2,6 +2,7 @@ package one.xingyi.restcore.entity;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.entity.Companion;
+import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restcore.xingYiServer.Entity;
 
@@ -34,7 +35,7 @@ class SimpleEntityRegister implements EntityRegister {
             acc.put(rd.entityName.toLowerCase(), rd);
             return acc;
         });
-        this.javascript = ListUtils.aggLeft(new StringBuilder(), details, (acc, d) -> acc.append(d.companion.javascript() + "\n")).toString();
+        this.javascript = Files.getText("header.js") + ListUtils.aggLeft(new StringBuilder(), details, (acc, d) -> acc.append(d.companion.javascript() + "\n")).toString();
     }
 
     @Override public CompletableFuture<Entity> apply(EntityDetailsRequest entityDetailsRequest) {
