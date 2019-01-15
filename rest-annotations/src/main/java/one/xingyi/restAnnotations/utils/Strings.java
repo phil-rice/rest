@@ -3,6 +3,7 @@ public class Strings {
 
     public static final String[] empty = new String[0];
     public static String quote(String s) { return "\"" + s + "\"";}
+
     public static String removeOptionalFirst(String first, String value) {
         if (value.startsWith(first))
             return value.substring(first.length());
