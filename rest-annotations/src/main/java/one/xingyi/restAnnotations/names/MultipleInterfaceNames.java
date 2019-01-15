@@ -7,15 +7,15 @@ import one.xingyi.restAnnotations.codedom.PackageAndClassName;
 public class MultipleInterfaceNames {
     final INames names;
     public final PackageAndClassName multipleInterfaceName;
-    public final PackageAndClassName serverImplementationName;
-    public final PackageAndClassName serverCompanionName;
-    private final PackageAndClassName entityImplementationName;
+    public final PackageAndClassName multipleInterfacesClientImplName;
+    public final PackageAndClassName multipleInterfacesClientCompanion;
+    public final EntityNames entityNames;
 
     public MultipleInterfaceNames(INames names, String multipleInterfaceString, String entityString) {
         this.names = names;
         this.multipleInterfaceName = new PackageAndClassName(multipleInterfaceString);
-        this.serverImplementationName = names.serverImplName(multipleInterfaceName);
-        this.serverCompanionName = names.serverCompanionName(multipleInterfaceName);
-        this.entityImplementationName = names.serverImplName(new PackageAndClassName(entityString));
+        this.multipleInterfacesClientImplName = names.clientImplName(multipleInterfaceName);
+        this.multipleInterfacesClientCompanion = names.clientCompanionName(multipleInterfaceName);
+        this.entityNames = new EntityNames(names, entityString);
     }
 }

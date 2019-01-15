@@ -2,24 +2,21 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.javascript.IXingYi;
-import one.xingyi.restAnnotations.names.INames;
+import one.xingyi.restAnnotations.names.MultipleInterfaceNames;
 
 import java.util.ArrayList;
 import java.util.List;
 public class CompositeImplClassDom {
     private LoggerAdapter log;
-    private final INames names;
     PackageAndClassName multipleInterfaceName;
     PackageAndClassName multipleImplName;
     PackageAndClassName rootImplName;
-    private final List<String> interfaceNames;
-    public CompositeImplClassDom(LoggerAdapter log, INames names, PackageAndClassName multipleInterfaceName, PackageAndClassName multipleImplName, PackageAndClassName rootImplName, List<String> interfaceNames) {
+
+    public CompositeImplClassDom(LoggerAdapter log,  MultipleInterfaceNames multipleInterfaceNames) {
         this.log = log;
-        this.names = names;
-        this.multipleInterfaceName = multipleInterfaceName;
-        this.multipleImplName = multipleImplName;
-        this.rootImplName = rootImplName;
-        this.interfaceNames = interfaceNames;
+        this.multipleInterfaceName = multipleInterfaceNames.multipleInterfaceName;
+        this.multipleImplName = multipleInterfaceNames.multipleInterfacesClientImplName;
+        this.rootImplName = multipleInterfaceNames.entityNames.clientImplementation;
     }
 
 

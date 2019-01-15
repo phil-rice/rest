@@ -5,6 +5,7 @@ import one.xingyi.restAnnotations.codedom.CompositeCompanionClassCodeDom;
 import one.xingyi.restAnnotations.codedom.CompositeImplClassDom;
 import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.codedom.PackageAndClassName;
+import one.xingyi.restAnnotations.names.MultipleInterfaceNames;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.WrappedException;
@@ -43,24 +44,17 @@ public class XingYiCompositeInterfaceAnnotationProcessor extends AbstractProcess
         Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYiCompositeInterface.class);
         for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
-                PackageAndClassName multipleInterfaceName = names.getEntity(annotatedElement);
                 XingYiCompositeInterface annotation = annotatedElement.getAnnotation(XingYiCompositeInterface.class);
-
-                PackageAndClassName rootEntityName = new PackageAndClassName(annotation.value());
-                PackageAndClassName rootCompanionName = names.clientCompanionName(rootEntityName);
-                PackageAndClassName rootImplName = names.clientImplName(rootEntityName);
-
-                PackageAndClassName multipleImplName = names.clientMultipleInterfacesName(multipleInterfaceName);
-                PackageAndClassName multipleCompanionName = names.clientCompanionName(multipleInterfaceName);
+                MultipleInterfaceNames interfaceNames = new MultipleInterfaceNames(names, annotatedElement.asType().toString(), annotation.value());
 
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
 
 
-                CompositeImplClassDom impl = new CompositeImplClassDom(log, names, multipleInterfaceName, multipleImplName, rootImplName, Arrays.asList());
-                makeClassFile(multipleImplName, ListUtils.join(impl.createClass(), "\n"), annotatedElement);
+                CompositeImplClassDom impl = new CompositeImplClassDom(log, interfaceNames);
+                makeClassFile(interfaceNames.multipleInterfacesClientImplName, ListUtils.join(impl.createClass(), "\n"), annotatedElement);
 
-                CompositeCompanionClassCodeDom companionDom = new CompositeCompanionClassCodeDom(log, names,multipleInterfaceName,multipleImplName, multipleCompanionName, rootCompanionName, rootImplName);
-                makeClassFile(multipleCompanionName, ListUtils.join(companionDom.createClass(), "\n"), annotatedElement);
+                CompositeCompanionClassCodeDom companionDom = new CompositeCompanionClassCodeDom(log, interfaceNames);
+                makeClassFile(interfaceNames.multipleInterfacesClientCompanion, ListUtils.join(companionDom.createClass(), "\n"), annotatedElement);
             }
         }
         return false;

@@ -5,27 +5,27 @@ import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientMaker;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.names.INames;
+import one.xingyi.restAnnotations.names.MultipleInterfaceNames;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 
 import java.util.*;
 import java.util.function.Function;
 public class CompositeCompanionClassCodeDom {
     private LoggerAdapter log;
-    private final INames names;
     private PackageAndClassName multipleInterfaceName;
     private PackageAndClassName multipleImplName;
     private final PackageAndClassName multipleCompanionName;
     private final PackageAndClassName rootCompanionName;
     private final PackageAndClassName rootImplName;
 
-    public CompositeCompanionClassCodeDom(LoggerAdapter log, INames names, PackageAndClassName multipleInterfaceName, PackageAndClassName multipleImplName, PackageAndClassName multipleCompanionName, PackageAndClassName rootCompanionName, PackageAndClassName rootImplName) {
+    public CompositeCompanionClassCodeDom(LoggerAdapter log, MultipleInterfaceNames interfaceNames) {
         this.log = log;
-        this.names = names;
-        this.multipleInterfaceName = multipleInterfaceName;
-        this.multipleImplName = multipleImplName;
-        this.multipleCompanionName = multipleCompanionName;
-        this.rootCompanionName = rootCompanionName;
-        this.rootImplName = rootImplName;
+
+        this.multipleInterfaceName = interfaceNames.multipleInterfaceName;
+        this.multipleImplName = interfaceNames.multipleInterfacesClientImplName;
+        this.multipleCompanionName = interfaceNames.multipleInterfacesClientCompanion;
+        this.rootCompanionName = interfaceNames.entityNames.clientCompanion;
+        this.rootImplName = interfaceNames.entityNames.clientImplementation;
     }
 
 
@@ -54,7 +54,7 @@ public class CompositeCompanionClassCodeDom {
         return Arrays.asList("public String bookmark(){return " + rootCompanionName.asString() + ".companion.bookmark();} ");
     }
     List<String> createSupported() {
-        return Arrays.asList("public Set<Class<?>> supported(){return Set.of("+ multipleInterfaceName.asString() + ".class);} ");
+        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + multipleInterfaceName.asString() + ".class);} ");
     }
     List<String> createFindCompanion() {
         return Arrays.asList(
