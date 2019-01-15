@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @XingYi(urlPattern = "/person")
-public interface IPerson {
-    @XingYiField(readInterfaces = Interfaces.personNameOps)
+public interface IPerson extends IPersonNameOps,IPersonLine12Ops,IPersonAddressOps {
+//    @XingYiField(readInterfaces = Interfaces.personNameOps)
      String name(); //
 
-    @XingYiField(interfaces = Interfaces.personAddressOps)
+//    @XingYiField(interfaces = Interfaces.personAddressOps)
     IAddress address();
 
-    @XingYiField(interfaces = Interfaces.personTelephoneOps)
+//    @XingYiField(interfaces = Interfaces.personTelephoneOps)
     Embedded<ITelephoneNumber> telephone();
 
 
@@ -25,9 +25,4 @@ public interface IPerson {
     @XingYiField(deprecated = true)
     default String line2() {throw new RuntimeException("not implemented");}
 
-    //function lens_person_telephonenumber_telephonenumber(){ return lens("telephoneNumber");};
-    //function lens_person_line2_string(){ return lens("line2");};
-    //function lens_person_name_string(){ return lens("name");};
-    //function lens_telephonenumber_number_string(){ return lens("number");};
-    //function lens_person_line1_string(){ return lens("line1");};
 }

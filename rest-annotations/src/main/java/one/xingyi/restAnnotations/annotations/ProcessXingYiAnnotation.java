@@ -16,11 +16,10 @@ class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
     final INames names;
     final ElementsAndOps elementsAndOps;
 
-    public ProcessXingYiAnnotation(INames names, Messager messager, Filer filer, RoundEnvironment env) {
+    public ProcessXingYiAnnotation(INames names, ElementsAndOps elementsAndOps, Messager messager, Filer filer, RoundEnvironment env) {
         super(XingYi.class, env, messager, filer);
         this.names = names;
-        Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYi.class);
-        this.elementsAndOps = ElementsAndOps.create(elements);
+        this.elementsAndOps = elementsAndOps;
     }
 
     @Override void doit(LoggerAdapter log, TypeElement annotatedElement, XingYi annotation) {
@@ -31,24 +30,24 @@ class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
         else {
             BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
             EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, entityNames, fields);
-            for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
-                makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-            }
-            for (OpsServerCompanionClassDom dom : classDom.nestedOpServerCompanions()) { //needs to be earlier as this makes classes other use
-                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-            }
-            for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
-                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-            }
+//            for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
+//                makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+//            }
+//            for (OpsServerCompanionClassDom dom : classDom.nestedOpServerCompanions()) { //needs to be earlier as this makes classes other use
+//                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+//            }
+//            for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
+//                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+//            }
             makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
             EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, entityNames, fields);
             makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
 
 
-            CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, entityNames, fields, bookmarkAndUrlPattern);
+            CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(log, names, elementsAndOps,entityNames, fields, bookmarkAndUrlPattern);
             makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
 
-            CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names, entityNames, fields, bookmarkAndUrlPattern);
+            CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names,elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
             makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
         }
     }

@@ -1,13 +1,17 @@
 package one.xingyi.restAnnotations.annotations;
 
+import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.names.INames;
+import one.xingyi.restAnnotations.utils.MapUtils;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.Set;
+import javax.tools.Diagnostic;
+import java.util.*;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
     final INames names = INames.defaultNames;
 
@@ -27,8 +31,21 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
-        new ProcessXingYiAnnotation(names, messager, filer, env).process();
-        new ProcessXingYiOpsAnnotation(names, messager, filer, env).process();
+        LoggerAdapter log = LoggerAdapter.fromMessager(messager);
+        Set<? extends Element> xingYiElements = env.getElementsAnnotatedWith(XingYi.class);
+        Set<? extends Element> xingYiopsElements = env.getElementsAnnotatedWith(XingYiOps.class);
+
+        Map<String, List<String>> map = new HashMap<>();
+        for (Element element : xingYiopsElements) {
+            MapUtils.add(map, ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), (TypeElement) element), element.asType().toString());
+        }
+        log.info("Before create" + map);
+
+
+        ElementsAndOps elementsAndOps = ElementsAndOps.create(log, xingYiElements, xingYiopsElements);
+        messager.printMessage(Diagnostic.Kind.NOTE, "ElementsAndOps " + elementsAndOps);
+        new ProcessXingYiAnnotation(names, elementsAndOps, messager, filer, env).process();
+        new ProcessXingYiOpsAnnotation(names, elementsAndOps, messager, filer, env).process();
         return false;
     }
 

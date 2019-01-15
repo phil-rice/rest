@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.annotations.ElementsAndOps;
 import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientMaker;
 import one.xingyi.restAnnotations.javascript.IXingYi;
@@ -12,6 +13,7 @@ import one.xingyi.restAnnotations.utils.OptionalUtils;
 import java.util.*;
 import java.util.function.Function;
 public class CompanionOnClientClassDom {
+    private final List<String> interfaces;
     private PackageAndClassName clientName;
     public final FieldList fields;
     private BookmarkAndUrlPattern bookmarkAndUrlPattern;
@@ -19,13 +21,16 @@ public class CompanionOnClientClassDom {
     public INames names;
     public final PackageAndClassName companionName;
 
-    public CompanionOnClientClassDom(LoggerAdapter log, INames names, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
+    public CompanionOnClientClassDom(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
         this.log = log;
         this.names = names;
         this.companionName = entityNames.clientCompanion;
         this.clientName = entityNames.clientImplementation;
         this.fields = fields;
         this.bookmarkAndUrlPattern = bookmarkAndUrlPattern;
+        interfaces = OptionalUtils.fold(elementsAndOps.find(entityNames.entityInterface.asString()), () -> Arrays.asList(), e -> e.interfaces);
+
+
     }
 
 
@@ -55,7 +60,7 @@ public class CompanionOnClientClassDom {
         return Arrays.asList("public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
     }
     List<String> createSupported() {
-        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");
+        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s + ".class") + ");} ");
     }
     List<String> createFindCompanion() {
         return Arrays.asList(

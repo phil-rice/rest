@@ -1,30 +1,37 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.annotations.ElementAndOps;
+import one.xingyi.restAnnotations.annotations.ElementsAndOps;
 import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.names.EntityNames;
 import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.OptionalUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 public class CompanionOnServerClassDom {
+    private final List<String> interfaces;
+    private LoggerAdapter log;
     public INames names;
     public final PackageAndClassName serverImpl;
     public final FieldList fields;
     private BookmarkAndUrlPattern bookmarkAndUrlPattern;
     public final PackageAndClassName interfaceName;
+    private ElementsAndOps elementsAndOps;
     public final PackageAndClassName companionName;
 
-    public CompanionOnServerClassDom(INames names, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
+    public CompanionOnServerClassDom(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
+        this.log = log;
         this.names = names;
+        this.elementsAndOps = elementsAndOps;
         this.companionName = entityNames.serverCompanion;
         this.interfaceName = entityNames.entityInterface;
         this.serverImpl = entityNames.serverImplementation;
         this.fields = fields;
         this.bookmarkAndUrlPattern = bookmarkAndUrlPattern;
+        interfaces = OptionalUtils.fold(elementsAndOps.find(interfaceName.asString()), () -> Arrays.asList(), e -> e.interfaces);
     }
 
     public List<String> createClass() {
@@ -48,10 +55,11 @@ public class CompanionOnServerClassDom {
         return Arrays.asList("public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
     }
     List<String> createSupported() {
-        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");
+        log.info("IN server/create supported for " + companionName + " interfaces" + interfaces);
+        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s + ".class") + ");} ");
     }
-   List<String> createOpsCompanions() {
-        return Arrays.asList("public Set<IOpsServerCompanion> opsCompanions(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");
+    List<String> createOpsCompanions() {
+        return Arrays.asList("public Set<IOpsServerCompanion> opsCompanions(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s + ".class") + ");} ");
     }
 
 
