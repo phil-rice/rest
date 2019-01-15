@@ -13,7 +13,7 @@ public interface IClientFactory extends IClientMaker {
 
     Set<Class<?>> supported();
 
-    Function<Class<?>, Optional<IClientMaker>> findCompanion();
+    Function<Class<?>, Optional<IClientCompanion>> findCompanion();
 
     default <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) { return findCompanion().apply(clazz).flatMap(c -> c.apply(clazz, xingYi, mirror)); }
 
@@ -25,7 +25,7 @@ public interface IClientFactory extends IClientMaker {
 @EqualsAndHashCode
 class ComposeClientFactory implements IClientFactory {
     final List<IClientFactory> factories;
-    private final List<Function<Class<?>, Optional<IClientMaker>>> findCompanions;
+    private final List<Function<Class<?>, Optional<IClientCompanion>>> findCompanions;
     public ComposeClientFactory(List<IClientFactory> factories) {
         this.factories = factories;
         this.findCompanions = ListUtils.map(factories, IClientFactory::findCompanion);
@@ -33,7 +33,7 @@ class ComposeClientFactory implements IClientFactory {
     @Override public Set<Class<?>> supported() {
         return ListUtils.aggLeft(new HashSet<Class<?>>(), factories, (acc, f) -> acc.addAll(f.supported()));
     }
-    @Override public Function<Class<?>, Optional<IClientMaker>> findCompanion() { return OptionalUtils.chainFn(findCompanions); }
+    @Override public Function<Class<?>, Optional<IClientCompanion>> findCompanion() { return OptionalUtils.chainFn(findCompanions); }
 
     @Override public <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
         return findCompanion().apply(clazz).flatMap(c -> c.apply(clazz, xingYi, mirror)).

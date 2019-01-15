@@ -2,6 +2,7 @@ package one.xingyi.restcore.xingyiclient;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.clientside.*;
+import one.xingyi.restAnnotations.http.Header;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.javascript.IXingYi;
@@ -48,14 +49,13 @@ class SimpleXingYiClient implements XingYiClient {
     }
     @Override
     public <Interface extends IXingYiOps<?>, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
-        ServiceRequest sr = new ServiceRequest("get", url, List.of(), "");
+        IClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
+        ServiceRequest sr = new ServiceRequest("get", url, List.of(new Header("Accept", "application/xingyi.json."+ companion.)), "");
         return client.apply(sr).thenApply(sRes -> fn.apply(processResult(interfaceClass, sRes)));
     }
     @Override public <Interface> CompletableFuture<String> getUrlPattern(Class<Interface> interfaceClass) {
-        IClientMaker companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
-        if (companion instanceof IClientCompanion)
-            return primitiveGet(IEntityUrlPattern.class, hostAndPort + ((IClientCompanion) companion).bookmark(), IEntityUrlPattern::url);
-        else throw new IllegalStateException("Cannot call this method with interface " + interfaceClass.getName() + " because there is no 'companion' object for it" );
+        IClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
+        return primitiveGet(IEntityUrlPattern.class, hostAndPort + ((IClientCompanion) companion).bookmark(), IEntityUrlPattern::url);
     }
 
     <Interface> Interface processResult(Class<Interface> interfaceClass, ServiceResponse serviceResponse) {
