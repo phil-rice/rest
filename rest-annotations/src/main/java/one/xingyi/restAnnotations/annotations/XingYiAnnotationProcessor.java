@@ -60,7 +60,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
                         makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
                     }
-                    for (OpsCompanionClassDom dom : classDom.nestedOpCompanions()) { //needs to be earlier as this makes classes other use
+                    for (OpsServerCompanionClassDom dom : classDom.nestedOpServerCompanions()) { //needs to be earlier as this makes classes other use
+                        makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+                    }
+                    for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
                         makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
                     }
                     makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);

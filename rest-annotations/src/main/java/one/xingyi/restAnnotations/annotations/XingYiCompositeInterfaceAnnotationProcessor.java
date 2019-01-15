@@ -3,9 +3,11 @@ package one.xingyi.restAnnotations.annotations;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.codedom.CompositeCompanionClassCodeDom;
 import one.xingyi.restAnnotations.codedom.CompositeImplClassDom;
+import one.xingyi.restAnnotations.names.EntityNames;
 import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.codedom.PackageAndClassName;
 import one.xingyi.restAnnotations.names.MultipleInterfaceNames;
+import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.WrappedException;
@@ -52,7 +54,9 @@ public class XingYiCompositeInterfaceAnnotationProcessor extends AbstractProcess
                 CompositeImplClassDom impl = new CompositeImplClassDom(log, interfaceNames);
                 makeClassFile(interfaceNames.multipleInterfacesClientImplName, ListUtils.join(impl.createClass(), "\n"), annotatedElement);
 
-                CompositeCompanionClassCodeDom companionDom = new CompositeCompanionClassCodeDom(log, interfaceNames);
+                TypeElement typeElement = (TypeElement) annotatedElement;
+                List<String> interfaces = ListUtils.map(typeElement.getInterfaces(), e -> e.toString());
+                CompositeCompanionClassCodeDom companionDom = new CompositeCompanionClassCodeDom(log, names, interfaceNames, interfaces);
                 makeClassFile(interfaceNames.multipleInterfacesClientCompanion, ListUtils.join(companionDom.createClass(), "\n"), annotatedElement);
             }
         }

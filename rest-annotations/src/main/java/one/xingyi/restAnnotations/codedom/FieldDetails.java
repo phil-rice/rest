@@ -14,6 +14,7 @@ import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -55,12 +56,17 @@ public class FieldDetails {
         return readWriteInterfaces.contains(interfaceName) || writeInterfaces.contains(interfaceName);
     }
 
-//    public FieldDetails mapType(Function<String, String> fn) {
-//        return new FieldDetails(log, fn.apply(interfaceDoms), name, readInterfaces, writeInterfaces, readWriteInterfaces, lensName, javascript, deprecated);
-//    }
-
     static String getLensName(String interfaceName, String name, String toClassName, Optional<String> lensName) {
         return lensName.orElse(interfaceName + "_" + name) + "_" + toClassName.replace("<", "").replace(">", "");
+    }
+
+
+
+    public boolean isPresent(String interfaceName) {
+        List<String> result = new ArrayList<>();
+        boolean read = shouldHaveRead(interfaceName);
+        boolean write = shouldHaveWrite(interfaceName);
+        return read || write;
     }
 
     public static FieldDetails create(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, String interfaceName, Element element) {

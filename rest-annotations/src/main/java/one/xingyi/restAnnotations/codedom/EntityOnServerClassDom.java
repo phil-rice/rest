@@ -35,8 +35,11 @@ public class EntityOnServerClassDom {
     public List<OpsInterfaceClassDom> nestedOps() {
         return ListUtils.map(fields.nestedOps(), opsName -> new OpsInterfaceClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
     }
-    public List<OpsCompanionClassDom> nestedOpCompanions() {
-        return ListUtils.map(fields.nestedOps(), opsName -> new OpsCompanionClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
+    public List<OpsServerCompanionClassDom> nestedOpServerCompanions() {
+        return ListUtils.map(fields.nestedOps(), opsName -> new OpsServerCompanionClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
+    }
+    public List<OpsClientCompanionClassDom> nestedOpClientCompanions() {
+        return ListUtils.map(fields.nestedOps(), opsName -> new OpsClientCompanionClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
     }
 
     public List<String> createClass() {

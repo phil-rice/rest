@@ -1,24 +1,21 @@
 package one.xingyi.restAnnotations.codedom;
 
-import one.xingyi.restAnnotations.clientside.IXingYiOps;
+import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.entity.Embedded;
-import one.xingyi.restAnnotations.entity.IOpsCompanion;
-import one.xingyi.restAnnotations.names.EntityNames;
+import one.xingyi.restAnnotations.entity.IOpsServerCompanion;
 import one.xingyi.restAnnotations.names.OpsNames;
-import one.xingyi.restAnnotations.optics.Lens;
+import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-public class OpsCompanionClassDom {
+public class OpsServerCompanionClassDom {
 
     public final PackageAndClassName companionName;
     private OpsNames opsNames;
     public final FieldList fields;
-    public OpsCompanionClassDom(OpsNames opsNames, FieldList fields) {
+    public OpsServerCompanionClassDom(OpsNames opsNames, FieldList fields) {
         this.companionName = opsNames.opsServerCompanion;
         this.opsNames = opsNames;
         this.fields = fields;
@@ -29,11 +26,15 @@ public class OpsCompanionClassDom {
         ArrayList<String> result = new ArrayList<>();
         result.add("package " + packageName + ";");
         result.addAll(fields.createImports());
-        result.add("import " + IOpsCompanion.class.getName() + ";");
+        result.add("import " + IOpsServerCompanion.class.getName() + ";");
         result.add("import " + Embedded.class.getName() + ";");
+        result.add("import " + List.class.getName() + ";");
+        result.add("import " + Arrays.class.getName() + ";");
+        result.add("import " + Companion.class.getName() + ";");
         result.add("import " + opsNames.entityNames.serverCompanion.asString() + ";");
-        result.add("public class " + companionName.className + " implements IOpsCompanion{");
+        result.add("public class " + companionName.className + " implements IOpsServerCompanion{");
         result.addAll(Formating.indent(createMainEntity()));
+        result.addAll(Formating.indent(createReturnTypes()));
         result.add("}");
         return result;
     }
@@ -42,7 +43,8 @@ public class OpsCompanionClassDom {
         return Arrays.asList("public " + opsNames.entityNames.serverCompanion.className + " entityCompanion(){return " + opsNames.entityNames.serverCompanion.className + ".companion; }");
     }
     List<String> createReturnTypes() {
-        return fields.flatMap(fd -> OptionalUtils.fold(fd.type.optEntityName, () -> Arrays.asList(), en -> Arrays.asList(en.clientCompanion.asString())));
+        List<String> returnTypes = fields.forInterfaceOnlyEntities(opsNames.opsInterface.className).map(fd -> fd.type.optEntityName.get().serverCompanion.asString() + ".companion");
+        return Arrays.asList("public List<Companion<?,?>> returnTypes(){return Arrays.asList(" + ListUtils.join(returnTypes, ",") + ");}");
 
     }
 }

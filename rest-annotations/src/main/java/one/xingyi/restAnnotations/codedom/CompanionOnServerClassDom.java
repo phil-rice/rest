@@ -50,6 +50,9 @@ public class CompanionOnServerClassDom {
     List<String> createSupported() {
         return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");
     }
+   List<String> createOpsCompanions() {
+        return Arrays.asList("public Set<IOpsServerCompanion> opsCompanions(){return Set.of(" + ListUtils.mapJoin(fields.nestedOps(), ",", s -> s + ".class") + ");} ");
+    }
 
 
     List<String> makeJavascript() {

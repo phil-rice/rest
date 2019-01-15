@@ -10,6 +10,7 @@ public class OpsNames {
     final INames names;
     public final PackageAndClassName opsInterface;
     public final PackageAndClassName opsServerCompanion;
+    public final PackageAndClassName opsClientCompanion;
     public final EntityNames entityNames;
 
 
@@ -18,5 +19,6 @@ public class OpsNames {
         this.opsInterface = opsInterface;
         this.entityNames = entityNames;
         this.opsServerCompanion = names.serverCompanionName(opsInterface);
+        this.opsClientCompanion = names.clientCompanionName(opsInterface);
     }
 }

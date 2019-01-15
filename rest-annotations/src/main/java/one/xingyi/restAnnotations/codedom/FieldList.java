@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.function.Function;
 public class FieldList {
 
+    private static LoggerAdapter log;
     final List<String> imports;
     final List<FieldDetails> fields;
     final List<FieldDetails> nonDeprecatedfields;
 
-    public static <T extends Element> FieldList create(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps,String interfaceName, List<T> elements) {
-        return new FieldList(log, ListUtils.map(elements, e -> FieldDetails.create(log, names, elementsAndOps,interfaceName, e)));
+    public static <T extends Element> FieldList create(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, String interfaceName, List<T> elements) {
+        FieldList.log = log;
+        return new FieldList(log, ListUtils.map(elements, e -> FieldDetails.create(log, names, elementsAndOps, interfaceName, e)));
     }
 
 
@@ -30,7 +32,11 @@ public class FieldList {
     List<String> nestedOps() { return ListUtils.unique(flatMap(tn -> tn.allInterfaces())); }
 
 
+    public FieldList forInterface(String interfaceName) { return filter(fd -> fd.isPresent(interfaceName));}
+    public FieldList forInterfaceOnlyEntities(String interfaceName) { return filter(fd -> fd.isPresent(interfaceName)&&!fd.type.primitive);}
+
     public <T> List<T> map(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(nonDeprecatedfields, fn); }
+    public <T> FieldList filter(Function<FieldDetails, Boolean> fn) { return new FieldList(log, ListUtils.filter(fields, fn)); }
     //    public <T> List<T> mapincDeprecated(Function<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }
     public <T> List<T> flatMap(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(nonDeprecatedfields, fn); }
     //    public <T> List<T> flatMapincDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }
