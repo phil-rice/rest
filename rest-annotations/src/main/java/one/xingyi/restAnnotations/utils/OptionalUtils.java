@@ -1,4 +1,5 @@
 package one.xingyi.restAnnotations.utils;
+import one.xingyi.restAnnotations.annotations.ElementAndOps;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 
 import javax.swing.text.html.Option;
@@ -48,5 +49,18 @@ public class OptionalUtils {
 
     public static <T> Optional<T> from(boolean b, Supplier<T> supplier) {
         return b ? Optional.of(supplier.get()) : Optional.empty();
+    }
+    public static <T> Optional<T> find(List<T> list, Function<T, Boolean> acceptor) {
+        for (T t : list)
+            if (acceptor.apply(t))
+                return Optional.of(t);
+        return Optional.empty();
+    }
+
+    public static <T, T1> T1 fold(Optional<T> opt, Supplier<T1> notIn, Function<T, T1> in) {
+        if (opt.isEmpty())
+            return notIn.get();
+        return
+                in.apply(opt.get());
     }
 }

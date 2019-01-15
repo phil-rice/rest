@@ -14,7 +14,7 @@ public class TypeDomTest {
     ElementsAndOps elementsAndOps = new ElementsAndOps(Arrays.asList());
     @Test
     public void testTypeDomWithSimpleClass() {
-        TypeDom dom = new TypeDom(mock(INames.class), className, elementsAndOps);
+        TypeDom dom =  TypeDom.create(mock(INames.class), className, "comment");
         assertEquals(className, dom.fullName);
         assertEquals(className, dom.fullNameOfEntity);
         assertEquals("E", dom.shortName);
@@ -25,7 +25,7 @@ public class TypeDomTest {
     @Test
     public void testTypeDomWithEmbeddedClass() {
         String full = Embedded.class.getName() + "<" + className + ">";
-        TypeDom dom = new TypeDom( mock(INames.class), full,elementsAndOps);
+        TypeDom dom =  TypeDom.create( mock(INames.class), full,"comment");
         assertEquals(full, dom.fullName);
         assertEquals(className, dom.fullNameOfEntity);
         assertEquals("Embedded<E>", dom.shortName);
@@ -35,7 +35,7 @@ public class TypeDomTest {
     @Test
     public void testTypeDomWithRealStrings() {
         String full = "()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>";
-        TypeDom dom = new TypeDom( mock(INames.class), full,elementsAndOps);
+        TypeDom dom = TypeDom.create( mock(INames.class), full,"comment");
         assertEquals("one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>", dom.fullName);
         assertEquals("one.xingyi.restExample.ITelephoneNumber", dom.fullNameOfEntity);
         assertEquals("Embedded<ITelephoneNumber>", dom.shortName);

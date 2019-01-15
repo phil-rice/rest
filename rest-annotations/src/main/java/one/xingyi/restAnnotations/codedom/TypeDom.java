@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.ElementsAndOps;
@@ -9,11 +10,12 @@ import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.List;
+@RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
 public class TypeDom {
     final String fullName; //includes embedded
-    final ElementsAndOps elementsAndOps;
+    final String comment;
     final String fullNameOfEntity;
     final String shortName;
     final String shortNameWithHasJson;
@@ -21,24 +23,23 @@ public class TypeDom {
     final boolean embedded;
 
 
-    public TypeDom( INames names, String fullName, ElementsAndOps elementsAndOps) {
-        this.fullName = Strings.removeOptionalFirst("()", fullName);
-        this.elementsAndOps = elementsAndOps;
-        if (this.fullName.startsWith(Embedded.class.getName())) {
-            this.fullNameOfEntity = Strings.extractFromOptionalEnvelope(Embedded.class.getName(), ">", this.fullName);
+    public static TypeDom create(INames names, String rawName, String comment) {
+        String fullName = Strings.removeOptionalFirst("()", rawName);
+        if (fullName.startsWith(Embedded.class.getName())) {
+            String fullNameOfEntity = Strings.extractFromOptionalEnvelope(Embedded.class.getName(), ">", fullName);
             String justEntity = Strings.lastSegement("\\.", fullNameOfEntity);
-            this.shortName = Embedded.class.getSimpleName() + "<" + justEntity + ">";
-            this.shortNameWithHasJson = EmbeddedWithHasJson.class.getSimpleName() + "<" + justEntity + ">";
-            this.clientImplName=names.clientImplName(justEntity);//This is the place where I need to focus...
-            this.embedded = true;
+            String shortName = Embedded.class.getSimpleName() + "<" + justEntity + ">";
+            String shortNameWithHasJson = EmbeddedWithHasJson.class.getSimpleName() + "<" + justEntity + ">";
+            String clientImplName = names.clientImplName(justEntity);//This is the place where I need to focus...
+            boolean embedded = true;
+            return new TypeDom(fullName, comment, fullNameOfEntity, shortName, shortNameWithHasJson, clientImplName, embedded);
         } else {
-            this.fullNameOfEntity = this.fullName;
-            this.shortName = Strings.lastSegement("\\.", this.fullName);
-            this.shortNameWithHasJson = shortName;
-            this.clientImplName = names.clientImplName(shortName);
-            this.embedded = false;
+            String fullNameOfEntity = fullName;
+            String shortName = Strings.lastSegement("\\.", fullName);
+            String shortNameWithHasJson = shortName;
+            String clientImplName = names.clientImplName(shortName);
+            boolean embedded = false;
+            return new TypeDom(fullName, comment, fullNameOfEntity, shortName, shortNameWithHasJson, clientImplName, embedded);
         }
-
     }
-
 }

@@ -67,7 +67,7 @@ public class FieldDetails {
 //        element.accept(new ElementVisitor<String, Void>() {});
         String rawType = Strings.removeOptionalFirst("()", element.asType().toString());
         String name = element.getSimpleName().toString();
-        TypeDom typeDom = new TypeDom(names,rawType, elementsAndOps);
+        TypeDom typeDom =  TypeDom.create(names,rawType, elementsAndOps.toString());
 
         List<String> allowed = elementsAndOps.allowedFor(typeDom.fullNameOfEntity, String.class);
         if (!allowed.contains(typeDom.fullNameOfEntity))
