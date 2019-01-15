@@ -19,6 +19,7 @@ import javax.tools.*;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
 
@@ -41,23 +42,29 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
 //        XingYiField.<Object, Integer>create(p -> p.hashCode(), (p, h) -> p);
         Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYi.class);
+        ElementsAndOps elementsAndOps = ElementsAndOps.create(elements);
+
         for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
                 EntityNames entityNames = new EntityNames(names, annotatedElement.asType().toString());
 
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
-                FieldList fields = FieldList.create(log, names, entityNames.entityInterface.className, annotatedElement.getEnclosedElements());
+
+//                log.info(elementsAndOps.toString());
+                FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, annotatedElement.getEnclosedElements());
                 List<String> errors = names.validateEntityName(entityNames.entityInterface);
                 if (errors.size() > 0) error(annotatedElement, errors.toString());
                 else {
                     XingYi annotation = annotatedElement.getAnnotation(XingYi.class);
                     BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
-
                     EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, entityNames, fields);
+                    for (OpsInterfaceClassDom dom : classDom.nested()) { //needs to be earlier as this makes classes other use
+                        makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+                    }
                     makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
-
                     EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, entityNames, fields);
                     makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
+
 
                     CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, entityNames, fields, bookmarkAndUrlPattern);
                     makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
@@ -65,9 +72,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names, entityNames, fields, bookmarkAndUrlPattern);
                     makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
 
-                    for (OpsInterfaceClassDom dom : classDom.nested()) {
-                        makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-                    }
                 }
             }
         }

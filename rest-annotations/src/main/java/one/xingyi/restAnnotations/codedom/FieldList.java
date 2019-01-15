@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.annotations.ElementsAndOps;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.functions.FunctionWithError;
 import one.xingyi.restAnnotations.names.INames;
@@ -15,8 +16,8 @@ public class FieldList {
     final List<FieldDetails> fields;
     final List<FieldDetails> nonDeprecatedfields;
 
-    public static <T extends Element> FieldList create(LoggerAdapter log, INames names, String interfaceName, List<T> elements) {
-        return new FieldList(log, ListUtils.map(elements, e -> FieldDetails.create(log, names, interfaceName, e)));
+    public static <T extends Element> FieldList create(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps,String interfaceName, List<T> elements) {
+        return new FieldList(log, ListUtils.map(elements, e -> FieldDetails.create(log, names, elementsAndOps,interfaceName, e)));
     }
 
 

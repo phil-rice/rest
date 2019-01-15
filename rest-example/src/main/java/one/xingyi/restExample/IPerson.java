@@ -10,7 +10,7 @@ import java.util.Map;
 @XingYi(urlPattern = "/person")
 public interface IPerson {
     @XingYiField(readInterfaces = Interfaces.personNameOps)
-    String name(); //
+     String name(); //
 
     @XingYiField(interfaces = Interfaces.personAddressOps)
     IAddress address();

@@ -1,6 +1,8 @@
 package one.xingyi.restAnnotations.codedom;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.annotations.ElementsAndOps;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.names.INames;
@@ -11,7 +13,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class TypeDom {
     final String fullName; //includes embedded
-    final List<InterfaceDom> interfaceDoms;
+    final ElementsAndOps elementsAndOps;
     final String fullNameOfEntity;
     final String shortName;
     final String shortNameWithHasJson;
@@ -19,9 +21,9 @@ public class TypeDom {
     final boolean embedded;
 
 
-    public TypeDom(INames names, String fullName, List<InterfaceDom> interfaceDoms) {
+    public TypeDom( INames names, String fullName, ElementsAndOps elementsAndOps) {
         this.fullName = Strings.removeOptionalFirst("()", fullName);
-        this.interfaceDoms = interfaceDoms;
+        this.elementsAndOps = elementsAndOps;
         if (this.fullName.startsWith(Embedded.class.getName())) {
             this.fullNameOfEntity = Strings.extractFromOptionalEnvelope(Embedded.class.getName(), ">", this.fullName);
             String justEntity = Strings.lastSegement("\\.", fullNameOfEntity);
@@ -36,6 +38,7 @@ public class TypeDom {
             this.clientImplName = names.clientImplName(shortName);
             this.embedded = false;
         }
+
     }
 
 }
