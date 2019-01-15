@@ -43,7 +43,7 @@ public class FieldList {
         return ListUtils.map(imports, i -> "import " + Strings.extractFromOptionalEnvelope(Embedded.class.getName(), ">", i) + ";");
     }
 //    public List<String> createFields() {
-//        return ListUtils.map(fields, nv -> nv.type + " " + nv.name + ";");
+//        return ListUtils.map(fields, nv -> nv.interfaceDoms + " " + nv.name + ";");
 //    }
 
     @Override public String toString() {

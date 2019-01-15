@@ -60,7 +60,7 @@ public class EntityOnServerClassDom {
     }
 
     public List<String> createFields() {
-        return fields.map(nv -> "final " + nv.type.shortNameWithHasJson + " " + nv.name + ";");
+        return fields.map(nv -> "final " + nv.type.shortNameWithHasJson + " " + nv.name + ";//" + nv.type.interfaceDoms);
     }
 
     public List<String> createLens() {

@@ -8,6 +8,10 @@ import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementVisitor;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +54,7 @@ public class FieldDetails {
     }
 
 //    public FieldDetails mapType(Function<String, String> fn) {
-//        return new FieldDetails(log, fn.apply(type), name, readInterfaces, writeInterfaces, readWriteInterfaces, lensName, javascript, deprecated);
+//        return new FieldDetails(log, fn.apply(interfaceDoms), name, readInterfaces, writeInterfaces, readWriteInterfaces, lensName, javascript, deprecated);
 //    }
 
     static String getLensName(String interfaceName, String name, String toClassName, Optional<String> lensName) {
@@ -58,11 +62,18 @@ public class FieldDetails {
     }
 
     public static FieldDetails create(LoggerAdapter log, INames names, String interfaceName, Element element) {
+//        element.accept(new ElementVisitor<String, Void>() {});
         String rawType = element.asType().toString();
-        TypeDom typeDom = new TypeDom(names, rawType);
+
+        TypeDom typeDom = new TypeDom(names, rawType, Arrays.asList());
         XingYiField xingYiField = element.getAnnotation(XingYiField.class);
         String name = element.getSimpleName().toString();
-//        log.info("Making field details. InterfaceName is [" + interfaceName + "] name is [" + name + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
+        ExecutableElement executableElement = (ExecutableElement) element;
+        if (executableElement.getParameters().size() > 0)
+            log.error(element, name + " should not have parameters ");
+
+
+        //        log.info("Making field details. InterfaceName is [" + interfaceName + "] name is [" + name + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
         if (xingYiField == null)
             return new FieldDetails(log, typeDom, name, Arrays.asList(), Arrays.asList(), Arrays.asList(), getLensName(interfaceName, name, typeDom.shortName, Optional.empty()), Optional.empty(), false, false);
         else

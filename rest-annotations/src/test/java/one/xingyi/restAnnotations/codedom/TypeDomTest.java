@@ -3,6 +3,8 @@ import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.names.INames;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 public class TypeDomTest {
@@ -10,7 +12,7 @@ public class TypeDomTest {
     String className = "a.b.c.E";
     @Test
     public void testTypeDomWithSimpleClass() {
-        TypeDom dom = new TypeDom(mock(INames.class), className);
+        TypeDom dom = new TypeDom(mock(INames.class), className, Arrays.asList());
         assertEquals(className, dom.fullName);
         assertEquals(className, dom.fullNameOfEntity);
         assertEquals("E", dom.shortName);
@@ -21,7 +23,7 @@ public class TypeDomTest {
     @Test
     public void testTypeDomWithEmbeddedClass() {
         String full = Embedded.class.getName() + "<" + className + ">";
-        TypeDom dom = new TypeDom(mock(INames.class), full);
+        TypeDom dom = new TypeDom(mock(INames.class), full, Arrays.asList());
         assertEquals(full, dom.fullName);
         assertEquals(className, dom.fullNameOfEntity);
         assertEquals("Embedded<E>", dom.shortName);
@@ -31,7 +33,7 @@ public class TypeDomTest {
     @Test
     public void testTypeDomWithRealStrings() {
         String full = "()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>";
-        TypeDom dom = new TypeDom(mock(INames.class), full);
+        TypeDom dom = new TypeDom(mock(INames.class), full, Arrays.asList());
         assertEquals("one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>", dom.fullName);
         assertEquals("one.xingyi.restExample.ITelephoneNumber", dom.fullNameOfEntity);
         assertEquals("Embedded<ITelephoneNumber>", dom.shortName);

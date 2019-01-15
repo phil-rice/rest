@@ -5,10 +5,13 @@ import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.Strings;
+
+import java.util.List;
 @ToString
 @EqualsAndHashCode
 public class TypeDom {
     final String fullName; //includes embedded
+    final List<InterfaceDom> interfaceDoms;
     final String fullNameOfEntity;
     final String shortName;
     final String shortNameWithHasJson;
@@ -16,14 +19,15 @@ public class TypeDom {
     final boolean embedded;
 
 
-    public TypeDom(INames names, String fullName) {
+    public TypeDom(INames names, String fullName, List<InterfaceDom> interfaceDoms) {
         this.fullName = Strings.removeOptionalFirst("()", fullName);
+        this.interfaceDoms = interfaceDoms;
         if (this.fullName.startsWith(Embedded.class.getName())) {
             this.fullNameOfEntity = Strings.extractFromOptionalEnvelope(Embedded.class.getName(), ">", this.fullName);
             String justEntity = Strings.lastSegement("\\.", fullNameOfEntity);
             this.shortName = Embedded.class.getSimpleName() + "<" + justEntity + ">";
             this.shortNameWithHasJson = EmbeddedWithHasJson.class.getSimpleName() + "<" + justEntity + ">";
-            this.clientImplName=names.clientImplName(justEntity);
+            this.clientImplName=names.clientImplName(justEntity);//This is the place where I need to focus...
             this.embedded = true;
         } else {
             this.fullNameOfEntity = this.fullName;

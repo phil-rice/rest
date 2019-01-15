@@ -49,7 +49,6 @@ public class XingYiCompositeInterfaceAnnotationProcessor extends AbstractProcess
 
                 LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
 
-
                 CompositeImplClassDom impl = new CompositeImplClassDom(log, interfaceNames);
                 makeClassFile(interfaceNames.multipleInterfacesClientImplName, ListUtils.join(impl.createClass(), "\n"), annotatedElement);
 
