@@ -76,7 +76,7 @@ public class CompositeCompanionClassCodeDom {
     }
     List<String> createFindCompanion() {
         return Arrays.asList(
-                "@Override public Function<Class<?>, Optional<IClientMaker>> findCompanion() {",
+                "@Override public Function<Class<?>, Optional<IClientCompanion>> findCompanion() {",
                 Formating.indent + "return clazz -> OptionalUtils.from(supported().contains(clazz), () -> this);",
                 "};");
 
