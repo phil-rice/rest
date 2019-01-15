@@ -13,6 +13,7 @@
         <module>rest-example</module>
         <module>rest-annotations</module>
         <module>sample-server</module>
+        <module>playing-around</module>
     </modules>
     <build>
         <plugins>

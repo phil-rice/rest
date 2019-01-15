@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.annotations;
 
+import lombok.RequiredArgsConstructor;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.codedom.*;
 import one.xingyi.restAnnotations.names.EntityNames;
@@ -17,7 +18,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.*;
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
@@ -39,71 +39,91 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
-//        XingYiField.<Object, Integer>create(p -> p.hashCode(), (p, h) -> p);
-        Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYi.class);
-        ElementsAndOps elementsAndOps = ElementsAndOps.create(elements);
-
-        for (Element annotatedElement : elements) {
-            if (annotatedElement.getKind() == ElementKind.INTERFACE) {
-                EntityNames entityNames = new EntityNames(names, annotatedElement.asType().toString());
-
-                LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
-
-//                log.info(elementsAndOps.toString());
-                FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, annotatedElement.getEnclosedElements());
-                List<String> errors = names.validateEntityName(entityNames.entityInterface);
-                if (errors.size() > 0) error(annotatedElement, errors.toString());
-                else {
-                    XingYi annotation = annotatedElement.getAnnotation(XingYi.class);
-                    BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
-                    EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, entityNames, fields);
-                    for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
-                        makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-                    }
-                    for (OpsServerCompanionClassDom dom : classDom.nestedOpServerCompanions()) { //needs to be earlier as this makes classes other use
-                        makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-                    }
-                    for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
-                        makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-                    }
-                    makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
-                    EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, entityNames, fields);
-                    makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
-
-
-                    CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, entityNames, fields, bookmarkAndUrlPattern);
-                    makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
-
-                    CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names, entityNames, fields, bookmarkAndUrlPattern);
-                    makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
-
-                }
-            }
-        }
+        new ProcessXingYiAnnotation(messager, filer, names, XingYi.class, env).process();
         return false;
     }
 
+    @RequiredArgsConstructor
+    static abstract class ProcessAnnotations {
+        final Class annotationClass;
+        final RoundEnvironment env;
+        final Messager messager;
+        final Filer filer;
+        abstract void doit(LoggerAdapter adapter, Element element, XingYi annotation);
 
-    private void makeClassFile(PackageAndClassName packageAndClassName, String classString, Element element) {
-        WrappedException.wrap(() -> {
-            JavaFileObject builderFile = filer.createSourceFile(packageAndClassName.asString());
+        public void process() {
+            Set<? extends Element> elements = env.getElementsAnnotatedWith(annotationClass);
+            for (Element element : elements) {
+                if (element.getKind() == ElementKind.INTERFACE) {
+                    LoggerAdapter log = LoggerAdapter.fromMessager(messager, element);
+                    XingYi annotation = element.getAnnotation(XingYi.class);
+                    doit(log, element, annotation);
+                }
+            }
+        }
+
+        void makeClassFile(PackageAndClassName packageAndClassName, String classString, Element element) {
+            WrappedException.wrap(() -> {
+                JavaFileObject builderFile = filer.createSourceFile(packageAndClassName.asString());
 //            messager.printMessage(Diagnostic.Kind.NOTE, "making  " + packageAndClassName + "->" + builderFile.toUri());
-            Files.setText(() -> new PrintWriter(builderFile.openWriter()), classString);
-        });
+                Files.setText(() -> new PrintWriter(builderFile.openWriter()), classString);
+            });
+        }
+
+        void error(Element e, String msg, Object... args) {
+            messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    String.format(msg, args),
+                    e);
+        }
+
     }
 
-    private void error(Element e, String msg, Object... args) {
-        messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(msg, args),
-                e);
+    static class ProcessXingYiAnnotation extends ProcessAnnotations {
+        private final INames names;
+        final ElementsAndOps elementsAndOps;
+
+        public ProcessXingYiAnnotation(Messager messager, Filer filer, INames names, Class annotationClass, RoundEnvironment env) {
+            super(annotationClass, env, messager, filer);
+            this.names = names;
+            Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYi.class);
+            this.elementsAndOps = ElementsAndOps.create(elements);
+        }
+
+        @Override void doit(LoggerAdapter log, Element annotatedElement, XingYi annotation) {
+            EntityNames entityNames = new EntityNames(names, annotatedElement.asType().toString());
+            FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, annotatedElement.getEnclosedElements());
+            List<String> errors = names.validateEntityName(entityNames.entityInterface);
+            if (errors.size() > 0) error(annotatedElement, errors.toString());
+            else {
+                BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
+                EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, entityNames, fields);
+                for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
+                    makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+                }
+                for (OpsServerCompanionClassDom dom : classDom.nestedOpServerCompanions()) { //needs to be earlier as this makes classes other use
+                    makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+                }
+                for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
+                    makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
+                }
+                makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
+                EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, entityNames, fields);
+                makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
+
+
+                CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(names, entityNames, fields, bookmarkAndUrlPattern);
+                makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
+
+                CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names, entityNames, fields, bookmarkAndUrlPattern);
+                makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
+            }
+        }
     }
+
+
     @Override public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
     }
-    @Override public Set<String> getSupportedAnnotationTypes() {
-        Set<String> set = new HashSet<>();
-        set.add(XingYi.class.getName());
-        return set;
-    }
+    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(XingYi.class.getName(), XingYiOps.class.getName()); }
 }
