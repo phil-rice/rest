@@ -2,10 +2,10 @@ package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.functions.FunctionWithError;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import java.util.List;
 import java.util.function.Function;

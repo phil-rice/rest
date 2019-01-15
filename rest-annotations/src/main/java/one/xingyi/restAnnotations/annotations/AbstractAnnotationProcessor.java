@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.annotations;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.codedom.*;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.WrappedException;
 

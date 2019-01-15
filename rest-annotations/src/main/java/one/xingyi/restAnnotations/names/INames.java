@@ -1,5 +1,6 @@
-package one.xingyi.restAnnotations.codedom;
+package one.xingyi.restAnnotations.names;
 
+import one.xingyi.restAnnotations.codedom.PackageAndClassName;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import javax.lang.model.element.Element;

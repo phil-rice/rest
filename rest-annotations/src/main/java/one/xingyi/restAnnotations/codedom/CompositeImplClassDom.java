@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.javascript.IXingYi;
+import one.xingyi.restAnnotations.names.INames;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,6 +4,7 @@ import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientMaker;
 import one.xingyi.restAnnotations.javascript.IXingYi;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 
 import java.util.*;

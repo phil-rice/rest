@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.entity.Embedded;
+import one.xingyi.restAnnotations.names.INames;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

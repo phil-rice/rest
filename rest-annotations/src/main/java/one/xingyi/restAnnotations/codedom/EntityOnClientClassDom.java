@@ -4,6 +4,8 @@ import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.javascript.XingYiDomain;
+import one.xingyi.restAnnotations.names.EntityNames;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
@@ -17,11 +19,11 @@ public class EntityOnClientClassDom {
     public INames names;
     public final PackageAndClassName packageAndClassName;
 
-    public EntityOnClientClassDom(LoggerAdapter log,INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
+    public EntityOnClientClassDom(LoggerAdapter log, INames names, EntityNames entityNames, FieldList fields) {
         this.log = log;
         this.names = names;
-        this.packageAndClassName = packageAndClassName;
-        this.interfaceName = interfaceName;
+        this.packageAndClassName = entityNames.clientImplementation;
+        this.interfaceName = entityNames.entityInterface;
         this.fields = fields;
     }
 

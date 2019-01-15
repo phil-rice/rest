@@ -5,6 +5,8 @@ import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
+import one.xingyi.restAnnotations.names.EntityNames;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.optics.Lens;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.Strings;
@@ -17,11 +19,11 @@ public class EntityOnServerClassDom {
     public INames names;
     public final PackageAndClassName packageAndClassName;
 
-    public EntityOnServerClassDom(LoggerAdapter log, INames names, PackageAndClassName packageAndClassName, PackageAndClassName interfaceName, FieldList fields) {
+    public EntityOnServerClassDom(LoggerAdapter log, INames names, EntityNames entityNames, FieldList fields) {
         this.log = log;
         this.names = names;
-        this.packageAndClassName = packageAndClassName;
-        this.interfaceName = interfaceName;
+        this.packageAndClassName = entityNames.serverImplementation;
+        this.interfaceName = entityNames.entityInterface;
         this.fields = fields;
 //        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
     }

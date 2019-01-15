@@ -3,6 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.XingYiField;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 

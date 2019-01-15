@@ -1,9 +1,9 @@
 package one.xingyi.restAnnotations.codedom;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.Strings;
 @ToString
 @EqualsAndHashCode
