@@ -15,25 +15,25 @@ public class GeneratedCodeTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("name", address, EmbeddedWithHasJson.<TelephoneNumber>value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.<TelephoneNumber>value(number));
     Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.value(number));
     ServiceRequest serviceRequest = new ServiceRequest("get", "http://somehost", Arrays.asList(), "");
     ContextForJson context = new ContextForJson(serviceRequest);
 
     @Test
     public void testCanDoThingsWithPerson() {
-        assertEquals("name", person.name());
+        assertEquals("serverName", person.name());
         assertEquals(personOtherName, person.withName("otherName"));
     }
 
     @Test
     public void testGeneratedJson_map() {
-        assertEquals("{name=name, address={line1=someLine1, line2=someLine2}, telephone={_embedded={number=someNumber}}}",
+        assertEquals("{name=serverName, address={line1=someLine1, line2=someLine2}, telephone={_embedded={number=someNumber}}}",
                 JsonTC.forMaps.toJson(person, context));
     }
     @Test
     public void testGeneratedJson_string() {
-        assertEquals("{'name':'name','address':{'line1':'someLine1','line2':'someLine2'},'telephone':{'_embedded':{'number':'someNumber'}}}",
+        assertEquals("{'name':'serverName','address':{'line1':'someLine1','line2':'someLine2'},'telephone':{'_embedded':{'number':'someNumber'}}}",
                 JsonTC.cheapJson.toJson(person, context).replace('"', '\''));
     }
 }

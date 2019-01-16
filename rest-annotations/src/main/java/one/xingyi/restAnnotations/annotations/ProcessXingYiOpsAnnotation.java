@@ -1,6 +1,6 @@
 package one.xingyi.restAnnotations.annotations;
 import one.xingyi.restAnnotations.LoggerAdapter;
-import one.xingyi.restAnnotations.clientside.IXingYiOps;
+import one.xingyi.restAnnotations.clientside.IXingYiServerOps;
 import one.xingyi.restAnnotations.codedom.*;
 import one.xingyi.restAnnotations.names.EntityNames;
 import one.xingyi.restAnnotations.names.INames;
@@ -11,12 +11,10 @@ import one.xingyi.restAnnotations.utils.Strings;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
     final ElementsAndOps elementsAndOps;
     final INames names;
@@ -35,7 +33,7 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
         if (errors.size() > 0) error(element, errors.toString());
         else {
             if (!entityNames.entityInterface.className.endsWith("Ops"))
-                log.error(element, "An ops name must end with 'Ops'");
+                log.error(element, "An ops serverName must end with 'Ops'");
             else {
                 findEntity(Optional.of(log), element).ifPresent(entityName -> {
                     OpsNames opsNames = new OpsNames(names, entityNames.entityInterface, new EntityNames(names, entityName));
@@ -43,6 +41,9 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
                     if (elementAndOps.isEmpty()) {
                         log.warning(element, "Cannot find entity " + entityName);
                     }
+
+                    OpsClientDom opsClientDom = new OpsClientDom(log, opsNames, fields);
+                    makeClassFile(opsClientDom.opsNames.opsClientInterface, ListUtils.join(opsClientDom.createClass(), "\n"), element);
 
                     OpsServerCompanionClassDom serverCompanionClassDom = new OpsServerCompanionClassDom(opsNames, fields);
                     makeClassFile(serverCompanionClassDom.companionName, ListUtils.join(serverCompanionClassDom.createClass(), "\n"), element);
@@ -68,15 +69,15 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
     public static Optional<String> findEntity(Optional<LoggerAdapter> log, TypeElement element) {
         List<TypeMirror> interfaces = (List<TypeMirror>) element.getInterfaces();
         if (interfaces.size() != 1) {
-            log.ifPresent(l -> l.error(element, "Expecting one and only one interface, and that to be of type IXingYiOps<T> where T is the entity defining interface"));
+            log.ifPresent(l -> l.error(element, "Expecting one and only one interface, and that to be of type IXingYiServerOps<T> where T is the entity defining interface"));
             return Optional.empty();
         }
         TypeMirror x = interfaces.get(0);
         String interfaceName = x.toString();
-        if (!interfaceName.startsWith(IXingYiOps.class.getName() + "<")) {
-            log.ifPresent(l -> l.error(element, "The one and only interface must be of type IXingYiOps<T>"));
+        if (!interfaceName.startsWith(IXingYiServerOps.class.getName() + "<")) {
+            log.ifPresent(l -> l.error(element, "The one and only interface must be of type IXingYiServerOps<T>"));
             return Optional.empty();
         }
-        return Optional.of(Strings.extractFromOptionalEnvelope(IXingYiOps.class.getName(), ">", interfaceName));
+        return Optional.of(Strings.extractFromOptionalEnvelope(IXingYiServerOps.class.getName(), ">", interfaceName));
     }
 }

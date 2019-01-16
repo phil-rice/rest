@@ -45,7 +45,7 @@ public class EntityClientDom {
         result.add("//If you get a 'does not override error then:");
         result.add("//   first rebuild every thing (for example 'mvn clean install'. Incremental compilation sometimes goes wrong)");
         result.add("//   second check that the main interface actually declares every field in the inherited 'ops' interfaces. The field should be obvious from the error message");
-        String interfaceString = interfaceName.asString() + (interfaceNames.isEmpty() ? "" : "," + ListUtils.mapJoin(interfaceNames, ",", i -> i.name));
+        String interfaceString = interfaceName.asString() + (interfaceNames.isEmpty() ? "" : "," + ListUtils.mapJoin(interfaceNames, ",", i -> i.clientInterface.asString()));
         result.add("public class " + clientImpl.className + " extends XingYiDomain implements " + interfaceString + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));

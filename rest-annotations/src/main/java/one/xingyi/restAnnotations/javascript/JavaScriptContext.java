@@ -2,7 +2,6 @@ package one.xingyi.restAnnotations.javascript;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.restAnnotations.clientside.IXingYiOps;
 
 import java.util.*;
 @RequiredArgsConstructor

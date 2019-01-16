@@ -11,11 +11,11 @@ import java.util.function.Function;
 public interface IClientFactory extends IClientMaker {
 
 
-    Set<Class<?>> supported();
+    Set<Class<? extends IXingYiClientOps<?>>>  supported();
 
-    Function<Class<?>, Optional<IClientCompanion>> findCompanion();
+    Function<Class<? extends IXingYiClientOps<?>>, Optional<IClientCompanion>> findCompanion();
 
-    default <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) { return findCompanion().apply(clazz).flatMap(c -> c.apply(clazz, xingYi, mirror)); }
+    default <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) { return findCompanion().apply(clazz).flatMap(c -> c.apply(clazz, xingYi, mirror)); }
 
     static IClientFactory compose(IClientFactory... factories) { return new ComposeClientFactory(Arrays.asList(factories)); }
 }
@@ -25,17 +25,17 @@ public interface IClientFactory extends IClientMaker {
 @EqualsAndHashCode
 class ComposeClientFactory implements IClientFactory {
     final List<IClientFactory> factories;
-    private final List<Function<Class<?>, Optional<IClientCompanion>>> findCompanions;
+    private final List<Function<Class<? extends IXingYiClientOps<?>>, Optional<IClientCompanion>>> findCompanions;
     public ComposeClientFactory(List<IClientFactory> factories) {
         this.factories = factories;
         this.findCompanions = ListUtils.map(factories, IClientFactory::findCompanion);
     }
-    @Override public Set<Class<?>> supported() {
-        return ListUtils.aggLeft(new HashSet<Class<?>>(), factories, (acc, f) -> acc.addAll(f.supported()));
+    @Override public Set<Class<? extends IXingYiClientOps<?>>>  supported() {
+        return ListUtils.aggLeft(new HashSet<Class<? extends IXingYiClientOps<?>>>(), factories, (acc, f) -> acc.addAll(f.supported()));
     }
-    @Override public Function<Class<?>, Optional<IClientCompanion>> findCompanion() { return OptionalUtils.chainFn(findCompanions); }
+    @Override public Function<Class<? extends IXingYiClientOps<?>>, Optional<IClientCompanion>> findCompanion() { return OptionalUtils.chainFn(findCompanions); }
 
-    @Override public <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
+    @Override public <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
         return findCompanion().apply(clazz).flatMap(c -> c.apply(clazz, xingYi, mirror)).
                 or(() -> OptionalUtils.allReturnSameTo(findCompanions).apply(clazz).flatMap(c -> c.apply(clazz, xingYi, mirror)));
     }

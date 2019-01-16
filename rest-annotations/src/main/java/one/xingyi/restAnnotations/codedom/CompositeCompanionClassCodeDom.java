@@ -3,18 +3,18 @@ package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientMaker;
+import one.xingyi.restAnnotations.clientside.IXingYiClientOps;
 import one.xingyi.restAnnotations.entity.IOpsClientCompanion;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.names.MultipleInterfaceNames;
-import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 
 import java.util.*;
 import java.util.function.Function;
 public class CompositeCompanionClassCodeDom {
-    private final List<PackageAndClassName> parentInterfaceNames;
+    private final List<PackageAndClassName> parentClientInterfaceNames;
     private LoggerAdapter log;
     private INames names;
     private PackageAndClassName multipleInterfaceName;
@@ -23,7 +23,7 @@ public class CompositeCompanionClassCodeDom {
     private final PackageAndClassName rootCompanionName;
 
 
-    public CompositeCompanionClassCodeDom(LoggerAdapter log, INames names, MultipleInterfaceNames interfaceNames, List<String> parentInterfaceNames) {
+    public CompositeCompanionClassCodeDom(LoggerAdapter log, INames names, MultipleInterfaceNames interfaceNames, List<String> parentClientInterfaceNames) {
         this.log = log;
         this.names = names;
 
@@ -32,7 +32,7 @@ public class CompositeCompanionClassCodeDom {
         this.multipleCompanionName = interfaceNames.multipleInterfacesClientCompanion;
         this.rootCompanionName = interfaceNames.entityNames.clientCompanion;
 //        this.rootImplName = interfaceNames.entityNames.clientImplementation;
-        this.parentInterfaceNames = ListUtils.map(parentInterfaceNames, n -> new PackageAndClassName(n));
+        this.parentClientInterfaceNames = ListUtils.map(parentClientInterfaceNames, n -> new PackageAndClassName(n));
     }
 
 
@@ -50,6 +50,7 @@ public class CompositeCompanionClassCodeDom {
         result.add("import " + Arrays.class.getName() + ";");
         result.add("import " + ListUtils.class.getName() + ";");
         result.add("import " + IClientMaker.class.getName() + ";");
+        result.add("import " + IXingYiClientOps.class.getName() + ";");
         result.add("import " + IOpsClientCompanion.class.getName() + ";");
         result.add("public class " + multipleCompanionName.className + " implements IClientCompanion, IOpsClientCompanion{");
         result.add(Formating.indent + "final static public " + multipleCompanionName.className + " companion=new " + multipleCompanionName.className + "();");
@@ -72,11 +73,11 @@ public class CompositeCompanionClassCodeDom {
     }
 
     List<String> createSupported() {
-        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + multipleInterfaceName.asString() + ".class);} ");
+        return Arrays.asList("public Set<Class<? extends IXingYiClientOps<?>>> supported(){return Set.of(" + multipleInterfaceName.asString() + ".class);} ");
     }
     List<String> createFindCompanion() {
         return Arrays.asList(
-                "@Override public Function<Class<?>, Optional<IClientCompanion>> findCompanion() {",
+                "@Override public  Function<Class<? extends IXingYiClientOps<?>>, Optional<IClientCompanion>> findCompanion() {",
                 Formating.indent + "return clazz -> OptionalUtils.from(supported().contains(clazz), () -> this);",
                 "};");
 
@@ -84,7 +85,7 @@ public class CompositeCompanionClassCodeDom {
 
     List<String> createApply() {
         return Arrays.asList(
-                "@Override public <Interface> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {",
+                "@Override public <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {",
                 Formating.indent + "if (supported().contains(clazz))",
                 Formating.indent + Formating.indent + "return Optional.of((Interface)new " + multipleImplName.className + "(mirror, xingYi));",
                 Formating.indent + " return Optional.empty();",
@@ -93,13 +94,13 @@ public class CompositeCompanionClassCodeDom {
     }
 
     List<String> createChildCompanions() {
-        String children = ListUtils.mapJoin(parentInterfaceNames, ",", i -> names.clientCompanionName(i).asString() + ".companion");
+        String children = ListUtils.mapJoin(parentClientInterfaceNames, ",", i -> names.clientCompanionName(i).asString() + ".companion");
         return Arrays.asList("public List<IOpsClientCompanion> childCompanions(){",
                 Formating.indent + "return Arrays.asList(" + children + ");",
                 "}");
     }
     List<String> createLens() {
-        String children = ListUtils.mapJoin(parentInterfaceNames, ",", i -> names.clientCompanionName(i).asString() + ".companion.lensNames()");
+        String children = ListUtils.mapJoin(parentClientInterfaceNames, ",", i -> names.clientCompanionName(i).asString() + ".companion.lensNames()");
 
 //        String children = ListUtils.mapJoin(parentOps, ",", op -> op.opsClientCompanion.asString() + ".companion.lensNames()");
         return Arrays.asList("public List<String> lensNames() {",

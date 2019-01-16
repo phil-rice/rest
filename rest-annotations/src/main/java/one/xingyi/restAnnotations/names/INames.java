@@ -22,6 +22,8 @@ public interface INames {
     String clientCompanionName(String interfaceName);
     default PackageAndClassName clientCompanionName(PackageAndClassName interfaceName) {return interfaceName.mapName(this::clientCompanionName);}
 
+    PackageAndClassName opsClientName(PackageAndClassName opsServerName);
+
 
     static INames defaultNames = new DefaultNames();
     PackageAndClassName clientMultipleInterfacesName(PackageAndClassName entityName);
@@ -57,6 +59,9 @@ class DefaultNames implements INames {
         return interfaceName.substring(1) + "ClientImpl";
     }
     @Override public String clientCompanionName(String interfaceName) { return interfaceName.substring(1) + "ClientCompanion"; }
+    public PackageAndClassName opsClientName(PackageAndClassName opsServerName) {
+        return opsServerName.mapName(n -> n.substring(0, n.length() - 3));
+    }
     @Override public PackageAndClassName clientMultipleInterfacesName(PackageAndClassName entityName) {
         return entityName.mapName(e -> e.substring(1) + "MultipleInterfacesImpl");
     }

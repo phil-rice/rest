@@ -5,7 +5,6 @@ import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.IOpsClientCompanion;
 import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.utils.ListUtils;
-import one.xingyi.restAnnotations.utils.OptionalUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class OpsClientCompanionClassDom {
         return Arrays.asList("public " + opsNames.entityNames.clientCompanion.className + " entityCompanion(){return " + opsNames.entityNames.clientCompanion.className + ".companion; }");
     }
     List<String> createLensNames() {
-        List<String> lensnames = fields.forInterfaceOnlyEntities(opsNames.opsInterface.className).map(fd -> "lens_"+fd.lensName);
+        List<String> lensnames = fields.forInterfaceOnlyEntities(opsNames.opsServerInterface.className).map(fd -> "lens_"+fd.lensName);
         return Arrays.asList("public List<String> lensNames(){return Arrays.asList(" + ListUtils.mapJoin(lensnames, ",", Strings::quote) + ");}");
     }
 }

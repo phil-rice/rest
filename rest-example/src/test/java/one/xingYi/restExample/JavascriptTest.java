@@ -17,7 +17,7 @@ public class JavascriptTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.value(number));
     Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.value(number));
 
     ServiceRequest serviceRequest = new ServiceRequest("get", "http://somehost", Arrays.asList(), "");
@@ -32,7 +32,7 @@ public class JavascriptTest {
         String json = person.toJsonString(JsonTC.cheapJson, context);
         Object mirror = xingYi.parse(json);
         PersonClientImpl client = new PersonClientImpl(mirror, xingYi);
-        assertEquals("name", client.name());
+        assertEquals("serverName", client.name());
         assertEquals("someLine1", client.address().line1());
     }
 
@@ -46,7 +46,7 @@ public class JavascriptTest {
         String json = person.toJsonString(JsonTC.cheapJson,context);
         Object mirror = xingYi.parse(json);
         PersonClientImpl client = new PersonClientImpl(mirror, xingYi);
-        assertEquals("name", client.name());
+        assertEquals("serverName", client.name());
         assertEquals("someLine1", client.address().line1());
     }
 

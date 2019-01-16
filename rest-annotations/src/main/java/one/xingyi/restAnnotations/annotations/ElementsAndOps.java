@@ -2,8 +2,8 @@ package one.xingyi.restAnnotations.annotations;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.codedom.PackageAndClassName;
+import one.xingyi.restAnnotations.names.INames;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.MapUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
@@ -15,7 +15,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
@@ -24,14 +23,14 @@ public class ElementsAndOps {
 
     public Optional<ElementAndOps> find(String interfaceName) { return OptionalUtils.find(list, e -> e.main.asString().equalsIgnoreCase(interfaceName)); }
     public List<InterfaceData> findInterfaces(String interfaceName) { return OptionalUtils.fold(find(interfaceName), () -> Arrays.asList(), e -> e.interfaces);}
-    public List<String> findNonDeprecatedInterfaceNames(String interfaceName) { return ListUtils.collect(findInterfaces(interfaceName), e -> !e.deprecated, e -> e.name); }
+//    public List<String> findNonDeprecatedInterfaceNames(String interfaceName) { return ListUtils.collect(findInterfaces(interfaceName), e -> !e.deprecated, e -> e.opsNames.serverName); }
 
-    public static ElementsAndOps create(LoggerAdapter log, Set<? extends Element> xingYiElements, Set<? extends
+    public static ElementsAndOps create(INames names, Set<? extends Element> xingYiElements, Set<? extends
             Element> xingYiopsElements) {
         Map<String, List<InterfaceData>> map = new HashMap<>();
         for (Element element : xingYiopsElements) {
             TypeElement typeElement = (TypeElement) element;
-            ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), typeElement).ifPresent(entity -> MapUtils.add(map, entity, InterfaceData.create(typeElement)));
+            ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), typeElement).ifPresent(entity -> MapUtils.add(map, entity, InterfaceData.create(names,typeElement)));
         }
 //        log.info("in create " + map);
 
@@ -51,7 +50,7 @@ public class ElementsAndOps {
     public List<String> allowedFor(String interfaceName, Class... othersAsArray) {
         List<String> others = ListUtils.map(Arrays.asList(othersAsArray), Class::getName);
         return ListUtils.append(others,
-                OptionalUtils.fold(find(interfaceName), () -> Arrays.asList(), found -> ListUtils.map(found.interfaces, i -> i.name)),
+                OptionalUtils.fold(find(interfaceName), () -> Arrays.asList(), found -> ListUtils.map(found.interfaces, i -> i.serverInterface.asString())),
                 ListUtils.map(list, e -> e.main.asString()));
     }
 }

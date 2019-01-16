@@ -24,13 +24,12 @@ class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
         EntityNames entityNames = new EntityNames(names, element.asType().toString());
         FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, element.getEnclosedElements());
         if (fields.isEmpty()){
-            log.error(element,"There is no data in the object. You must have at least one field. Like 'String name()'");
+            log.error(element,"There is no data in the object. You must have at least one field. Like 'String serverName()'");
         }
         List<String> errors = names.validateEntityName(entityNames.entityInterface);
         if (errors.size() > 0) error(element, errors.toString());
         else {
             BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
-
 
             EntityServerDom serverDom = new EntityServerDom(log, names, entityNames, fields);
             makeClassFile(serverDom.packageAndClassName, ListUtils.join(serverDom.createClass(), "\n"), element);
@@ -45,6 +44,8 @@ class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
 
             ClientCompanionDom clientCompanionDom = new ClientCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
             makeClassFile(clientCompanionDom.companionName, ListUtils.join(clientCompanionDom.createClass(), "\n"), element);
+
+
         }
     }
 }

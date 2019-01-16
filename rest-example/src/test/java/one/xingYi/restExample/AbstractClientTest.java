@@ -29,7 +29,7 @@ abstract class AbstractClientTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.value(number));
     IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
     IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 
@@ -54,41 +54,43 @@ abstract class AbstractClientTest {
 
     @Test
     public void testGetUsingUrl() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/person/<id>", client.primitiveGet(IEntityUrlPatternOps.class, urlPrefix + "/person", e -> e.url()).get());
-        assertEquals(expectedHost() + "/address/<id>", client.primitiveGet(IEntityUrlPatternOps.class, urlPrefix + "/address", e -> e.url()).get());
-        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonLine12Ops, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfacesOps.class, urlPrefix + "/person", e -> e.interfaces()).get());
+        assertEquals(expectedHost() + "/person/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/person", e -> e.url()).get());
+        assertEquals(expectedHost() + "/address/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/address", e -> e.url()).get());
+        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonLine12Ops, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]",
+                client.primitiveGet(IEntityInterfaces.class, urlPrefix + "/person", e -> e.interfaces()).get());
     }
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/entity/<id>", client.getUrlPattern(IEntityUrlPatternOps.class).get());
-        assertEquals(expectedHost() + "/person/<id>", client.getUrlPattern(IPersonNameOps.class).get());
-        assertEquals(expectedHost() + "/address/<id>", client.getUrlPattern(IAddressLine12Ops.class).get());
+        assertEquals(expectedHost() + "/entity/<id>", client.getUrlPattern(IEntityUrlPattern.class).get());
+        assertEquals(expectedHost() + "/person/<id>", client.getUrlPattern(IPersonName.class).get());
+        assertEquals(expectedHost() + "/address/<id>", client.getUrlPattern(IAddressLine12.class).get());
     }
 
     @Test
     public void testGetPerson() throws ExecutionException, InterruptedException {
-        assertEquals("name", client.get(IPersonNameOps.class, "id1", IPersonNameOps::name).get());
+        assertEquals("serverName", client.get(IPersonName.class, "id1", IPersonName::name).get());
     }
 
     @Test
     public void testGetAddress() throws ExecutionException, InterruptedException {
         assertEquals(Optional.of(address), addressStore.read("add1").get());
         assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'), IXingYiResponseSplitter.splitter.apply(getAddressEndpoint.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
-        assertEquals("someLine1", client.get(IAddressLine12Ops.class, "add1", IAddressLine12Ops::line1).get());
+
+        assertEquals("someLine1", client.get(IAddressLine12.class, "add1", (ops)->ops.line1()).get());
     }
 
     static final String name = EntityClientImpl.class.getName();
 
     @Test
     public void testWithMultipleInterfaces() throws ExecutionException, InterruptedException {
-        assertEquals("name/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
+        assertEquals("serverName/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
         //solution to this is to have a @XingYiMulti annotation and create instance which can delegate. Actually pretty straightforwards...
     }
     @Test
     public void testWithMultipleInterfaces2() throws ExecutionException, InterruptedException {
 //    Thread.sleep(100000);
-        assertEquals("name/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
+        assertEquals("serverName/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
         //solution to this is to have a @XingYiMulti annotation and create instance which can delegate. Actually pretty straightforwards...
     }
 }

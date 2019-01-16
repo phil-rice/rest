@@ -23,7 +23,7 @@ public class SampleServer {
     //These are the 'fake' backend values. Normally this would be a link to a database or another microservice
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("name", address, EmbeddedWithHasJson.value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.value(number));
     IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
     IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 

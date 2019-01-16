@@ -42,7 +42,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 //        log.info("Before create" + map);
 
 
-        ElementsAndOps elementsAndOps = ElementsAndOps.create(log, xingYiElements, xingYiopsElements);
+        ElementsAndOps elementsAndOps = ElementsAndOps.create(names, xingYiElements, xingYiopsElements);
         messager.printMessage(Diagnostic.Kind.NOTE, "ElementsAndOps " + elementsAndOps);
         new ProcessXingYiAnnotation(names, elementsAndOps, messager, filer, env).process();
         new ProcessXingYiOpsAnnotation(names, elementsAndOps, messager, filer, env).process();

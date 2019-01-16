@@ -77,7 +77,7 @@ public class FieldDetails {
             log.error(element, name + " should not have parameters ");
 
 
-        //        log.info("ng field details. InterfaceName is [" + interfaceName + "] name is [" + name + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
+        //        log.info("ng field details. InterfaceName is [" + interfaceName + "] serverName is [" + serverName + "] rawType is" + "[" + rawType + "] typeDom is " + typeDom);
         if (xingYiField == null)
             return new FieldDetails(log, typeDom, name, false, getLensName(interfaceName, name, typeDom.shortName, Optional.empty()), Optional.empty(), false, false);
         else

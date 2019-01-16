@@ -1,7 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
-import one.xingyi.restAnnotations.annotations.ElementAndOps;
 import one.xingyi.restAnnotations.annotations.ElementsAndOps;
 import one.xingyi.restAnnotations.annotations.InterfaceData;
 import one.xingyi.restAnnotations.entity.Companion;
@@ -57,10 +56,10 @@ public class ServerCompanionDom {
     }
     List<String> createSupported() {
 //        log.info("IN server/create supported for " + companionName + " interfaces" + interfaces);
-        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.name + ".class") + ");} ");
+        return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.serverInterface.asString() + ".class") + ");} ");
     }
     List<String> createOpsCompanions() {
-        return Arrays.asList("public Set<IOpsServerCompanion> opsCompanions(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.name + ".class") + ");} ");
+        return Arrays.asList("public Set<IOpsServerCompanion> opsCompanions(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.serverInterface.asString() + ".class") + ");} ");
     }
 
 

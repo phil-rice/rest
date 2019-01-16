@@ -5,7 +5,6 @@ import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.IOpsServerCompanion;
 import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.utils.ListUtils;
-import one.xingyi.restAnnotations.utils.OptionalUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public class OpsServerCompanionClassDom {
         return Arrays.asList("public " + opsNames.entityNames.serverCompanion.className + " entityCompanion(){return " + opsNames.entityNames.serverCompanion.className + ".companion; }");
     }
     List<String> createReturnTypes() {
-        List<String> returnTypes = fields.forInterfaceOnlyEntities(opsNames.opsInterface.className).map(fd -> fd.type.optEntityName.get().serverCompanion.asString() + ".companion");
+        List<String> returnTypes = fields.forInterfaceOnlyEntities(opsNames.opsServerInterface.className).map(fd -> fd.type.optEntityName.get().serverCompanion.asString() + ".companion");
         return Arrays.asList("public List<Companion<?,?>> returnTypes(){return Arrays.asList(" + ListUtils.join(returnTypes, ",") + ");}");
 
     }

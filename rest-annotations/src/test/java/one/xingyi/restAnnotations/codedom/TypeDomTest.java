@@ -21,7 +21,7 @@ public class TypeDomTest {
         assertEquals(false, dom.embedded);
     }
 
-    //Information:(11, 8) java: Making field details. InterfaceName is [IPerson] name is [telephone[ rawType is[()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>] typeDom is TypeDom(fullInterfaceName=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, fullNameOfEntity=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, shortNameOfInterface=ITelephoneNumber>, embedded=false)
+    //Information:(11, 8) java: Making field details. InterfaceName is [IPerson] serverName is [telephone[ rawType is[()one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>] typeDom is TypeDom(fullInterfaceName=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, fullNameOfEntity=one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>, shortNameOfInterface=ITelephoneNumber>, embedded=false)
     @Test
     public void testTypeDomWithEmbeddedClass() {
         String full = Embedded.class.getName() + "<" + className + ">";

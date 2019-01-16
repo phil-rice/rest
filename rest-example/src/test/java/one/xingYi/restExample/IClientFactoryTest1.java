@@ -1,26 +1,24 @@
 package one.xingYi.restExample;
 import one.xingyi.restAnnotations.annotations.XingYi;
-import one.xingyi.restAnnotations.annotations.XingYiCompositeInterface;
-import one.xingyi.restAnnotations.annotations.XingYiField;
 import one.xingyi.restAnnotations.annotations.XingYiOps;
-import one.xingyi.restAnnotations.clientside.IXingYiOps;
+import one.xingyi.restAnnotations.clientside.IXingYiServerOps;
 @XingYi
 public interface IClientFactoryTest1 {
     String name1();
     String name2();
 }
 @XingYiOps
-interface ITest11Ops extends IXingYiOps<IClientFactoryTest1> {
+interface ITest11Ops extends IXingYiServerOps<IClientFactoryTest1> {
     String name1();
 
 }
 @XingYiOps
-interface ITest12Ops extends IXingYiOps<IClientFactoryTest1> {
+interface ITest12Ops extends IXingYiServerOps<IClientFactoryTest1> {
     String name2();
 
 }
 @XingYiOps
-interface ITest22Ops extends IXingYiOps<IClientFactoryTest2> {
+interface ITest22Ops extends IXingYiServerOps<IClientFactoryTest2> {
     String name2();
 
 }

@@ -58,7 +58,7 @@ public class LensDom {
                 ", fromClassName='" + fromClassName + '\'' +
                 ", toClassName='" + toClassName + '\'' +
                 ", Name='" + Name + '\'' +
-                ", name='" + name + '\'' +
+                ", serverName='" + name + '\'' +
                 ", fieldDetails=" + fieldDetails +
                 '}';
     }
