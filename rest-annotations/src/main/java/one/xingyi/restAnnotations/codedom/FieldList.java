@@ -16,6 +16,7 @@ public class FieldList {
     final List<String> imports;
     final List<FieldDetails> fields;
     final List<FieldDetails> nonDeprecatedfields;
+     final List<FieldDetails> writableFields;
 
     public boolean isEmpty() {return fields.isEmpty();}
 
@@ -29,6 +30,7 @@ public class FieldList {
         this.fields = fields;
         this.imports = ListUtils.unique(ListUtils.map(fields, tn -> tn.type.fullNameOfEntity));
         this.nonDeprecatedfields = ListUtils.filter(fields, fd -> !fd.deprecated);
+        this.writableFields = ListUtils.filter(fields, fd -> !fd.readOnly);
     }
 
 
@@ -36,6 +38,7 @@ public class FieldList {
 
     public <T> List<T> map(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(nonDeprecatedfields, fn); }
     public <T> List<T> mapWithDeprecated(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }
+    public <T> List<T> mapWithWritable(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(writableFields, fn); }
     public <T> FieldList filter(Function<FieldDetails, Boolean> fn) { return new FieldList(log, ListUtils.filter(fields, fn)); }
     public <T> List<T> flatMap(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(nonDeprecatedfields, fn); }
     public <T> List<T> flatMapWithDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }

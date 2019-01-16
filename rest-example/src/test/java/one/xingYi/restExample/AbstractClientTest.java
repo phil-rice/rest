@@ -1,23 +1,18 @@
 package one.xingYi.restExample;
 import one.xingyi.restAnnotations.access.IEntityStore;
 import one.xingyi.restAnnotations.clientside.IXingYiResponseSplitter;
-import one.xingyi.restAnnotations.clientside.JavaHttpClient;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.marshelling.JsonObject;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
-import one.xingyi.restAnnotations.server.EndpointHandler;
-import one.xingyi.restAnnotations.server.SimpleServer;
 import one.xingyi.restExample.*;
 import one.xingyi.restcore.access.GetEntityEndpoint;
 import one.xingyi.restcore.entity.EntityDetailsEndpoint;
 import one.xingyi.restcore.entity.EntityRegister;
 import one.xingyi.restcore.xingYiServer.*;
 import one.xingyi.restcore.xingyiclient.XingYiClient;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -25,8 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
@@ -61,14 +54,14 @@ abstract class AbstractClientTest {
 
     @Test
     public void testGetUsingUrl() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/person/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/person", e -> e.url()).get());
-        assertEquals(expectedHost() + "/address/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/address", e -> e.url()).get());
-        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonLine12Ops, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, urlPrefix + "/person", e -> e.interfaces()).get());
+        assertEquals(expectedHost() + "/person/<id>", client.primitiveGet(IEntityUrlPatternOps.class, urlPrefix + "/person", e -> e.url()).get());
+        assertEquals(expectedHost() + "/address/<id>", client.primitiveGet(IEntityUrlPatternOps.class, urlPrefix + "/address", e -> e.url()).get());
+        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonLine12Ops, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfacesOps.class, urlPrefix + "/person", e -> e.interfaces()).get());
     }
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/entity/<id>", client.getUrlPattern(IEntityUrlPattern.class).get());
+        assertEquals(expectedHost() + "/entity/<id>", client.getUrlPattern(IEntityUrlPatternOps.class).get());
         assertEquals(expectedHost() + "/person/<id>", client.getUrlPattern(IPersonNameOps.class).get());
         assertEquals(expectedHost() + "/address/<id>", client.getUrlPattern(IAddressLine12Ops.class).get());
     }

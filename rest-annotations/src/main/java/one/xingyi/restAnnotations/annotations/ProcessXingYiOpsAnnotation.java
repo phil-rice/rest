@@ -34,18 +34,21 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
         List<String> errors = names.validateEntityName(entityNames.entityInterface);
         if (errors.size() > 0) error(element, errors.toString());
         else {
-            findEntity(Optional.of(log), element).ifPresent(entityName -> {
-                OpsNames opsNames = new OpsNames(names, entityNames.entityInterface, new EntityNames(names, entityName));
-                Optional<ElementAndOps> elementAndOps = elementsAndOps.find(entityName);
-                if (elementAndOps.isEmpty()) {
-                    log.warning(element, "Cannot find entity " + entityName );
-                }
+            if (!entityNames.entityInterface.className.endsWith("Ops"))
+                log.error(element, "An ops name must end with 'Ops'");
+            else {
+                findEntity(Optional.of(log), element).ifPresent(entityName -> {
+                    OpsNames opsNames = new OpsNames(names, entityNames.entityInterface, new EntityNames(names, entityName));
+                    Optional<ElementAndOps> elementAndOps = elementsAndOps.find(entityName);
+                    if (elementAndOps.isEmpty()) {
+                        log.warning(element, "Cannot find entity " + entityName);
+                    }
 
-                OpsServerCompanionClassDom serverCompanionClassDom = new OpsServerCompanionClassDom(opsNames, fields);
-                makeClassFile(serverCompanionClassDom.companionName, ListUtils.join(serverCompanionClassDom.createClass(), "\n"), element);
+                    OpsServerCompanionClassDom serverCompanionClassDom = new OpsServerCompanionClassDom(opsNames, fields);
+                    makeClassFile(serverCompanionClassDom.companionName, ListUtils.join(serverCompanionClassDom.createClass(), "\n"), element);
 
-                OpsClientCompanionClassDom clientCompanionClassDom = new OpsClientCompanionClassDom(opsNames, fields);
-                makeClassFile(clientCompanionClassDom.companionName, ListUtils.join(clientCompanionClassDom.createClass(), "\n"), element);
+                    OpsClientCompanionClassDom clientCompanionClassDom = new OpsClientCompanionClassDom(opsNames, fields);
+                    makeClassFile(clientCompanionClassDom.companionName, ListUtils.join(clientCompanionClassDom.createClass(), "\n"), element);
 //                log.info("finished");
 //                makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), element);
 //            EntityServerDom classDom = new EntityServerDom(log, names, entityNames, fields);
@@ -58,7 +61,8 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
 //            for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
 //                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), element);
 //            }
-            });
+                });
+            }
         }
     }
     public static Optional<String> findEntity(Optional<LoggerAdapter> log, TypeElement element) {

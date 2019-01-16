@@ -1,7 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
+import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 public class LensDom {
@@ -42,28 +42,14 @@ public class LensDom {
     }
 
     public List<String> createForClassOnServer() {
-        return Arrays.asList("", lensString(), getString(), withString());
+        return ListUtils.append(Arrays.asList("", getString()), Strings.useIf(!fieldDetails.readOnly, lensString()), Strings.useIf(!fieldDetails.readOnly, withString()));
     }
-    public List<String> createForClassOnClient() {
-        return Arrays.asList("",
-                "public " + lensHeader() + "(){ return xingYi." + callCodeDom.xingyiGetCall( "Lens", this) + ";}",
-                getStringDeclaration() + "{ return " + fromClassName + Name + "Lens().get(this); }",
-                withStringHeader() + "{ return " + fromClassName + Name + "Lens().set(this, " + name + "); }");
-    }
-    public List<String> createForInterfacesOnServer(String interfaceName) {
-        List<String> result = new ArrayList<>();
-        boolean read = fieldDetails.shouldHaveRead(interfaceName);
-        boolean write = fieldDetails.shouldHaveWrite(interfaceName);
-        if (read)
-            result.add(getStringDeclaration() + ";//lens_" + fieldDetails.lensName);
-        if (write)
-            result.add(withStringHeader() + ";");
-//        if (read && write)
-//            result.add("static " + lensHeader() + "();");
-        if (result.size() > 0)
-            result.add(0, "");
-        return result;
-    }
+
+    String createLensOnClient() {return "public " + lensHeader() + "(){ return xingYi." + callCodeDom.xingyiGetCall("Lens", this) + ";}";}
+    String createReadOnClient() {return getStringDeclaration() + "{ return " + fromClassName + Name + "Lens().get(this); }";}
+    List<String> createWithOnClient() {return Strings.useIf(!fieldDetails.readOnly, withStringHeader() + "{ return " + fromClassName + Name + "Lens().set(this, " + name + "); }");}
+
+    public List<String> createForClassOnClient() { return ListUtils.append(Arrays.asList("", createLensOnClient(), createReadOnClient()), createWithOnClient()); }
 
     @Override public String toString() {
         return "LensDom{" +

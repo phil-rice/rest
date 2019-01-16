@@ -1,5 +1,8 @@
 package one.xingyi.restAnnotations.utils;
+import java.util.Arrays;
+import java.util.List;
 public class Strings {
+public static    List<String> useIf(boolean b, String string) { return b ? Arrays.asList(string) : Arrays.asList();}
 
     public static final String[] empty = new String[0];
     public static String quote(String s) { return "\"" + s + "\"";}

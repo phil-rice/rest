@@ -23,6 +23,6 @@ public class XingYiCallCodeDom {
         return "<" + lensDom.fromClassName + "," + lensDom.toClassName + ">object" + setOrGet + "(" + lensDom.fromClassName + "::new," + domainMakerForObject(targetClassname, lensDom) + ", \"lens_" + lensDom.fieldDetails.lensName + "\");}//"+ lensDom.fieldDetails;
     }
     String xingYiStringCall(String setOrGet, LensDom lensDom) {
-        return "<" + lensDom.fromClassName + ">string" + setOrGet + "(" + lensDom.fromClassName + "::new, \"lens_" + lensDom.fieldDetails.lensName + "\")";
+        return "<" + lensDom.fromClassName + ">string" + setOrGet + "(" + lensDom.fromClassName + "::new, \"lens_" + lensDom.fieldDetails.lensName + "\");}//"+ lensDom.fieldDetails;
     }
 }

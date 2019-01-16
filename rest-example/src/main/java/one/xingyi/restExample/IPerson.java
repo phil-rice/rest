@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @XingYi(urlPattern = "/person")
-public interface IPerson extends IPersonNameOps,IPersonLine12Ops,IPersonAddressOps {
-//    @XingYiField(readInterfaces = Interfaces.personNameOps)
-     String name(); //
+public interface IPerson extends IPersonNameOps, IPersonLine12Ops, IPersonAddressOps {
+    //    @XingYiField(readOnly = true)
+    String name(); //
 
-//    @XingYiField(interfaces = Interfaces.personAddressOps)
+    //    @XingYiField(interfaces = Interfaces.personAddressOps)
     IAddress address();
 
-//    @XingYiField(interfaces = Interfaces.personTelephoneOps)
+    //    @XingYiField(interfaces = Interfaces.personTelephoneOps)
     Embedded<ITelephoneNumber> telephone();
 
 

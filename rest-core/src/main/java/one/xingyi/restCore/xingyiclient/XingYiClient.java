@@ -7,7 +7,7 @@ import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.javascript.IXingYiFactory;
-import one.xingyi.restcore.xingYiServer.IEntityUrlPattern;
+import one.xingyi.restcore.xingYiServer.IEntityUrlPatternOps;
 
 import java.net.URLEncoder;
 import java.util.List;
@@ -55,7 +55,7 @@ class SimpleXingYiClient implements XingYiClient {
     }
     @Override public <Interface> CompletableFuture<String> getUrlPattern(Class<Interface> interfaceClass) {
         IClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
-        return primitiveGet(IEntityUrlPattern.class, hostAndPort + ((IClientCompanion) companion).bookmark(), IEntityUrlPattern::url);
+        return primitiveGet(IEntityUrlPatternOps.class, hostAndPort + ((IClientCompanion) companion).bookmark(), IEntityUrlPatternOps::url);
     }
 
     <Interface> Interface processResult(Class<Interface> interfaceClass, ServiceResponse serviceResponse) {

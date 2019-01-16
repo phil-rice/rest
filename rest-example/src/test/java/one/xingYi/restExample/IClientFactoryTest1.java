@@ -10,17 +10,17 @@ public interface IClientFactoryTest1 {
     String name2();
 }
 @XingYiOps
-interface ITest11 extends IXingYiOps<IClientFactoryTest1> {
+interface ITest11Ops extends IXingYiOps<IClientFactoryTest1> {
     String name1();
 
 }
 @XingYiOps
-interface ITest12 extends IXingYiOps<IClientFactoryTest1> {
+interface ITest12Ops extends IXingYiOps<IClientFactoryTest1> {
     String name2();
 
 }
 @XingYiOps
-interface ITest22 extends IXingYiOps<IClientFactoryTest2> {
+interface ITest22Ops extends IXingYiOps<IClientFactoryTest2> {
     String name2();
 
 }
@@ -32,7 +32,7 @@ interface IClientFactoryTest2 {
 
 //Cannot do this in this execution phase I think
 //
-// @XingYiCompositeInterface(ClientFactoryTest1ClientImpl.class)
-//interface IClientFactoryTest12 extends ITest11, ITest12 {
+// @XingYiCompositeInterface(ClientFactoryTest1ClientImplOps.class)
+//interface IClientFactoryTest12 extends ITest11Ops, ITest12Ops {
 //
 //}

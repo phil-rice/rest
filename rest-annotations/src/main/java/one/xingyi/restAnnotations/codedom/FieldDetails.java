@@ -69,7 +69,7 @@ public class FieldDetails {
 
         List<String> allowed = elementsAndOps.allowedFor(typeDom.fullNameOfEntity, String.class);
         if (!allowed.contains(typeDom.fullNameOfEntity))
-            log.warning(element, name + " cannot return a " + typeDom.fullNameOfEntity + " it can only return " + allowed + "\n" + elementsAndOps + "\n" + rawType);
+            log.warning(element, name + "When incrementally compiling this error message sometimes occurs erroneously\nCannot return a " + typeDom.fullNameOfEntity + " it can only return " + allowed + "\n" + elementsAndOps + "\n" + rawType);
 
         XingYiField xingYiField = element.getAnnotation(XingYiField.class);
         ExecutableElement executableElement = (ExecutableElement) element;
