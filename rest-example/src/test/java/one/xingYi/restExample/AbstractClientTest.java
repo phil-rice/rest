@@ -63,7 +63,7 @@ abstract class AbstractClientTest {
     public void testGetUsingUrl() throws ExecutionException, InterruptedException {
         assertEquals(expectedHost() + "/person/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/person", e -> e.url()).get());
         assertEquals(expectedHost() + "/address/<id>", client.primitiveGet(IEntityUrlPattern.class, urlPrefix + "/address", e -> e.url()).get());
-        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, urlPrefix + "/person", e -> e.interfaces()).get());
+        assertEquals("[one.xingyi.restExample.IPersonAddressOps, one.xingyi.restExample.IPersonLine12Ops, one.xingyi.restExample.IPersonNameOps, one.xingyi.restExample.IPersonTelephoneNumberOps]", client.primitiveGet(IEntityInterfaces.class, urlPrefix + "/person", e -> e.interfaces()).get());
     }
 
     @Test

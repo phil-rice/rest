@@ -29,14 +29,14 @@ public class ElementsAndOps {
         for (Element element : xingYiopsElements) {
             MapUtils.add(map, ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), (TypeElement) element), element.asType().toString());
         }
-        log.info("in create " + map);
+//        log.info("in create " + map);
 
         return new ElementsAndOps(xingYiElements.stream().filter(e -> ((Element) e).getKind() == ElementKind.INTERFACE).
                 map(main -> {
                     String key = ((Element) main).asType().toString();
-                    log.info("In create key is " + key);
+//                    log.info("In create key is " + key);
                     List<String> interfaces = map.getOrDefault(key, Arrays.asList());
-                    log.info("In create interfaces are " + interfaces);
+//                    log.info("In create interfaces are " + interfaces);
                     List<String> returnedTypes = ListUtils.unique(ListUtils.map(main.getEnclosedElements(), e -> Strings.removeOptionalFirst("()", e.asType().toString())));
                     return new ElementAndOps(new PackageAndClassName(main.asType().toString()), interfaces, returnedTypes);
                 }).
