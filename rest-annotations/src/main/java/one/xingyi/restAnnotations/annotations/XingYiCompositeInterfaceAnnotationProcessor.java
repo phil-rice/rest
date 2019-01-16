@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.annotations;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.clientside.IXingYiMultipleOps;
 import one.xingyi.restAnnotations.codedom.CompositeCompanionClassCodeDom;
 import one.xingyi.restAnnotations.codedom.CompositeImplClassDom;
 import one.xingyi.restAnnotations.names.EntityNames;
@@ -10,6 +11,7 @@ import one.xingyi.restAnnotations.names.MultipleInterfaceNames;
 import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.Strings;
 import one.xingyi.restAnnotations.utils.WrappedException;
 
 import javax.annotation.processing.*;
@@ -43,21 +45,31 @@ public class XingYiCompositeInterfaceAnnotationProcessor extends AbstractProcess
     @Override
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
 //        XingYiField.<Object, Integer>create(p -> p.hashCode(), (p, h) -> p);
+        LoggerAdapter log = LoggerAdapter.fromMessager(messager);
         Set<? extends Element> elements = env.getElementsAnnotatedWith(XingYiCompositeInterface.class);
         for (Element annotatedElement : elements) {
             if (annotatedElement.getKind() == ElementKind.INTERFACE) {
-                XingYiCompositeInterface annotation = annotatedElement.getAnnotation(XingYiCompositeInterface.class);
-                MultipleInterfaceNames interfaceNames = new MultipleInterfaceNames(names, annotatedElement.asType().toString(), annotation.value());
-
-                LoggerAdapter log = LoggerAdapter.fromMessager(messager, annotatedElement);
-
-                CompositeImplClassDom impl = new CompositeImplClassDom(log, interfaceNames);
-                makeClassFile(interfaceNames.multipleInterfacesClientImplName, ListUtils.join(impl.createClass(), "\n"), annotatedElement);
-
                 TypeElement typeElement = (TypeElement) annotatedElement;
                 List<String> interfaces = ListUtils.map(typeElement.getInterfaces(), e -> e.toString());
-                CompositeCompanionClassCodeDom companionDom = new CompositeCompanionClassCodeDom(log, names, interfaceNames, interfaces);
-                makeClassFile(interfaceNames.multipleInterfacesClientCompanion, ListUtils.join(companionDom.createClass(), "\n"), annotatedElement);
+                Optional<String> opt = ListUtils.find(interfaces, s -> s.startsWith(IXingYiMultipleOps.class.getName()));
+
+                if (opt.isEmpty())
+                    log.error(annotatedElement, "This interface must extend " + IXingYiMultipleOps.class.getSimpleName());
+//                XingYiCompositeInterface annotation = annotatedElement.getAnnotation(XingYiCompositeInterface.class);
+                opt.ifPresent(multipleInterfaceString -> {
+
+                    String nameOfEntity = Strings.extractFromOptionalEnvelope(IXingYiMultipleOps.class.getName(), ">", multipleInterfaceString);
+
+                    MultipleInterfaceNames interfaceNames = new MultipleInterfaceNames(names, annotatedElement.asType().toString(), nameOfEntity);
+
+
+                    CompositeImplClassDom impl = new CompositeImplClassDom(log, interfaceNames);
+                    makeClassFile(interfaceNames.multipleInterfacesClientImplName, ListUtils.join(impl.createClass(), "\n"), annotatedElement);
+
+                    List<String> cleanedInterfaces = ListUtils.filter(interfaces, i -> !i.startsWith(IXingYiMultipleOps.class.getName()));
+                    CompositeCompanionClassCodeDom companionDom = new CompositeCompanionClassCodeDom(log, names, interfaceNames, cleanedInterfaces);
+                    makeClassFile(interfaceNames.multipleInterfacesClientCompanion, ListUtils.join(companionDom.createClass(), "\n"), annotatedElement);
+                });
             }
         }
         return false;

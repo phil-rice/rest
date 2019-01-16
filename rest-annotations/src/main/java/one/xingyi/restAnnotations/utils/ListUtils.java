@@ -10,6 +10,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 public class ListUtils {
 
+
+    public static <T> Optional<T> find(List<T> list, Function<T, Boolean> fn) {
+        for (T t : list)
+            if (fn.apply(t)) return Optional.of(t);
+        return Optional.empty();
+    }
     public static <T, T1> List<T1> map(List<T> list, FunctionWithError<T, T1> fn) {
         try {
             List<T1> result = new ArrayList<>();
