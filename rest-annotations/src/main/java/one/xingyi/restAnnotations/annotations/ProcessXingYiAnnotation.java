@@ -20,28 +20,31 @@ class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
         this.elementsAndOps = elementsAndOps;
     }
 
-    @Override void doit(LoggerAdapter log, TypeElement annotatedElement, XingYi annotation) {
-        EntityNames entityNames = new EntityNames(names, annotatedElement.asType().toString());
-        FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, annotatedElement.getEnclosedElements());
+    @Override void doit(LoggerAdapter log, TypeElement element, XingYi annotation) {
+        EntityNames entityNames = new EntityNames(names, element.asType().toString());
+        FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, element.getEnclosedElements());
+        if (fields.isEmpty()){
+            log.error(element,"There is no data in the object. You must have at least one field. Like 'String name()'");
+        }
         List<String> errors = names.validateEntityName(entityNames.entityInterface);
-        if (errors.size() > 0) error(annotatedElement, errors.toString());
+        if (errors.size() > 0) error(element, errors.toString());
         else {
             BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
 
 
             EntityServerDom serverDom = new EntityServerDom(log, names, entityNames, fields);
-            makeClassFile(serverDom.packageAndClassName, ListUtils.join(serverDom.createClass(), "\n"), annotatedElement);
+            makeClassFile(serverDom.packageAndClassName, ListUtils.join(serverDom.createClass(), "\n"), element);
 
             List<InterfaceData> interfaceNames = elementsAndOps.findInterfaces(entityNames.entityInterface.asString());
             EntityClientDom clientDom = new EntityClientDom(log, names, entityNames, fields, interfaceNames);
-            makeClassFile(clientDom.clientImpl, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
+            makeClassFile(clientDom.clientImpl, ListUtils.join(clientDom.createClass(), "\n"), element);
 
 
             ServerCompanionDom serverCompanionDom = new ServerCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
-            makeClassFile(serverCompanionDom.companionName, ListUtils.join(serverCompanionDom.createClass(), "\n"), annotatedElement);
+            makeClassFile(serverCompanionDom.companionName, ListUtils.join(serverCompanionDom.createClass(), "\n"), element);
 
             ClientCompanionDom clientCompanionDom = new ClientCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
-            makeClassFile(clientCompanionDom.companionName, ListUtils.join(clientCompanionDom.createClass(), "\n"), annotatedElement);
+            makeClassFile(clientCompanionDom.companionName, ListUtils.join(clientCompanionDom.createClass(), "\n"), element);
         }
     }
 }

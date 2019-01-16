@@ -17,6 +17,8 @@ public class FieldList {
     final List<FieldDetails> fields;
     final List<FieldDetails> nonDeprecatedfields;
 
+    public boolean isEmpty() {return fields.isEmpty();}
+
     public static <T extends Element> FieldList create(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, String interfaceName, List<T> elements) {
         FieldList.log = log;
         return new FieldList(log, ListUtils.map(elements, e -> FieldDetails.create(log, names, elementsAndOps, interfaceName, e)));
@@ -30,8 +32,7 @@ public class FieldList {
     }
 
 
-
-    public FieldList forInterfaceOnlyEntities(String interfaceName) { return filter(fd -> fd.isPresent(interfaceName)&&!fd.type.primitive);}
+    public FieldList forInterfaceOnlyEntities(String interfaceName) { return filter(fd -> fd.isPresent(interfaceName) && !fd.type.primitive);}
 
     public <T> List<T> map(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(nonDeprecatedfields, fn); }
     public <T> List<T> mapWithDeprecated(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }

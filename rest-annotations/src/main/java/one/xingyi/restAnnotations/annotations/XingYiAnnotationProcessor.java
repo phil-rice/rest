@@ -37,7 +37,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
         Map<String, List<String>> map = new HashMap<>();
         for (Element element : xingYiopsElements) {
-            MapUtils.add(map, ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), (TypeElement) element), element.asType().toString());
+            ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), (TypeElement) element).ifPresent(entity -> MapUtils.add(map, entity, element.asType().toString()));
         }
 //        log.info("Before create" + map);
 

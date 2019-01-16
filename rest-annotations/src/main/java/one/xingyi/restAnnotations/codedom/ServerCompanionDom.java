@@ -56,7 +56,7 @@ public class ServerCompanionDom {
         return Arrays.asList("public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
     }
     List<String> createSupported() {
-        log.info("IN server/create supported for " + companionName + " interfaces" + interfaces);
+//        log.info("IN server/create supported for " + companionName + " interfaces" + interfaces);
         return Arrays.asList("public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.name + ".class") + ");} ");
     }
     List<String> createOpsCompanions() {

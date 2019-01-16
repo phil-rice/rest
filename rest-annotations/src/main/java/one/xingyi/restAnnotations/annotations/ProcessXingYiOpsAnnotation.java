@@ -29,21 +29,24 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
 
     @Override void doit(LoggerAdapter log, TypeElement element, XingYiOps annotation) {
         EntityNames entityNames = new EntityNames(names, element.asType().toString());
-        log.info("Entity names: " + entityNames);
+//        log.info("Entity names: " + entityNames);
         FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, element.getEnclosedElements());
         List<String> errors = names.validateEntityName(entityNames.entityInterface);
         if (errors.size() > 0) error(element, errors.toString());
         else {
-            String entityName = findEntity(Optional.of(log), element);
-            OpsNames opsNames = new OpsNames(names, entityNames.entityInterface, new EntityNames(names, entityName));
-            log.info("names are" + opsNames);
+            findEntity(Optional.of(log), element).ifPresent(entityName -> {
+                OpsNames opsNames = new OpsNames(names, entityNames.entityInterface, new EntityNames(names, entityName));
+                Optional<ElementAndOps> elementAndOps = elementsAndOps.find(entityName);
+                if (elementAndOps.isEmpty()) {
+                    log.warning(element, "Cannot find entity " + entityName );
+                }
 
-            OpsServerCompanionClassDom serverCompanionClassDom = new OpsServerCompanionClassDom(opsNames, fields);
-            makeClassFile(serverCompanionClassDom.companionName, ListUtils.join(serverCompanionClassDom.createClass(), "\n"), element);
+                OpsServerCompanionClassDom serverCompanionClassDom = new OpsServerCompanionClassDom(opsNames, fields);
+                makeClassFile(serverCompanionClassDom.companionName, ListUtils.join(serverCompanionClassDom.createClass(), "\n"), element);
 
-            OpsClientCompanionClassDom clientCompanionClassDom = new OpsClientCompanionClassDom(opsNames, fields);
-            makeClassFile(clientCompanionClassDom.companionName, ListUtils.join(clientCompanionClassDom.createClass(), "\n"), element);
-            log.info("finished");
+                OpsClientCompanionClassDom clientCompanionClassDom = new OpsClientCompanionClassDom(opsNames, fields);
+                makeClassFile(clientCompanionClassDom.companionName, ListUtils.join(clientCompanionClassDom.createClass(), "\n"), element);
+//                log.info("finished");
 //                makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), element);
 //            EntityServerDom classDom = new EntityServerDom(log, names, entityNames, fields);
 //            for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
@@ -55,16 +58,21 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
 //            for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
 //                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), element);
 //            }
+            });
         }
     }
-    public static String findEntity(Optional<LoggerAdapter> log, TypeElement element) {
+    public static Optional<String> findEntity(Optional<LoggerAdapter> log, TypeElement element) {
         List<TypeMirror> interfaces = (List<TypeMirror>) element.getInterfaces();
-        if (interfaces.size() != 1)
+        if (interfaces.size() != 1) {
             log.ifPresent(l -> l.error(element, "Expecting one and only one interface, and that to be of type IXingYiOps<T> where T is the entity defining interface"));
+            return Optional.empty();
+        }
         TypeMirror x = interfaces.get(0);
         String interfaceName = x.toString();
-        if (!interfaceName.startsWith(IXingYiOps.class.getName() + "<"))
+        if (!interfaceName.startsWith(IXingYiOps.class.getName() + "<")) {
             log.ifPresent(l -> l.error(element, "The one and only interface must be of type IXingYiOps<T>"));
-        return Strings.extractFromOptionalEnvelope(IXingYiOps.class.getName(), ">", interfaceName);
+            return Optional.empty();
+        }
+        return Optional.of(Strings.extractFromOptionalEnvelope(IXingYiOps.class.getName(), ">", interfaceName));
     }
 }

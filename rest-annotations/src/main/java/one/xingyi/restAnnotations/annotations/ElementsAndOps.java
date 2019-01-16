@@ -31,7 +31,7 @@ public class ElementsAndOps {
         Map<String, List<InterfaceData>> map = new HashMap<>();
         for (Element element : xingYiopsElements) {
             TypeElement typeElement = (TypeElement) element;
-            MapUtils.add(map, ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), typeElement), InterfaceData.create(typeElement));
+            ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), typeElement).ifPresent(entity -> MapUtils.add(map, entity, InterfaceData.create(typeElement)));
         }
 //        log.info("in create " + map);
 

@@ -32,6 +32,8 @@ public class OpsServerCompanionClassDom {
         result.add("import " + Arrays.class.getName() + ";");
         result.add("import " + Companion.class.getName() + ";");
         result.add("import " + opsNames.entityNames.serverCompanion.asString() + ";");
+        result.add("");
+        result.add("//if you get a compilation error with mispelt items check if there was an earlier 'cannot find entity' warning in one of the inherited ops interfaces" );
         result.add("public class " + companionName.className + " implements IOpsServerCompanion{");
         result.addAll(Formating.indent(createMainEntity()));
         result.addAll(Formating.indent(createReturnTypes()));
