@@ -18,7 +18,7 @@ import java.util.Optional;
 @EqualsAndHashCode
 public class TypeDom {
     final String fullName; //includes embedded
-    final String comment;
+//    final String comment;
     final String fullNameOfEntity;
     final String shortName;
     final String shortNameWithHasJson;
@@ -27,7 +27,7 @@ public class TypeDom {
     final boolean primitive;
 
 
-    public static TypeDom create(INames names, String rawName, String comment) {
+    public static TypeDom create(INames names, String rawName) {
         String fullName = Strings.removeOptionalFirst("()", rawName);
         if (fullName.startsWith(Embedded.class.getName())) {
             String fullNameOfEntity = Strings.extractFromOptionalEnvelope(Embedded.class.getName(), ">", fullName);
@@ -36,7 +36,7 @@ public class TypeDom {
             String shortNameWithHasJson = EmbeddedWithHasJson.class.getSimpleName() + "<" + justEntity + ">";
             EntityNames entityName = new EntityNames(names, fullNameOfEntity);//This is the place where I need to focus...
             boolean embedded = true;
-            return new TypeDom(fullName, comment, fullNameOfEntity, shortName, shortNameWithHasJson, Optional.of(entityName), embedded, false);
+            return new TypeDom(fullName,  fullNameOfEntity, shortName, shortNameWithHasJson, Optional.of(entityName), embedded, false);
         } else {
             String fullNameOfEntity = fullName;
             String shortName = Strings.lastSegement("\\.", fullName);
@@ -44,7 +44,7 @@ public class TypeDom {
             String clientImplName = names.clientImplName(shortName);
             boolean embedded = false;
             boolean primitive = shortName.equalsIgnoreCase("String");
-            return new TypeDom(fullName, comment, fullNameOfEntity, shortName, shortNameWithHasJson, OptionalUtils.from(!primitive, () -> new EntityNames(names, fullNameOfEntity)), embedded, primitive);
+            return new TypeDom(fullName,  fullNameOfEntity, shortName, shortNameWithHasJson, OptionalUtils.from(!primitive, () -> new EntityNames(names, fullNameOfEntity)), embedded, primitive);
         }
     }
 }

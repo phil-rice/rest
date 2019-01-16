@@ -13,10 +13,10 @@ public class ElementsAndOpsTest {
     //    final IAddress add
     ElementsAndOps ops = new ElementsAndOps(Arrays.asList(
             new ElementAndOps(new PackageAndClassName("one.xingyi.restExample.IPerson"),
-                    Arrays.asList("IPersonNameOps", "IPersonAddressOps", "IPersonTelephoneNumberOps"),
+                    Arrays.asList(new InterfaceData("IPersonNameOps", false), new InterfaceData("IPersonAddressOps", true), new InterfaceData("IPersonTelephoneNumberOps", false)),
                     Arrays.asList("java.lang.String, one.xingyi.restExample.IAddress, one.xingyi.restAnnotations.entity.Embedded<one.xingyi.restExample.ITelephoneNumber>")),
             new ElementAndOps(new PackageAndClassName("one.xingyi.restExample.IAddress"),
-                    Arrays.asList("IAddressLine12Ops", "IAddressLine12Ops"),
+                    Arrays.asList(new InterfaceData("IAddressLine12Ops", false), new InterfaceData("IAddressLine12Ops", false)),
                     Arrays.asList("java.lang.String")),
             new ElementAndOps(new PackageAndClassName("one.xingyi.restExample.ITelephoneNumber"), Arrays.asList(), Arrays.asList("java.lang.String"))));
 

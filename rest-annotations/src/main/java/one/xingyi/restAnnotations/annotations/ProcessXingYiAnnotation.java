@@ -8,10 +8,8 @@ import one.xingyi.restAnnotations.utils.ListUtils;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.util.List;
-import java.util.Set;
 class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
     final INames names;
     final ElementsAndOps elementsAndOps;
@@ -29,26 +27,21 @@ class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
         if (errors.size() > 0) error(annotatedElement, errors.toString());
         else {
             BookmarkAndUrlPattern bookmarkAndUrlPattern = new BookmarkAndUrlPattern(entityNames.serverImplementation.className, annotation.bookmarked(), annotation.urlPattern());
-            EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, entityNames, fields);
-//            for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
-//                makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-//            }
-//            for (OpsServerCompanionClassDom dom : classDom.nestedOpServerCompanions()) { //needs to be earlier as this makes classes other use
-//                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-//            }
-//            for (OpsClientCompanionClassDom dom : classDom.nestedOpClientCompanions()) { //needs to be earlier as this makes classes other use
-//                makeClassFile(dom.companionName, ListUtils.join(dom.createClass(), "\n"), annotatedElement);
-//            }
-            makeClassFile(classDom.packageAndClassName, ListUtils.join(classDom.createClass(), "\n"), annotatedElement);
-            EntityOnClientClassDom clientDom = new EntityOnClientClassDom(log, names, entityNames, fields);
-            makeClassFile(clientDom.packageAndClassName, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
 
 
-            CompanionOnServerClassDom companionOnServerClassDom = new CompanionOnServerClassDom(log, names, elementsAndOps,entityNames, fields, bookmarkAndUrlPattern);
-            makeClassFile(companionOnServerClassDom.companionName, ListUtils.join(companionOnServerClassDom.createClass(), "\n"), annotatedElement);
+            EntityServerDom serverDom = new EntityServerDom(log, names, entityNames, fields);
+            makeClassFile(serverDom.packageAndClassName, ListUtils.join(serverDom.createClass(), "\n"), annotatedElement);
 
-            CompanionOnClientClassDom companionOnClientClassDom = new CompanionOnClientClassDom(log, names,elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
-            makeClassFile(companionOnClientClassDom.companionName, ListUtils.join(companionOnClientClassDom.createClass(), "\n"), annotatedElement);
+            List<InterfaceData> interfaceNames = elementsAndOps.findInterfaces(entityNames.entityInterface.asString());
+            EntityClientDom clientDom = new EntityClientDom(log, names, entityNames, fields, interfaceNames);
+            makeClassFile(clientDom.clientImpl, ListUtils.join(clientDom.createClass(), "\n"), annotatedElement);
+
+
+            ServerCompanionDom serverCompanionDom = new ServerCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
+            makeClassFile(serverCompanionDom.companionName, ListUtils.join(serverCompanionDom.createClass(), "\n"), annotatedElement);
+
+            ClientCompanionDom clientCompanionDom = new ClientCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
+            makeClassFile(clientCompanionDom.companionName, ListUtils.join(clientCompanionDom.createClass(), "\n"), annotatedElement);
         }
     }
 }

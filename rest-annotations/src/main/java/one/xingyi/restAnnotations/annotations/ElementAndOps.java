@@ -9,7 +9,8 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 public class ElementAndOps {
-   public  final PackageAndClassName main;
-    public final List<String> interfaces;
+    public final PackageAndClassName main;
+    public final List<InterfaceData> interfaces;
     public final List<String> returnedTypes;
 }
+

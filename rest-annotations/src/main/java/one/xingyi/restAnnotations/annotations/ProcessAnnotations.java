@@ -39,7 +39,7 @@ abstract class ProcessAnnotations<T extends Annotation> {
     void makeClassFile(PackageAndClassName packageAndClassName, String classString, Element element) {
         WrappedException.wrap(() -> {
             JavaFileObject builderFile = filer.createSourceFile(packageAndClassName.asString());
-//            messager.printMessage(Diagnostic.Kind.NOTE, "making  " + packageAndClassName + "->" + builderFile.toUri());
+//            messager.printMessage(Diagnostic.Kind.NOTE, "making  " + clientImpl + "->" + builderFile.toUri());
             Files.setText(() -> new PrintWriter(builderFile.openWriter()), classString);
         });
     }

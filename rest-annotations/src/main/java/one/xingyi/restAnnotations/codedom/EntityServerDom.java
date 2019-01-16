@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.annotations.ElementsAndOps;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
@@ -13,7 +14,7 @@ import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.*;
-public class EntityOnServerClassDom {
+public class EntityServerDom {
     private LoggerAdapter log;
     private EntityNames entityNames;
     public final FieldList fields;
@@ -21,26 +22,16 @@ public class EntityOnServerClassDom {
     public INames names;
     public final PackageAndClassName packageAndClassName;
 
-    public EntityOnServerClassDom(LoggerAdapter log, INames names, EntityNames entityNames, FieldList fields) {
+    public EntityServerDom(LoggerAdapter log, INames names,  EntityNames entityNames, FieldList fields) {
         this.log = log;
         this.names = names;
         this.packageAndClassName = entityNames.serverImplementation;
         this.interfaceName = entityNames.entityInterface;
         this.entityNames = entityNames;
         this.fields = fields;
-//        log.info("The fields in 'enityOnServerDom' for " + packageAndClassName + "are " + fields);
     }
 
 
-    public List<OpsInterfaceClassDom> nestedOps() {
-        return ListUtils.map(fields.nestedOps(), opsName -> new OpsInterfaceClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
-    }
-    public List<OpsServerCompanionClassDom> nestedOpServerCompanions() {
-        return ListUtils.map(fields.nestedOps(), opsName -> new OpsServerCompanionClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
-    }
-    public List<OpsClientCompanionClassDom> nestedOpClientCompanions() {
-        return ListUtils.map(fields.nestedOps(), opsName -> new OpsClientCompanionClassDom(new OpsNames(names, packageAndClassName.withName(opsName), entityNames), fields));
-    }
 
     public List<String> createClass() {
         String packageName = packageAndClassName.packageName;

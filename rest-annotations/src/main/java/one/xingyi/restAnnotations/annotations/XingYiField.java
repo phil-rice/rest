@@ -10,10 +10,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS) // Make it class retention for incremental compilation
 public @interface XingYiField {
-    String[] readInterfaces() default {};
-    String[] writeInterfaces() default {};
-    String[] interfaces() default {};
     String lens() default "";
+    boolean readOnly() default false;
     String javascript() default "";
     boolean deprecated() default false;
     boolean templatedJson() default false;

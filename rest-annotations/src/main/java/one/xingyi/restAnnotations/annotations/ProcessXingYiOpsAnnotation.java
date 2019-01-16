@@ -45,7 +45,7 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
             makeClassFile(clientCompanionClassDom.companionName, ListUtils.join(clientCompanionClassDom.createClass(), "\n"), element);
             log.info("finished");
 //                makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), element);
-//            EntityOnServerClassDom classDom = new EntityOnServerClassDom(log, names, entityNames, fields);
+//            EntityServerDom classDom = new EntityServerDom(log, names, entityNames, fields);
 //            for (OpsInterfaceClassDom dom : classDom.nestedOps()) { //needs to be earlier as this makes classes other use
 //                makeClassFile(dom.opsName, ListUtils.join(dom.createClass(), "\n"), element);
 //            }

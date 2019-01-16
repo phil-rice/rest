@@ -29,17 +29,15 @@ public class FieldList {
         this.nonDeprecatedfields = ListUtils.filter(fields, fd -> !fd.deprecated);
     }
 
-    List<String> nestedOps() { return ListUtils.unique(flatMap(tn -> tn.allInterfaces())); }
 
 
-    public FieldList forInterface(String interfaceName) { return filter(fd -> fd.isPresent(interfaceName));}
     public FieldList forInterfaceOnlyEntities(String interfaceName) { return filter(fd -> fd.isPresent(interfaceName)&&!fd.type.primitive);}
 
     public <T> List<T> map(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(nonDeprecatedfields, fn); }
+    public <T> List<T> mapWithDeprecated(FunctionWithError<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }
     public <T> FieldList filter(Function<FieldDetails, Boolean> fn) { return new FieldList(log, ListUtils.filter(fields, fn)); }
-    //    public <T> List<T> mapincDeprecated(Function<FieldDetails, T> fn) { return ListUtils.map(fields, fn); }
     public <T> List<T> flatMap(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(nonDeprecatedfields, fn); }
-    //    public <T> List<T> flatMapincDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }
+    public <T> List<T> flatMapWithDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }
     public <T> String mapJoin(String separator, Function<FieldDetails, String> fn) { return ListUtils.<FieldDetails>mapJoin(nonDeprecatedfields, separator, fn); }
 
     public String createConstructorCall(String name) {
@@ -49,9 +47,6 @@ public class FieldList {
     public List<String> createImports() {
         return ListUtils.map(imports, i -> "import " + Strings.extractFromOptionalEnvelope(Embedded.class.getName(), ">", i) + ";");
     }
-//    public List<String> createFields() {
-//        return ListUtils.map(fields, nv -> nv.interfaceDoms + " " + nv.name + ";");
-//    }
 
     @Override public String toString() {
         return "FieldList{" +
