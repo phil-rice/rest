@@ -7,9 +7,12 @@ import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 
 import java.util.concurrent.CompletableFuture;
+
 public interface EmbeddedWithHasJson<T> extends Embedded, HasJson<ContextForJson> {
 
-    static <T extends HasJson> EmbeddedWithHasJson value(T t) {return new ActuallyEmbeddedWithJson(t);}
+    //TODO I don't like this typecasting, but it's currently only used in tests to create data
+    @SuppressWarnings("unchecked")
+    static <T> EmbeddedWithHasJson<T> valueForTest(T t) {return new ActuallyEmbeddedWithJson((HasJson<ContextForJson>) t);}
 }
 
 @ToString

@@ -1,5 +1,7 @@
 package one.xingyi.sampleServer;
 import one.xingyi.restAnnotations.access.IEntityStore;
+import one.xingyi.restAnnotations.endpoints.EndPoint;
+import one.xingyi.restAnnotations.endpoints.EndpointAcceptor0;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.marshelling.JsonObject;
@@ -8,12 +10,9 @@ import one.xingyi.restAnnotations.server.EndpointHandler;
 import one.xingyi.restAnnotations.server.HttpUtils;
 import one.xingyi.restAnnotations.server.SimpleServer;
 import one.xingyi.restExample.*;
-import one.xingyi.restAnnotations.endpoints.EndPoint;
-import one.xingyi.restAnnotations.endpoints.EndpointAcceptor0;
 import one.xingyi.restcore.access.GetEntityEndpoint;
 import one.xingyi.restcore.entity.EntityDetailsEndpoint;
 import one.xingyi.restcore.entity.EntityRegister;
-import one.xingyi.restcore.xingYiServer.Entity;
 import one.xingyi.restcore.xingYiServer.EntityServerCompanion;
 
 import java.util.Map;
@@ -23,7 +22,7 @@ public class SampleServer {
     //These are the 'fake' backend values. Normally this would be a link to a database or another microservice
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("serverName", address, EmbeddedWithHasJson.value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.valueForTest(number));
     IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
     IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 

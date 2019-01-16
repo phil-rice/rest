@@ -4,6 +4,7 @@ import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restExample.Address;
+import one.xingyi.restExample.ITelephoneNumber;
 import one.xingyi.restExample.Person;
 import one.xingyi.restExample.TelephoneNumber;
 import org.junit.Test;
@@ -15,8 +16,8 @@ public class GeneratedCodeTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("serverName", address, EmbeddedWithHasJson.<TelephoneNumber>value(number));
-    Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.<ITelephoneNumber>valueForTest(number));
+    Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.valueForTest(number));
     ServiceRequest serviceRequest = new ServiceRequest("get", "http://somehost", Arrays.asList(), "");
     ContextForJson context = new ContextForJson(serviceRequest);
 

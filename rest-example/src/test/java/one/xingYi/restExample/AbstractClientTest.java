@@ -2,6 +2,7 @@ package one.xingYi.restExample;
 import one.xingyi.restAnnotations.access.IEntityStore;
 import one.xingyi.restAnnotations.clientside.IXingYiResponseSplitter;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
+import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
@@ -29,7 +30,7 @@ abstract class AbstractClientTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("serverName", address, EmbeddedWithHasJson.value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.valueForTest(number));
     IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
     IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 

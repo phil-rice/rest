@@ -66,6 +66,7 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
             }
         }
     }
+    @SuppressWarnings("unchecked")
     public static Optional<String> findEntity(Optional<LoggerAdapter> log, TypeElement element) {
         List<TypeMirror> interfaces = (List<TypeMirror>) element.getInterfaces();
         if (interfaces.size() != 1) {

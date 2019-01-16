@@ -51,7 +51,13 @@ public class ListUtils {
             result.addAll(list);
         return result;
     }
-    public static <T> List<T> optionals(Optional<T>... optionals) {
+    public static <T> List<T> appendList(List<List<T>> lists) {
+        List<T> result = new ArrayList<>();
+        for (List<T> list : lists)
+            result.addAll(list);
+        return result;
+    }
+    public static <T> List<T> optionals(List<Optional<T>> optionals) {
         List<T> result = new ArrayList<>();
         for (Optional<T> list : optionals)
             list.ifPresent(result::add);

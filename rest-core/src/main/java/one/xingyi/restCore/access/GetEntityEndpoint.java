@@ -7,6 +7,7 @@ import one.xingyi.restAnnotations.endpoints.EndPoint;
 import one.xingyi.restAnnotations.endpoints.EndpointAcceptor1;
 import one.xingyi.restAnnotations.endpoints.EndpointRequest;
 import one.xingyi.restAnnotations.entity.Companion;
+import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restcore.entity.EntityDetailsRequest;
@@ -28,10 +29,10 @@ public interface GetEntityEndpoint {
         return EndpointAcceptor1.nameThenId("get", companion.entityName(), EntityDetailsRequest::new);
     }
 
-    static <J, E extends HasJson> EndPoint getEntityEndpoint(JsonTC<J> jsonTC, EntityRegister entityRegister, Companion<?, E> companion, Function<String, CompletableFuture<E>> fn) {
+    static <J, E extends HasJson<ContextForJson>> EndPoint getEntityEndpoint(JsonTC<J> jsonTC, EntityRegister entityRegister, Companion<?, E> companion, Function<String, CompletableFuture<E>> fn) {
         return EndPoint.javascriptAndJson(jsonTC, 200, acceptor(companion), ed -> fn.apply(ed.entityName), entityRegister.javascript());
     }
-    static <J, E extends HasJson> EndPoint getOptionalEndPoint(JsonTC<J> jsonTC, EntityRegister entityRegister, Companion<?, E> companion, Function<String, CompletableFuture<Optional<E>>> fn) {
+    static <J, E extends HasJson<ContextForJson>> EndPoint getOptionalEndPoint(JsonTC<J> jsonTC, EntityRegister entityRegister, Companion<?, E> companion, Function<String, CompletableFuture<Optional<E>>> fn) {
         return EndPoint.optionalJavascriptAndJson(jsonTC, 200, acceptor(companion), ed -> fn.apply(ed.entityName), entityRegister.javascript());
     }
 }

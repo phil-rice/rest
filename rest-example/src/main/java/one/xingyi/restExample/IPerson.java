@@ -9,7 +9,9 @@ import java.util.Map;
 
 @XingYi(urlPattern = "/person")
 public interface IPerson extends IPersonNameOps, IPersonLine12Ops, IPersonAddressOps {
-    //    @XingYiField(readOnly = true)
+
+
+   //    @XingYiField(readOnly = true)
     String name(); //
 
     //    @XingYiField(interfaces = Interfaces.personAddressOps)

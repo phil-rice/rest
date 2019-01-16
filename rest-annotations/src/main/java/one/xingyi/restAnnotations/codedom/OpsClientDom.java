@@ -35,7 +35,7 @@ public class OpsClientDom {
 //        result.add("//   first rebuild every thing (for example 'mvn clean install'. Incremental compilation sometimes goes wrong)");
 //        result.add("//   second check that the main interface actually declares every field in the inherited 'ops' interfaces. The field should be obvious from the error message");
 //        String interfaceString = interfaceName.asString() + (interfaceNames.isEmpty() ? "" : "," + ListUtils.mapJoin(interfaceNames, ",", i -> i.serverName));
-        result.add("public interface " + opsNames.opsClientInterface.className + " extends IXingYiClientOps<"+opsNames.entityNames.entityInterface.className + "> {");
+        result.add("public interface " + opsNames.opsClientInterface.className + " extends IXingYiClientOps<" + opsNames.entityNames.entityInterface.className + "> {");
         result.addAll(Formating.indent(createFields()));
 //        result.addAll(Formating.indent(createConstructor()));
 //        result.addAll(Formating.indent(createLens()));
@@ -43,7 +43,8 @@ public class OpsClientDom {
         return result;
     }
     List<String> createFields() {
-        return fields.mapWithDeprecated(fd -> fd.type.shortName + " " + fd.name + "();//" + fd.lensName);
+        return fields.flatMapWithDeprecated(fd -> new LensDom(fields, opsNames.opsClientInterface.className, fd.type.shortName, fd).createForClassOnClientInterface());
+
     }
 
 }

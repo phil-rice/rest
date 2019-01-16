@@ -17,8 +17,8 @@ public class JavascriptTest {
 
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
-    Person person = new Person("serverName", address, EmbeddedWithHasJson.value(number));
-    Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.value(number));
+    Person person = new Person("serverName", address, EmbeddedWithHasJson.valueForTest(number));
+    Person personOtherName = new Person("otherName", address, EmbeddedWithHasJson.valueForTest(number));
 
     ServiceRequest serviceRequest = new ServiceRequest("get", "http://somehost", Arrays.asList(), "");
     ContextForJson context = new ContextForJson(serviceRequest);

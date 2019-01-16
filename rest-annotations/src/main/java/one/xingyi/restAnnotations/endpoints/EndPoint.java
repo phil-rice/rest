@@ -37,13 +37,13 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     }
 
 
-    static <J, From extends EndpointRequest, To extends HasJson> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
+    static <J, From extends EndpointRequest, To extends HasJson<ContextForJson>> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn);
     }
-    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint javascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, String javascript) {
+    static <J, From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> EndPoint javascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, String javascript) {
         return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,   javascript);
     }
-    static <J, From extends EndpointRequest, Interface, To extends HasJson> EndPoint optionalJavascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, String javascript) {
+    static <J, From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> EndPoint optionalJavascriptAndJson(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, String javascript) {
         return new OptionalJavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn,  javascript);
     }
 
@@ -113,7 +113,7 @@ class ComposeEndPoints implements EndPoint {
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class JsonEndPoint<From extends EndpointRequest, To extends HasJson> implements EndPoint {
+class JsonEndPoint<From extends EndpointRequest, To extends HasJson<ContextForJson>> implements EndPoint {
 
     final JsonTC<? extends Object> jsonTc;
     final int status;
@@ -128,7 +128,7 @@ class JsonEndPoint<From extends EndpointRequest, To extends HasJson> implements 
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson> implements EndPoint {
+class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> implements EndPoint {
 
     final JsonTC<? extends Object> jsonTc;
     final int status;
@@ -146,7 +146,7 @@ class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To exte
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class OptionalJavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson> implements EndPoint {
+class OptionalJavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> implements EndPoint {
 
     final JsonTC<? extends Object> jsonTc;
     final int status;

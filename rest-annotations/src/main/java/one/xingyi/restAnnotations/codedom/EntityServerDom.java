@@ -60,17 +60,17 @@ public class EntityServerDom {
     }
 
     public List<String> createFields() {
-        return fields.map(nv -> "final " + nv.type.shortNameWithHasJson + " " + nv.name + ";//" + nv.type);
+        return fields.map(nv -> "final " + nv.type.shortNameWithHasEmbeddedJson + " " + nv.name + ";//" + nv.type);
     }
 
     public List<String> createLens() {
-        return fields.flatMap(fd -> new LensDom(fields, packageAndClassName.className, fd.type.shortNameWithHasJson, fd).createForClassOnServer());
+        return fields.flatMap(fd -> new LensDom(fields, packageAndClassName.className, fd.type.shortNameWithHasEmbeddedJson, fd).createForClassOnServer());
     }
 
 
     public List<String> createConstructor() {
         List<String> result = new ArrayList<>();
-        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type.shortNameWithHasJson + " " + nv.name) + "){");
+        result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type.shortNameWithHasEmbeddedJson + " " + nv.name) + "){");
         result.addAll(fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
         result.add("}");
         return result;

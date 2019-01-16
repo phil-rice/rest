@@ -30,7 +30,7 @@ public class ElementsAndOps {
         Map<String, List<InterfaceData>> map = new HashMap<>();
         for (Element element : xingYiopsElements) {
             TypeElement typeElement = (TypeElement) element;
-            ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), typeElement).ifPresent(entity -> MapUtils.add(map, entity, InterfaceData.create(names,typeElement)));
+            ProcessXingYiOpsAnnotation.findEntity(Optional.empty(), typeElement).ifPresent(entity -> MapUtils.add(map, entity, InterfaceData.create(names, typeElement)));
         }
 //        log.info("in create " + map);
 
@@ -49,9 +49,9 @@ public class ElementsAndOps {
     }
     public List<String> allowedFor(String interfaceName, Class... othersAsArray) {
         List<String> others = ListUtils.map(Arrays.asList(othersAsArray), Class::getName);
-        return ListUtils.append(others,
-                OptionalUtils.fold(find(interfaceName), () -> Arrays.asList(), found -> ListUtils.map(found.interfaces, i -> i.serverInterface.asString())),
-                ListUtils.map(list, e -> e.main.asString()));
+        return ListUtils.<String>appendList(List.of(others,
+                OptionalUtils.fold(find(interfaceName), () -> Arrays.<String>asList(), found -> ListUtils.map(found.interfaces, i -> i.serverInterface.asString())),
+                ListUtils.map(list, e -> e.main.asString())));
     }
 }
 

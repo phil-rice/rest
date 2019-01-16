@@ -42,14 +42,19 @@ public class LensDom {
     }
 
     public List<String> createForClassOnServer() {
-        return ListUtils.append(Arrays.asList("", getString()), Strings.useIf(!fieldDetails.readOnly, lensString()), Strings.useIf(!fieldDetails.readOnly, withString()));
+        return ListUtils.appendList(List.of(Arrays.asList("", getString()), Strings.useIf(!fieldDetails.readOnly, lensString()), Strings.useIf(!fieldDetails.readOnly, withString())));
     }
 
     String createLensOnClient() {return "public " + lensHeader() + "(){ return xingYi." + callCodeDom.xingyiGetCall("Lens", this) + ";}";}
     String createReadOnClient() {return getStringDeclaration() + "{ return " + fromClassName + Name + "Lens().get(this); }";}
     List<String> createWithOnClient() {return Strings.useIf(!fieldDetails.readOnly, withStringHeader() + "{ return " + fromClassName + Name + "Lens().set(this, " + name + "); }");}
 
-    public List<String> createForClassOnClient() { return ListUtils.append(Arrays.asList("", createLensOnClient(), createReadOnClient()), createWithOnClient()); }
+    public List<String> createForClassOnClient() { return ListUtils.appendList(List.of(Arrays.asList("", createLensOnClient(), createReadOnClient()), createWithOnClient())); }
+
+    String createReadOnClientInterface() {return getStringDeclaration() + ";";}
+    List<String> createWithOnClientInterface() {return Strings.useIf(!fieldDetails.readOnly, withStringHeader() + ";");}
+
+    public List<String> createForClassOnClientInterface() { return ListUtils.appendList(List.of(Arrays.asList("", createReadOnClientInterface()), createWithOnClientInterface())); }
 
     @Override public String toString() {
         return "LensDom{" +

@@ -75,6 +75,7 @@ public class ClientCompanionDom {
 
     List<String> createApply() {
         return Arrays.asList(
+                "@SuppressWarnings(\"unchecked\")",
                 "@Override public <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {",
                 Formating.indent + "if (supported().contains(clazz))",
                 Formating.indent + Formating.indent + "return Optional.of((Interface)new " + clientName.className + "(mirror, xingYi));",
