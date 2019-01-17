@@ -67,6 +67,7 @@ public class CompositeCompanionClassCodeDom {
         result.addAll(Formating.indent(createEntityCompanion()));
         result.addAll(Formating.indent(createChildCompanions()));
         result.addAll(Formating.indent(createLens()));
+        result.addAll(Formating.indent(OpsClientCompanionClassDom.createAccept()));
         result.add("}");
         return result;
     }

@@ -7,6 +7,7 @@ import one.xingyi.restAnnotations.entity.IOpsClientCompanion;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.names.OpsNames;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.SetUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class OpsClientCompanionClassDom {
         result.add("import " + IOpsClientCompanion.class.getName() + ";");
         result.add("import " + Embedded.class.getName() + ";");
         result.add("import " + List.class.getName() + ";");
+        result.add("import " + SetUtils.class.getName() + ";");
         result.add("import " + Set.class.getName() + ";");
         result.add("import " + Arrays.class.getName() + ";");
         result.add("import " + Companion.class.getName() + ";");
@@ -44,6 +46,7 @@ public class OpsClientCompanionClassDom {
 
         result.addAll(Formating.indent(createMainEntity()));
         result.addAll(Formating.indent(createLensNames()));
+        result.addAll(Formating.indent(createAccept()));
         result.addAll(Formating.indent(createMakeImplementation()));
 //        result.addAll(Formating.indent(createReturnTypes()));
         result.add("}");
@@ -54,8 +57,15 @@ public class OpsClientCompanionClassDom {
         return Arrays.asList("@XingYiGenerated", "public " + opsNames.entityNames.clientCompanion.className + " entityCompanion(){return " + opsNames.entityNames.clientCompanion.className + ".companion; }");
     }
     List<String> createLensNames() {
-        List<String> lensnames = fields.mapWithDeprecated(fd -> "lens_" + fd.lensName );
-        return Arrays.asList("@XingYiGenerated", "public Set<String> lensNames(){return Set.of(" + ListUtils.mapJoin(lensnames, ",", Strings::quote) + ");}//"+ fields);
+        List<String> lensnames = fields.mapWithDeprecated(fd -> "lens_" + fd.lensName);
+        return Arrays.asList("@XingYiGenerated", "public Set<String> lensNames(){return Set.of(" + ListUtils.mapJoin(lensnames, ",", Strings::quote) + ");}//" + fields);
+    }
+    static List<String> createAccept() {
+        return Arrays.asList("@XingYiGenerated",
+                "final String acceptString= \"application/xingyi.\"+SetUtils.sortedString( lensNames(), \".\");",
+                "@Override public String acceptString() {",
+                Formating.indent + "return acceptString;",
+                "}");
     }
     List<String> createMakeImplementation() {
         return Arrays.asList("@XingYiGenerated  public " + opsNames.entityNames.clientImplementation.className + " makeImplementation(IXingYi xingYi, Object mirror) {",

@@ -36,7 +36,7 @@ public class SimpleClient implements Client {
     @Override
     public <Interface extends IXingYiClientOps<?>, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
         IOpsClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
-        ServiceRequest sr = new ServiceRequest("get", url, List.of(new Header("Accept", "application/xingyi.json.")), "");
+        ServiceRequest sr = new ServiceRequest("get", url, List.of(new Header("Accept", companion.acceptString())), "");
         return client.apply(sr).thenApply(sRes -> fn.apply(processResult(interfaceClass, sRes)));
     }
     public SimpleClient(String hostAndPort, Function<ServiceRequest, CompletableFuture<ServiceResponse>> client, IClientFactory[] factories) {

@@ -15,4 +15,10 @@ public class SetUtils {
         return result;
     }
 
+    public static String sortedString(Set<String> names, String separator) {
+        List<String> result = new ArrayList<>();
+        result.addAll(names);
+        result.sort((a,b)->a.compareTo(b));
+        return ListUtils.join(result, separator);
+    }
 }

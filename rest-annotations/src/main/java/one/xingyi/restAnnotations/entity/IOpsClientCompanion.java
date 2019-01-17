@@ -7,6 +7,7 @@ import java.util.Set;
 public interface  IOpsClientCompanion<T extends XingYiDomain> {
     IClientCompanion entityCompanion();
     Set<String> lensNames();
+    String acceptString();
     T makeImplementation(IXingYi xingYi, Object mirror);
 
 }
