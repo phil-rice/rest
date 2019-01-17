@@ -3,6 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.client.Client;
 import one.xingyi.restAnnotations.clientside.*;
+import one.xingyi.restAnnotations.entity.IOpsClientCompanion;
 import one.xingyi.restAnnotations.http.Header;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
@@ -34,7 +35,7 @@ public class SimpleClient implements Client {
 
     @Override
     public <Interface extends IXingYiClientOps<?>, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {
-        IClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
+        IOpsClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
         ServiceRequest sr = new ServiceRequest("get", url, List.of(new Header("Accept", "application/xingyi.json.")), "");
         return client.apply(sr).thenApply(sRes -> fn.apply(processResult(interfaceClass, sRes)));
     }
@@ -45,8 +46,8 @@ public class SimpleClient implements Client {
         this.factory = IClientFactory.compose(factories);
     }
     @Override public <Interface extends IXingYiClientOps<?>> CompletableFuture<String> getUrlPattern(Class<Interface> interfaceClass) {
-        IClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
-        return this.<IEntityUrlPattern, String>primitiveGet(IEntityUrlPattern.class, hostAndPort + ((IClientCompanion) companion).bookmark(), IEntityUrlPattern::url);
+        IOpsClientCompanion companion = factory.findCompanion().apply(interfaceClass).orElseThrow(runtimeExceptionSupplier(interfaceClass));
+        return this.<IEntityUrlPattern, String>primitiveGet(IEntityUrlPattern.class, hostAndPort + companion.entityCompanion().bookmark(), IEntityUrlPattern::url);
 
     }
 
@@ -57,5 +58,5 @@ public class SimpleClient implements Client {
         Optional<Interface> opt = factory.apply(interfaceClass, xingYi, mirror);
         return opt.orElseThrow(runtimeExceptionSupplier(interfaceClass));
     }
-    Supplier<RuntimeException> runtimeExceptionSupplier(Class<?> interfaceClass) {return () -> new RuntimeException("Cannot work out how to load " + interfaceClass + " Legal values are: " + factory.supported()+ "\n\nIf this is a composite interface did you manually add the companion?\n");}
+    Supplier<RuntimeException> runtimeExceptionSupplier(Class<?> interfaceClass) {return () -> new RuntimeException("Cannot work out how to load " + interfaceClass + " Legal values are: " + factory.supported() + "\n\nIf this is a composite interface did you manually add the companion?\n");}
 }
