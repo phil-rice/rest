@@ -35,7 +35,7 @@ abstract class AbstractClientTest {
     IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 
     JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
-    EndPoint composed = PersonServer.createEndpoints(jsonTC, personStore, addressStore);
+    EndPoint composed = PersonServer.createEndpoints(jsonTC, addressStore, personStore);
 
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();

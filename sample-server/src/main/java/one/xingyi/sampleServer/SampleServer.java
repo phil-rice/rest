@@ -19,15 +19,17 @@ interface MockPersonAndAddressStores {
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
     Person person = new Person("serverName", address, EmbeddedWithHasJson.valueForTest(number));
+
     IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
     IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 }
 
 public class SampleServer implements MockPersonAndAddressStores {
+
     public static void main(String[] args) {
         JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
-        EndPoint entityEndpoints = PersonServer.createWithHelpers(jsonTC, personStore, addressStore);//the stores are  just ways of 'given an id go get xxx'
-        SimpleServer server = new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(entityEndpoints), 9000);
+        EndPoint endPoints = PersonServer.createWithHelpers(jsonTC, addressStore, personStore);//the stores are  just ways of 'given an id go get a completable future of xxx' a
+        SimpleServer server = new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(endPoints), 9000);
         server.start();
     }
 }

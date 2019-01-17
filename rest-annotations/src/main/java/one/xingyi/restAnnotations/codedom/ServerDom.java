@@ -19,6 +19,7 @@ public class ServerDom {
         this.serverEntityName = serverEntityName;
         this.entityNames = ListUtils.map(entityNames, e -> e.entityNames);
         this.exposedEntityNames = ListUtils.map(ListUtils.filter(entityNames, e -> e.hasUrlPattern), e -> e.entityNames);
+        this.exposedEntityNames.sort((a, b) -> a.serverImplementation.className.compareTo(b.serverImplementation.className));
         joining = exposedEntityNames.size() > 0 ? "," : "";
     }
 
@@ -70,6 +71,7 @@ public class ServerDom {
         result.add("public static <J> EndPoint createEndpoints(JsonTC<J> jsonTC" + joining + createParameters() + ") {");
         result.add(Formating.indent + "EntityRegister register = SimpleEntityRegister.simple(EntityServerCompanion.companion, ");
         result.add(Formating.indent + register);
+        result.add("");
         result.add(Formating.indent + "EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);");
         result.addAll(Formating.indent(ListUtils.map(exposedEntityNames, en -> "EndPoint get" + en.serverImplementation.className + "Endpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, " + en.serverCompanion.asString() + ".companion, " + en.serverImplementation.className.toLowerCase() + "::read);")));
         result.add(Formating.indent + "return EndPoint.compose(entityDetailsEndPoint" + joining + ListUtils.mapJoin(exposedEntityNames, ",", en -> "get" + en.serverImplementation.className + "Endpoint") + ");");
