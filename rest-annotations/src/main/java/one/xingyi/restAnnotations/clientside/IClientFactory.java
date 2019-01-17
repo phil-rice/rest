@@ -3,6 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.restAnnotations.entity.IOpsClientCompanion;
 import one.xingyi.restAnnotations.javascript.IXingYi;
+import one.xingyi.restAnnotations.javascript.XingYiDomain;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restAnnotations.utils.OptionalUtils;
 
@@ -15,7 +16,10 @@ public interface IClientFactory extends IClientMaker {
 
     Function<Class<? extends IXingYiClientOps<?>>, Optional<IOpsClientCompanion>> findCompanion();
 
-    default <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) { return findCompanion().apply(clazz).flatMap(c -> c.entityCompanion().apply(clazz, xingYi, mirror)); }
+    default <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
+        Function<Class<? extends IXingYiClientOps<?>>, Optional<IOpsClientCompanion>> companion = findCompanion();
+        return companion.apply(clazz).map(c -> (Interface) c.makeImplementation(xingYi, mirror));//TODO It would be really nice to get rid of this typeclass
+    }
 
     static IClientFactory compose(IClientFactory... factories) { return new ComposeClientFactory(Arrays.asList(factories)); }
 }
@@ -36,7 +40,7 @@ class ComposeClientFactory implements IClientFactory {
     @Override public Function<Class<? extends IXingYiClientOps<?>>, Optional<IOpsClientCompanion>> findCompanion() { return OptionalUtils.chainFn(findCompanions); }
 
     @Override public <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {
-        return findCompanion().apply(clazz).flatMap(c -> c.entityCompanion().apply(clazz, xingYi, mirror)).
-                or(() -> OptionalUtils.allReturnSameTo(findCompanions).apply(clazz).flatMap(c -> c.entityCompanion().apply(clazz, xingYi, mirror)));
+        return findCompanion().apply(clazz).map(c1 ->(Interface) c1.makeImplementation(xingYi, mirror)).
+                or(() -> OptionalUtils.allReturnSameTo(findCompanions).apply(clazz).map(c -> (Interface)c.makeImplementation(xingYi, mirror)));
     }
 }

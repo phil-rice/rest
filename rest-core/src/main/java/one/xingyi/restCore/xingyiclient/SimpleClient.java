@@ -31,7 +31,7 @@ public class SimpleClient implements Client {
     final String hostAndPort;
     final Function<ServiceRequest, CompletableFuture<ServiceResponse>> client;
     final IClientFactory[] factories;
-    final IClientFactory factory;
+    public final IClientFactory factory;
 
     @Override
     public <Interface extends IXingYiClientOps<?>, Result> CompletableFuture<Result> primitiveGet(Class<Interface> interfaceClass, String url, Function<Interface, Result> fn) {

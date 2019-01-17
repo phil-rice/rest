@@ -76,7 +76,6 @@ abstract class AbstractClientTest {
     public void testWithMultipleInterfaces() throws ExecutionException, InterruptedException {
         assertEquals("serverName/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
         assertEquals("serverName/one.xi", client.get(ITestMultiple.class, "id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
-        //solution to this is to have a @XingYiMulti annotation and create instance which can delegate. Actually pretty straightforwards...
     }
     @Test
     public void testWithMultipleInterfaces2() throws ExecutionException, InterruptedException {

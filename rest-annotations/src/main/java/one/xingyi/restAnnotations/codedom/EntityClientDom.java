@@ -58,7 +58,7 @@ public class EntityClientDom {
     }
 
     public List<String> createFields() {
-        return Arrays.asList("@XingYiGenerated", "final IXingYi xingYi;");
+        return Arrays.asList("@XingYiGenerated", "public final IXingYi xingYi;");
     }
 
     public List<String> createLens() {

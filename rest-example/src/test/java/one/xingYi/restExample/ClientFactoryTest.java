@@ -21,13 +21,13 @@ public class ClientFactoryTest {
 
     @Test
     public void testFindCompanion() {
-        assertEquals(companion1, companion1.findCompanion().apply(ITest11.class).get());
-        assertEquals(companion1, companion1.findCompanion().apply(ITest12.class).get());
-        assertEquals(companion2, companion2.findCompanion().apply(ITest22.class).get());
+        assertEquals(Test11ClientCompanion.companion, companion1.findCompanion().apply(ITest11.class).get());
+        assertEquals(Test12ClientCompanion.companion, companion1.findCompanion().apply(ITest12.class).get());
+        assertEquals(Test22ClientCompanion.companion, companion2.findCompanion().apply(ITest22.class).get());
 
-        assertEquals(companion1, composed.findCompanion().apply(ITest11.class).get());
-        assertEquals(companion1, composed.findCompanion().apply(ITest12.class).get());
-        assertEquals(companion2, composed.findCompanion().apply(ITest22.class).get());
+        assertEquals(Test11ClientCompanion.companion, composed.findCompanion().apply(ITest11.class).get());
+        assertEquals(Test12ClientCompanion.companion, composed.findCompanion().apply(ITest12.class).get());
+        assertEquals(Test22ClientCompanion.companion, composed.findCompanion().apply(ITest22.class).get());
 
         assertEquals(Optional.empty(), companion1.findCompanion().apply(ITest22.class));
         assertEquals(Optional.empty(), companion2.findCompanion().apply(ITest12.class));
