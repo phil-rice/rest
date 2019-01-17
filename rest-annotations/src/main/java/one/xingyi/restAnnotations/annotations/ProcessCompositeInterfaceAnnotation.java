@@ -16,12 +16,10 @@ import java.util.List;
 import java.util.Optional;
 class ProcessCompositeInterfaceAnnotation extends ProcessAnnotations<XingYiCompositeInterface> {
 
-    private XingYiClientAnnotationProcessor xingYiClientAnnotationProcessor;
     private INames names;
     public ProcessCompositeInterfaceAnnotation(INames names,  RoundEnvironment env, Messager messager, Filer filer) {
         super(XingYiCompositeInterface.class, env, messager, filer);
         this.names = names;
-        this.xingYiClientAnnotationProcessor = xingYiClientAnnotationProcessor;
     }
     @Override void doit(LoggerAdapter log, TypeElement element, XingYiCompositeInterface annotation) {
         List<String> interfaces = ListUtils.map(element.getInterfaces(), e -> e.toString());

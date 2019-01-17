@@ -1,6 +1,7 @@
 package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
+import one.xingyi.restAnnotations.annotations.XingYiCompositeInterface;
 import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientMaker;
 import one.xingyi.restAnnotations.clientside.IXingYiClientOps;
@@ -96,7 +97,13 @@ public class CompositeCompanionClassCodeDom {
 
     List<String> createChildCompanions() {
         String children = ListUtils.mapJoin(parentClientInterfaceNames, ",", i -> names.clientCompanionName(i).asString() + ".companion");
-        return Arrays.asList("public List<IOpsClientCompanion> childCompanions(){",
+        return Arrays.asList(
+                "//If you get a compilation here with funny spelled companions starting with a '.' it is probably because the ",
+                "//"+ XingYiCompositeInterface.class.getSimpleName() + " is defined in the same project as the server objects",
+                "//There is an awkward ordering problem, and to fix it a work around is to put the qualified class name rather than the simple",
+                "//For example public interface IPersonNameAndAddress extends IXingYiMultipleOps<IPerson>,one.xingyi.restExample.IPersonAddress, one.xingyi.restExample.IPersonName {",
+                "//Instead of public interface IPersonNameAndAddress extends IXingYiMultipleOps<IPerson>,IPersonName, IPersonAddress {\n",
+                "public List<IOpsClientCompanion> childCompanions(){",
                 Formating.indent + "return Arrays.asList(" + children + ");",
                 "}");
     }

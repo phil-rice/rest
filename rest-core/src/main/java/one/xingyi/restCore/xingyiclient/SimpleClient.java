@@ -57,5 +57,5 @@ public class SimpleClient implements Client {
         Optional<Interface> opt = factory.apply(interfaceClass, xingYi, mirror);
         return opt.orElseThrow(runtimeExceptionSupplier(interfaceClass));
     }
-    Supplier<RuntimeException> runtimeExceptionSupplier(Class<?> interfaceClass) {return () -> new RuntimeException("Cannot work out how to load " + interfaceClass + " Legal values are: " + factory.supported());}
+    Supplier<RuntimeException> runtimeExceptionSupplier(Class<?> interfaceClass) {return () -> new RuntimeException("Cannot work out how to load " + interfaceClass + " Legal values are: " + factory.supported()+ "\n\nIf this is a composite interface did you manually add the companion?\n");}
 }

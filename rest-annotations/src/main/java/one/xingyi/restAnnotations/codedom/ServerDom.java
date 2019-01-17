@@ -84,8 +84,8 @@ public class ServerDom {
         result.add("public static EndPoint index = EndPoint.function(EndpointAcceptor0.exact(\"get\", \"/\"), sr -> ServiceResponse.html(200, \"made it: you sent\" + sr));");
         result.add("public static EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact(\"get\", \"/keepalive\"), ServiceResponse.html(200, \"Alive\"));");
         result.add("public static <J>EndPoint createWithHelpers(JsonTC<J> jsonTC" + joining + createParameters() + "){");
-        result.add(Formating.indent + "return EndPoint.printlnLog(EndPoint.compose(index, keepalive, createEndpoints(jsonTC" + joining +
-                ListUtils.mapJoin(exposedEntityNames, ",", en -> en.serverImplementation.className.toLowerCase()) + ")));");
+        result.add(Formating.indent + "return EndPoint.compose(index, keepalive, createEndpoints(jsonTC" + joining +
+                ListUtils.mapJoin(exposedEntityNames, ",", en -> en.serverImplementation.className.toLowerCase()) + "));");
         result.add("}");
         return result;
         //    EndPoint index = EndPoint.function(EndpointAcceptor0.exact("get", "/"), sr -> ServiceResponse.html(200, "made it: you sent" + sr));

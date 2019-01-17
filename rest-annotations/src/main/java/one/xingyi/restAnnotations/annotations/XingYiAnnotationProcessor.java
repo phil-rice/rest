@@ -12,7 +12,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.*;
-public class XingYiServerAnnotationProcessor extends AbstractProcessor {
+public class XingYiAnnotationProcessor extends AbstractProcessor {
     final INames names = INames.defaultNames;
 
     private Types typeUtils;
@@ -47,6 +47,8 @@ public class XingYiServerAnnotationProcessor extends AbstractProcessor {
         new ProcessXingYiAnnotation(names, elementsAndOps, messager, filer, env).process();
         new ProcessXingYiOpsAnnotation(names, elementsAndOps, messager, filer, env).process();
         new ProcessXingYiServerAnnotation(names, elementsAndOps, messager,filer, env).process();
+        new ProcessCompositeInterfaceAnnotation(names, env, messager, filer).process();
+        new ProcessXingYiClientAnnotation(names, messager, filer, env).process();
         return false;
     }
 
@@ -54,5 +56,5 @@ public class XingYiServerAnnotationProcessor extends AbstractProcessor {
     @Override public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
     }
-    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(XingYi.class.getName(), XingYiOps.class.getName(), XingYiServer.class.getName()); }
+    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(XingYi.class.getName(), XingYiOps.class.getName(), XingYiServer.class.getName(), XingYiCompositeInterface.class.getName(), XingYiClient.class.getName()); }
 }
