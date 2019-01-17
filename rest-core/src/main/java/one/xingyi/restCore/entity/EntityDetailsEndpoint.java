@@ -1,14 +1,12 @@
 package one.xingyi.restcore.entity;
 
 
+import one.xingyi.restAnnotations.entity.EntityDetailsRequest;
+import one.xingyi.restAnnotations.entity.EntityRegister;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
 import one.xingyi.restAnnotations.endpoints.EndpointAcceptor1;
-import one.xingyi.restcore.xingYiServer.Entity;
 import one.xingyi.restcore.xingYiServer.EntityServerCompanion;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 public interface EntityDetailsEndpoint {
     EndpointAcceptor1<EntityDetailsRequest> acceptor = EndpointAcceptor1.justOneThing("get", EntityDetailsRequest::new);

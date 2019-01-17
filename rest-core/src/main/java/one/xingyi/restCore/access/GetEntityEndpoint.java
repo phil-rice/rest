@@ -1,27 +1,17 @@
 package one.xingyi.restcore.access;
 
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
 import one.xingyi.restAnnotations.endpoints.EndpointAcceptor1;
-import one.xingyi.restAnnotations.endpoints.EndpointRequest;
 import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
-import one.xingyi.restcore.entity.EntityDetailsRequest;
-import one.xingyi.restcore.entity.EntityRegister;
-import one.xingyi.restcore.xingYiServer.Entity;
-import one.xingyi.restcore.xingYiServer.EntityServerCompanion;
+import one.xingyi.restAnnotations.entity.EntityDetailsRequest;
+import one.xingyi.restAnnotations.entity.EntityRegister;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 public interface GetEntityEndpoint {
 

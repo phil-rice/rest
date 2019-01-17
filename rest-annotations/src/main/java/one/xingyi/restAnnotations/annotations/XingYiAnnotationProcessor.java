@@ -46,6 +46,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 //        messager.printMessage(Diagnostic.Kind.NOTE, "ElementsAndOps " + elementsAndOps);
         new ProcessXingYiAnnotation(names, elementsAndOps, messager, filer, env).process();
         new ProcessXingYiOpsAnnotation(names, elementsAndOps, messager, filer, env).process();
+        new ProcessXingYiServerAnnotation(names, elementsAndOps, messager,filer, env).process();
         return false;
     }
 
@@ -53,5 +54,5 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
     }
-    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(XingYi.class.getName(), XingYiOps.class.getName()); }
+    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(XingYi.class.getName(), XingYiOps.class.getName(), XingYiServer.class.getName()); }
 }

@@ -1,31 +1,23 @@
 package one.xingyi.restcore.entity;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import one.xingyi.restAnnotations.entity.Companion;
+import one.xingyi.restAnnotations.entity.*;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
 import one.xingyi.restcore.xingYiServer.Entity;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Entity>> {
+@ToString
+@EqualsAndHashCode
+public class SimpleEntityRegister implements EntityRegister<Entity> {
+    public static EntityRegister register(List<EntityRegistrationDetails> details) { return new SimpleEntityRegister(details); }
 
-    String javascript();
-
-    static EntityRegister register(List<EntityRegistrationDetails> details) {
-        return new SimpleEntityRegister(details);
-    }
-    static EntityRegister simple(Companion<?, ?>... companions) {
+    public static EntityRegister simple(Companion<?, ?>... companions) {
         return new SimpleEntityRegister(ListUtils.map(Arrays.asList(companions),
                 c -> new EntityRegistrationDetails(c.entityName(), "<host>/" + c.entityName().toLowerCase() + "/<id>", c)));
     }
-}
 
-@ToString
-@EqualsAndHashCode
-class SimpleEntityRegister implements EntityRegister {
 
     final Map<String, EntityRegistrationDetails> register;
     final String javascript;

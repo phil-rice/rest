@@ -1,4 +1,4 @@
-package one.xingyi.restcore.entity;
+package one.xingyi.restAnnotations.entity;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -8,7 +8,7 @@ import one.xingyi.restAnnotations.entity.Companion;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class EntityRegistrationDetails {
-    final String entityName;
-    final String urlPattern;
-    final Companion<?, ?> companion;
+    public final String entityName;
+    public final String urlPattern;
+    public final Companion<?, ?> companion;
 }

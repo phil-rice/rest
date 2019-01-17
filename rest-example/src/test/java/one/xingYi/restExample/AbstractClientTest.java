@@ -2,7 +2,6 @@ package one.xingYi.restExample;
 import one.xingyi.restAnnotations.access.IEntityStore;
 import one.xingyi.restAnnotations.clientside.IXingYiResponseSplitter;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
-import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.http.ServiceRequest;
 import one.xingyi.restAnnotations.http.ServiceResponse;
@@ -11,7 +10,8 @@ import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restExample.*;
 import one.xingyi.restcore.access.GetEntityEndpoint;
 import one.xingyi.restcore.entity.EntityDetailsEndpoint;
-import one.xingyi.restcore.entity.EntityRegister;
+import one.xingyi.restAnnotations.entity.EntityRegister;
+import one.xingyi.restcore.entity.SimpleEntityRegister;
 import one.xingyi.restcore.xingYiServer.*;
 import one.xingyi.restcore.xingyiclient.XingYiClient;
 import org.junit.Test;
@@ -35,13 +35,7 @@ abstract class AbstractClientTest {
     IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 
     JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
-
-    EntityRegister register = EntityRegister.simple(EntityServerCompanion.companion, PersonServerCompanion.companion, AddressServerCompanion.companion, TelephoneNumberServerCompanion.companion);
-    EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);
-    EndPoint getPersonEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, PersonServerCompanion.companion, personStore::read);
-    EndPoint getAddressEndpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, AddressServerCompanion.companion, addressStore::read);
-
-    EndPoint composed = EndPoint.compose(getAddressEndpoint, entityDetailsEndPoint, getPersonEndpoint);
+    EndPoint composed = PersonServer.createEndpoints(jsonTC, personStore, addressStore);
 
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
@@ -77,7 +71,7 @@ abstract class AbstractClientTest {
     public void testGetAddress() throws ExecutionException, InterruptedException {
         assertEquals(Optional.of(address), addressStore.read("add1").get());
         assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'),
-                IXingYiResponseSplitter.splitter.apply(getAddressEndpoint.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
+                IXingYiResponseSplitter.splitter.apply(composed.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
 
         assertEquals("someLine1", client.get(IAddressLine12.class, "add1", IAddressLine12::line1).get());
     }
