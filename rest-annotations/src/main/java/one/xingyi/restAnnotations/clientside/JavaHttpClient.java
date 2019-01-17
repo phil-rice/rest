@@ -27,7 +27,7 @@ public interface JavaHttpClient {
         HttpRequest.Builder b2 = ListUtils.foldLeft(b1, sr.headers, (b, h) -> b.header(h.name, h.value));
         return b2.build();}
       catch (Exception e){
-          throw new RuntimeException("Trying to use Java Client with " + sr, e);
+          throw new RuntimeException("Trying to use Java XingYiHttpClient with " + sr, e);
       }
     };
 

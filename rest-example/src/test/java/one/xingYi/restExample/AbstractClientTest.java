@@ -8,12 +8,9 @@ import one.xingyi.restAnnotations.http.ServiceResponse;
 import one.xingyi.restAnnotations.marshelling.JsonObject;
 import one.xingyi.restAnnotations.marshelling.JsonTC;
 import one.xingyi.restExample.*;
-import one.xingyi.restcore.access.GetEntityEndpoint;
-import one.xingyi.restcore.entity.EntityDetailsEndpoint;
-import one.xingyi.restAnnotations.entity.EntityRegister;
-import one.xingyi.restcore.entity.SimpleEntityRegister;
 import one.xingyi.restcore.xingYiServer.*;
-import one.xingyi.restcore.xingyiclient.XingYiClient;
+import one.xingyi.restAnnotations.client.Client;
+import one.xingyi.restcore.xingyiclient.SimpleClient;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -28,6 +25,9 @@ import static org.junit.Assert.assertEquals;
 abstract class AbstractClientTest {
     String urlPrefix = "http://localhost:9000";
 
+    abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
+    abstract protected String expectedHost();
+
     TelephoneNumber number = new TelephoneNumber("someNumber");
     Address address = new Address("someLine1", "someLine2");
     Person person = new Person("serverName", address, EmbeddedWithHasJson.valueForTest(number));
@@ -37,14 +37,8 @@ abstract class AbstractClientTest {
     JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
     EndPoint composed = PersonServer.createEndpoints(jsonTC, addressStore, personStore);
 
-    abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
-    abstract protected String expectedHost();
 
-    XingYiClient client = XingYiClient.using(urlPrefix, httpClient(),
-            EntityClientCompanion.companion,
-            PersonClientCompanion.companion,
-            AddressClientCompanion.companion,
-            TestMultipleClientCompanion.companion); //TODO Perhaps this can be automated?
+    Client client = DomainClient.client(urlPrefix, httpClient(), TestMultipleClientCompanion.companion); //TODO Perhaps this can be automated?
 
 
     @Test

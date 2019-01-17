@@ -1,2 +1,2 @@
-one.xingyi.restAnnotations.annotations.XingYiAnnotationProcessor
-one.xingyi.restAnnotations.annotations.XingYiCompositeInterfaceAnnotationProcessor
+one.xingyi.restAnnotations.annotations.XingYiServerAnnotationProcessor
+one.xingyi.restAnnotations.annotations.XingYiClientAnnotationProcessor

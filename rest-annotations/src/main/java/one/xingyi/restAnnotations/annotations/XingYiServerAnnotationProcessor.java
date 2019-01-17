@@ -12,7 +12,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.*;
-public class XingYiAnnotationProcessor extends AbstractProcessor {
+public class XingYiServerAnnotationProcessor extends AbstractProcessor {
     final INames names = INames.defaultNames;
 
     private Types typeUtils;
