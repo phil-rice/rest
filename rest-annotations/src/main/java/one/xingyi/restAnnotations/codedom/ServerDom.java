@@ -41,6 +41,7 @@ public class ServerDom {
         result.add("import one.xingyi.restcore.xingYiServer.EntityServerCompanion;");
         result.add("@XingYiGenerated ");
         result.add("public class " + serverEntityName.serverImplementation.className + " implements " + serverEntityName.entityInterface.asString() + "{");
+        result.addAll(Formating.indent(createRegister()));
         result.addAll(Formating.indent(createCreateServerMethod()));
         result.add("");
         result.addAll(Formating.indent(createOtherEndPoints()));
@@ -64,6 +65,17 @@ public class ServerDom {
         return ListUtils.mapJoin(exposedEntityNames, ",", en -> "IEntityRead<" + en.serverImplementation.className + "> " + en.serverImplementation.className.toLowerCase());
     }
 
+
+    List<String> createRegister() {
+        String register = ListUtils.mapJoin(entityNames, ",\n" + Formating.indent + Formating.indent, en -> en.serverCompanion.asString() + ".companion") + ");";
+
+        List<String> result = new ArrayList<>();
+        result.add("@XingYiGenerated ");
+        result.add("public static EntityRegister register = SimpleEntityRegister.simple(EntityServerCompanion.companion, ");
+        result.add(Formating.indent + register + ";");
+        return result;
+    }
+
     List<String> createCreateServerMethod() {
         String register = ListUtils.mapJoin(entityNames, ",\n" + Formating.indent + Formating.indent, en -> en.serverCompanion.asString() + ".companion") + ");";
 
@@ -72,9 +84,6 @@ public class ServerDom {
         result.add("//If you have a compilation error check you've done a full compile: there is an issue with the annotation processors");
         result.add("@XingYiGenerated ");
         result.add("public static <J> EndPoint createEndpoints(JsonTC<J> jsonTC" + joining + createParameters() + ") {");
-        result.add(Formating.indent + "EntityRegister register = SimpleEntityRegister.simple(EntityServerCompanion.companion, ");
-        result.add(Formating.indent + register);
-        result.add("");
         result.add(Formating.indent + "EndPoint entityDetailsEndPoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, register);");
         result.addAll(Formating.indent(ListUtils.map(exposedEntityNames, en -> "EndPoint get" + en.serverImplementation.className + "Endpoint = GetEntityEndpoint.getOptionalEndPoint(jsonTC, register, " + en.serverCompanion.asString() + ".companion, " + en.serverImplementation.className.toLowerCase() + "::read);")));
         result.add(Formating.indent + "return EndPoint.compose(entityDetailsEndPoint" + joining + ListUtils.mapJoin(exposedEntityNames, ",", en -> "get" + en.serverImplementation.className + "Endpoint") + ");");

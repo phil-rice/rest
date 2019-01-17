@@ -15,7 +15,7 @@ import one.xingyi.restAnnotations.utils.OptionalUtils;
 
 import java.util.*;
 import java.util.function.Function;
-public class ClientCompanionDom {
+public class EntityClientCompanionDom {
     private final List<InterfaceData> interfaces;
     private PackageAndClassName clientName;
     public final FieldList fields;
@@ -24,7 +24,7 @@ public class ClientCompanionDom {
     public INames names;
     public final PackageAndClassName companionName;
 
-    public ClientCompanionDom(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
+    public EntityClientCompanionDom(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
         this.log = log;
         this.names = names;
         this.companionName = entityNames.clientCompanion;

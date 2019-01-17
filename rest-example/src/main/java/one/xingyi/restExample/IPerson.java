@@ -9,22 +9,10 @@ import java.util.Map;
 
 @XingYi(urlPattern = "/person")
 public interface IPerson extends IPersonNameOps, IPersonLine12Ops, IPersonAddressOps {
-
-
-   //    @XingYiField(readOnly = true)
-    String name(); //
-
-    //    @XingYiField(interfaces = Interfaces.personAddressOps)
+    String name();
     IAddress address();
-
-    //    @XingYiField(interfaces = Interfaces.personTelephoneOps)
-     Embedded<ITelephoneNumber> telephone();
-
-
-    @XingYiField(deprecated = true)
-    default String line1() {throw new RuntimeException("not implemented");}
-
-    @XingYiField(deprecated = true)
-    default String line2() {throw new RuntimeException("not implemented");}
+    Embedded<ITelephoneNumber> telephone();
+    @Deprecated @XingYiField(deprecated = true, javascript = "line1Javascript") default String line1() {throw new RuntimeException("not implemented");}
+    @Deprecated @XingYiField(deprecated = true, javascript = "line2javascript") default String line2() {throw new RuntimeException("not implemented");}
 
 }

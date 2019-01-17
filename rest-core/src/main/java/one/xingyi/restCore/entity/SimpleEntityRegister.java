@@ -4,6 +4,7 @@ import lombok.ToString;
 import one.xingyi.restAnnotations.entity.*;
 import one.xingyi.restAnnotations.utils.Files;
 import one.xingyi.restAnnotations.utils.ListUtils;
+import one.xingyi.restAnnotations.utils.MapUtils;
 import one.xingyi.restcore.xingYiServer.Entity;
 
 import java.util.*;
@@ -11,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 @ToString
 @EqualsAndHashCode
 public class SimpleEntityRegister implements EntityRegister<Entity> {
+    private final Map<String, String> javascriptMap;
     public static EntityRegister register(List<EntityRegistrationDetails> details) { return new SimpleEntityRegister(details); }
 
     public static EntityRegister simple(Companion<?, ?>... companions) {
@@ -27,7 +29,10 @@ public class SimpleEntityRegister implements EntityRegister<Entity> {
             acc.put(rd.entityName.toLowerCase(), rd);
             return acc;
         });
-        this.javascript = Files.getText("header.js") + ListUtils.aggLeft(new StringBuilder(), details, (acc, d) -> acc.append(d.companion.javascript() + "\n")).toString();
+        String rootJavascript = Files.getText("header.js");
+        this.javascript = rootJavascript + ListUtils.aggLeft(new StringBuilder(), details, (acc, d) -> acc.append(d.companion.javascript() + "\n")).toString();
+        this.javascriptMap = MapUtils.append(ListUtils.add(ListUtils.map(List.copyOf(register.values()), r -> r.companion.javascriptMap()), Map.of("root", rootJavascript)));
+
     }
 
     @Override public CompletableFuture<Entity> apply(EntityDetailsRequest entityDetailsRequest) {
@@ -38,6 +43,9 @@ public class SimpleEntityRegister implements EntityRegister<Entity> {
         List<String> supported = ListUtils.map(classes, Class::getName);
         Collections.sort(supported);
         return CompletableFuture.completedFuture(new Entity(details.urlPattern, supported.toString()));
+    }
+    @Override public String javascriptFor(String lens) {
+        return Optional.ofNullable(javascriptMap.get(lens)).orElseThrow(()-> new RuntimeException("Asked for lens '"+ lens + "' legal values are " + register.keySet() ));
     }
     @Override public String javascript() {
         return javascript;

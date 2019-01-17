@@ -8,6 +8,4 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS) // Make it class retention for incremental compilation
 public @interface XingYiServer {
-   boolean withSimpleServer() default false;
-   boolean withKeepAlive() default false;
 }

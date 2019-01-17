@@ -43,6 +43,7 @@ public class FieldList {
     public <T> List<T> flatMap(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(nonDeprecatedfields, fn); }
     public <T> List<T> flatMapWithDeprecated(Function<FieldDetails, List<T>> fn) { return ListUtils.flatMap(fields, fn); }
     public <T> String mapJoin(String separator, Function<FieldDetails, String> fn) { return ListUtils.<FieldDetails>mapJoin(nonDeprecatedfields, separator, fn); }
+    public <T> String mapJoinWithDeprecated(String separator, Function<FieldDetails, String> fn) { return ListUtils.<FieldDetails>mapJoin(fields, separator, fn); }
 
     public String createConstructorCall(String name) {
         return "new " + name + "(" + mapJoin(", ", nv -> nv.name) + ")";

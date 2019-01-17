@@ -39,11 +39,11 @@ class ProcessXingYiAnnotation extends ProcessAnnotations<XingYi> {
             makeClassFile(clientDom.clientImpl, ListUtils.join(clientDom.createClass(), "\n"), element);
 
 
-            ServerCompanionDom serverCompanionDom = new ServerCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
-            makeClassFile(serverCompanionDom.companionName, ListUtils.join(serverCompanionDom.createClass(), "\n"), element);
+            EntityServerCompanionDom entityServerCompanionDom = new EntityServerCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
+            makeClassFile(entityServerCompanionDom.companionName, ListUtils.join(entityServerCompanionDom.createClass(), "\n"), element);
 
-            ClientCompanionDom clientCompanionDom = new ClientCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
-            makeClassFile(clientCompanionDom.companionName, ListUtils.join(clientCompanionDom.createClass(), "\n"), element);
+            EntityClientCompanionDom entityClientCompanionDom = new EntityClientCompanionDom(log, names, elementsAndOps, entityNames, fields, bookmarkAndUrlPattern);
+            makeClassFile(entityClientCompanionDom.companionName, ListUtils.join(entityClientCompanionDom.createClass(), "\n"), element);
 
 
         }

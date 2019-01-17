@@ -12,7 +12,7 @@ import one.xingyi.restAnnotations.utils.OptionalUtils;
 import one.xingyi.restAnnotations.utils.Strings;
 
 import java.util.*;
-public class ServerCompanionDom {
+public class EntityServerCompanionDom {
     private final List<InterfaceData> interfaces;
     private LoggerAdapter log;
     public INames names;
@@ -23,7 +23,7 @@ public class ServerCompanionDom {
     private ElementsAndOps elementsAndOps;
     public final PackageAndClassName companionName;
 
-    public ServerCompanionDom(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
+    public EntityServerCompanionDom(LoggerAdapter log, INames names, ElementsAndOps elementsAndOps, EntityNames entityNames, FieldList fields, BookmarkAndUrlPattern bookmarkAndUrlPattern) {
         this.log = log;
         this.names = names;
         this.elementsAndOps = elementsAndOps;
@@ -40,6 +40,7 @@ public class ServerCompanionDom {
         ArrayList<String> result = new ArrayList<>();
         result.add("package " + packageName + ";");
         result.add("import " + Companion.class.getName() + ";");
+        result.add("import " + Map.class.getName() + ";");
         result.add("import " + Set.class.getName() + ";");
         result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("@XingYiGenerated");
@@ -50,19 +51,21 @@ public class ServerCompanionDom {
         result.add("");
         result.addAll(Formating.indent(makeJavascript()));
         result.add("");
+        result.addAll(Formating.indent(makeJavascriptMap()));
+        result.add("");
         result.addAll(Formating.indent(createSupported()));
         result.add("}");
         return result;
     }
     List<String> createBookmark() {
-        return Arrays.asList("@XingYiGenerated","public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
+        return Arrays.asList("@XingYiGenerated", "public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
     }
     List<String> createSupported() {
 //        log.info("IN server/create supported for " + companionName + " interfaces" + interfaces);
-        return Arrays.asList("@XingYiGenerated","public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.serverInterface.asString() + ".class") + ");} ");
+        return Arrays.asList("@XingYiGenerated", "public Set<Class<?>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.serverInterface.asString() + ".class") + ");} ");
     }
     List<String> createOpsCompanions() {
-        return Arrays.asList("@XingYiGenerated","public Set<IOpsServerCompanion> opsCompanions(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.serverInterface.asString() + ".class") + ");} ");
+        return Arrays.asList("@XingYiGenerated", "public Set<IOpsServerCompanion> opsCompanions(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.serverInterface.asString() + ".class") + ");} ");
     }
 
 
@@ -74,6 +77,17 @@ public class ServerCompanionDom {
         result.add("@XingYiGenerated public String interfaceName() { return " + Strings.quote(interfaceName.className) + "; } ");
         result.add("@XingYiGenerated public String entityName() { return " + Strings.quote(serverImpl.className) + "; } ");
         result.add("@XingYiGenerated public String javascript() { return javascript; } ");
+        return result;
+    }
+    List<String> makeJavascriptMap() {
+        List<String> result = new ArrayList<>();
+        result.add("public Map<String,String> javascriptMap(){return Map.of(");
+        result.add(Formating.indent + fields.mapJoinWithDeprecated(",\n" + Formating.indent + Formating.indent, fd ->
+        {
+            String defaultJavascript = "function lens_" + fd.lensName + "(){ return lens('" + fd.name + "');};";
+            return Strings.quote(fd.lensName) + "," + Strings.quote(fd.javascript.orElse(defaultJavascript));
+        }) + ");//");
+        result.add("}");
         return result;
     }
 
