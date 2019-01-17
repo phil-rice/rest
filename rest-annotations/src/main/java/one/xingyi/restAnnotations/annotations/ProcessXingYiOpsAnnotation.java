@@ -28,7 +28,6 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
     @Override void doit(LoggerAdapter log, TypeElement element, XingYiOps annotation) {
         EntityNames entityNames = new EntityNames(names, element.asType().toString());
 //        log.info("Entity names: " + entityNames);
-        FieldList fields = FieldList.create(log, names, elementsAndOps, entityNames.entityInterface.className, element.getEnclosedElements());
         List<String> errors = names.validateEntityName(entityNames.entityInterface);
         if (errors.size() > 0) error(element, errors.toString());
         else {
@@ -37,6 +36,7 @@ public class ProcessXingYiOpsAnnotation extends ProcessAnnotations<XingYiOps> {
             else {
                 findEntity(Optional.of(log), element).ifPresent(entityName -> {
                     OpsNames opsNames = new OpsNames(names, entityNames.entityInterface, new EntityNames(names, entityName));
+                    FieldList fields = FieldList.create(log, names, elementsAndOps, opsNames.entityNames.entityInterface.className, element.getEnclosedElements());
                     Optional<ElementAndOps> elementAndOps = elementsAndOps.find(entityName);
                     if (elementAndOps.isEmpty()) {
                         log.warning(element, "Cannot find entity " + entityName);

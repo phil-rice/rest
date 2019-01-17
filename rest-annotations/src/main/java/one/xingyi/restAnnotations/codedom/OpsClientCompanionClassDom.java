@@ -54,8 +54,8 @@ public class OpsClientCompanionClassDom {
         return Arrays.asList("@XingYiGenerated", "public " + opsNames.entityNames.clientCompanion.className + " entityCompanion(){return " + opsNames.entityNames.clientCompanion.className + ".companion; }");
     }
     List<String> createLensNames() {
-        List<String> lensnames = fields.forInterfaceOnlyEntities(opsNames.opsServerInterface.className).map(fd -> "lens_" + fd.lensName);
-        return Arrays.asList("@XingYiGenerated", "public Set<String> lensNames(){return Set.of(" + ListUtils.mapJoin(lensnames, ",", Strings::quote) + ");}");
+        List<String> lensnames = fields.mapWithDeprecated(fd -> "lens_" + fd.lensName );
+        return Arrays.asList("@XingYiGenerated", "public Set<String> lensNames(){return Set.of(" + ListUtils.mapJoin(lensnames, ",", Strings::quote) + ");}//"+ fields);
     }
     List<String> createMakeImplementation() {
         return Arrays.asList("@XingYiGenerated  public " + opsNames.entityNames.clientImplementation.className + " makeImplementation(IXingYi xingYi, Object mirror) {",
