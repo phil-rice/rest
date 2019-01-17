@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.XingYiCompositeInterface;
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientMaker;
 import one.xingyi.restAnnotations.clientside.IXingYiClientOps;
@@ -53,6 +54,7 @@ public class CompositeCompanionClassCodeDom {
         result.add("import " + IClientMaker.class.getName() + ";");
         result.add("import " + IXingYiClientOps.class.getName() + ";");
         result.add("import " + IOpsClientCompanion.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("public class " + multipleCompanionName.className + " implements IClientCompanion, IOpsClientCompanion{");
         result.add(Formating.indent + "final static public " + multipleCompanionName.className + " companion=new " + multipleCompanionName.className + "();");
         result.addAll(Formating.indent(createSupported()));
@@ -67,17 +69,17 @@ public class CompositeCompanionClassCodeDom {
     }
 
     List<String> createBookmark() {
-        return Arrays.asList("public String bookmark(){return " + rootCompanionName.asString() + ".companion.bookmark();} ");
+        return Arrays.asList("@XingYiGenerated","public String bookmark(){return " + rootCompanionName.asString() + ".companion.bookmark();} ");
     }
     List<String> createEntityCompanion() {
-        return Arrays.asList("public IClientCompanion entityCompanion(){return " + rootCompanionName.asString() + ".companion;} ");
+        return Arrays.asList("@XingYiGenerated","public IClientCompanion entityCompanion(){return " + rootCompanionName.asString() + ".companion;} ");
     }
 
     List<String> createSupported() {
-        return Arrays.asList("public Set<Class<? extends IXingYiClientOps<?>>> supported(){return Set.of(" + multipleInterfaceName.asString() + ".class);} ");
+        return Arrays.asList("@XingYiGenerated","public Set<Class<? extends IXingYiClientOps<?>>> supported(){return Set.of(" + multipleInterfaceName.asString() + ".class);} ");
     }
     List<String> createFindCompanion() {
-        return Arrays.asList(
+        return Arrays.asList("@XingYiGenerated",
                 "@Override public  Function<Class<? extends IXingYiClientOps<?>>, Optional<IClientCompanion>> findCompanion() {",
                 Formating.indent + "return clazz -> OptionalUtils.from(supported().contains(clazz), () -> this);",
                 "};");
@@ -86,6 +88,7 @@ public class CompositeCompanionClassCodeDom {
 
     List<String> createApply() {
         return Arrays.asList(
+                "@XingYiGenerated",
                 "@SuppressWarnings(\"unchecked\")",
                 "@Override public <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {",
                 Formating.indent + "if (supported().contains(clazz))",
@@ -103,6 +106,7 @@ public class CompositeCompanionClassCodeDom {
                 "//There is an awkward ordering problem, and to fix it a work around is to put the qualified class name rather than the simple",
                 "//For example public interface IPersonNameAndAddress extends IXingYiMultipleOps<IPerson>,one.xingyi.restExample.IPersonAddress, one.xingyi.restExample.IPersonName {",
                 "//Instead of public interface IPersonNameAndAddress extends IXingYiMultipleOps<IPerson>,IPersonName, IPersonAddress {\n",
+                "@XingYiGenerated",
                 "public List<IOpsClientCompanion> childCompanions(){",
                 Formating.indent + "return Arrays.asList(" + children + ");",
                 "}");
@@ -111,7 +115,7 @@ public class CompositeCompanionClassCodeDom {
         String children = ListUtils.mapJoin(parentClientInterfaceNames, ",", i -> names.clientCompanionName(i).asString() + ".companion.lensNames()");
 
 //        String children = ListUtils.mapJoin(parentOps, ",", op -> op.opsClientCompanion.asString() + ".companion.lensNames()");
-        return Arrays.asList("public List<String> lensNames() {",
+        return Arrays.asList("@XingYiGenerated","public List<String> lensNames() {",
                 Formating.indent + "return ListUtils.append(" + children + ");",
                 "}");
     }

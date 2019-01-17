@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.access.IEntityRead;
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.client.Client;
 import one.xingyi.restAnnotations.clientside.IClientFactory;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
@@ -39,6 +40,7 @@ public class ClientDom {
         result.add("import " + Arrays.class.getName() + ";");
         result.add("import " + List.class.getName() + ";");
         result.add("import " + ListUtils.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("import one.xingyi.restcore.entity.SimpleEntityRegister;");
         result.add("import one.xingyi.restcore.entity.EntityDetailsEndpoint;");
         result.add("import one.xingyi.restcore.access.GetEntityEndpoint;");
@@ -54,6 +56,7 @@ public class ClientDom {
 
     public List<String> createCreate() {
         List<String> result = new ArrayList<>();
+        result.add("@XingYiGenerated");
         result.add("public static Client client(String urlPrefix, Function< ServiceRequest, CompletableFuture<ServiceResponse>> httpClient, IClientFactory...others){");
         result.add(Formating.indent + "List<IClientFactory> entityFactories = Arrays.asList( EntityClientCompanion.companion," + ListUtils.mapJoin(entityNames, ",", en -> en.clientCompanion.asString() + ".companion") + ");");
         result.add(Formating.indent + "List<IClientFactory> factories = ListUtils.append(entityFactories, Arrays.asList(others));");

@@ -3,6 +3,7 @@ package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.ElementsAndOps;
 import one.xingyi.restAnnotations.annotations.InterfaceData;
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.clientside.IClientCompanion;
 import one.xingyi.restAnnotations.clientside.IClientMaker;
 import one.xingyi.restAnnotations.clientside.IXingYiClientOps;
@@ -48,7 +49,9 @@ public class ClientCompanionDom {
         result.add("import " + Function.class.getName() + ";");
         result.add("import " + OptionalUtils.class.getName() + ";");
         result.add("import " + IXingYiClientOps.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("import " + clientName.asString() + ";");
+        result.add("@XingYiGenerated");
         result.add("public class " + companionName.className + " implements IClientCompanion{");
         result.add(Formating.indent + "final static public " + companionName.className + " companion=new " + companionName.className + "();");
         result.addAll(Formating.indent(createSupported()));
@@ -60,13 +63,14 @@ public class ClientCompanionDom {
     }
 
     List<String> createBookmark() {
-        return Arrays.asList("public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
+        return Arrays.asList("@XingYiGenerated", "public String bookmark(){return \"" + bookmarkAndUrlPattern.bookmark + "\";} ");
     }
     List<String> createSupported() {
-        return Arrays.asList("public Set<Class<? extends IXingYiClientOps<?>>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.clientInterface.asString() + ".class") + ");} ");
+        return Arrays.asList("@XingYiGenerated","public Set<Class<? extends IXingYiClientOps<?>>> supported(){return Set.of(" + ListUtils.mapJoin(interfaces, ",", s -> s.clientInterface.asString() + ".class") + ");} ");
     }
     List<String> createFindCompanion() {
         return Arrays.asList(
+                "@XingYiGenerated",
                 "@Override public Function<Class<? extends IXingYiClientOps<?>>, Optional<IClientCompanion>> findCompanion() {",
                 Formating.indent + "return clazz -> OptionalUtils.from(supported().contains(clazz), () -> this);",
                 "};");
@@ -75,6 +79,7 @@ public class ClientCompanionDom {
 
     List<String> createApply() {
         return Arrays.asList(
+                "@XingYiGenerated",
                 "@SuppressWarnings(\"unchecked\")",
                 "@Override public <Interface extends IXingYiClientOps<?>> Optional<Interface> apply(Class<Interface> clazz, IXingYi xingYi, Object mirror) {",
                 Formating.indent + "if (supported().contains(clazz))",

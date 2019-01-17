@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.ElementsAndOps;
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.entity.EmbeddedWithHasJson;
 import one.xingyi.restAnnotations.marshelling.ContextForJson;
 import one.xingyi.restAnnotations.marshelling.HasJson;
@@ -45,7 +46,9 @@ public class EntityServerDom {
         result.add("import " + HasJson.class.getName() + ";");
         result.add("import " + JsonTC.class.getName() + ";");
         result.add("import " + ContextForJson.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
+        result.add("@XingYiGenerated");
         result.add("public class " + packageAndClassName.className + " implements HasJson<ContextForJson>, " + interfaceName.className + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
@@ -70,6 +73,7 @@ public class EntityServerDom {
 
     public List<String> createConstructor() {
         List<String> result = new ArrayList<>();
+        result.add("@XingYiGenerated");
         result.add("public " + packageAndClassName.className + "(" + fields.mapJoin(",", nv -> nv.type.shortNameWithHasEmbeddedJson + " " + nv.name) + "){");
         result.addAll(fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
         result.add("}");
@@ -78,6 +82,7 @@ public class EntityServerDom {
 
     public List<String> createEquals() {
         List<String> result = new ArrayList<>();
+        result.add("@XingYiGenerated");
         result.add("@Override public boolean equals(Object o) {");
         result.add(Formating.indent + "if (this == o) return true;");
         result.add(Formating.indent + "if (o == null || getClass() != o.getClass()) return false;");
@@ -88,6 +93,7 @@ public class EntityServerDom {
     }
     public List<String> createHashcode() {
         List<String> result = new ArrayList<>();
+        result.add("@XingYiGenerated");
         result.add("@Override public int hashCode() {");
         result.add(Formating.indent + "return Objects.hash(" + fields.mapJoin(",", fd -> fd.name) + ");");
         result.add("}");
@@ -109,6 +115,7 @@ public class EntityServerDom {
     }
     List<String> makeJson() {
         List<String> result = new ArrayList<>();
+        result.add("@XingYiGenerated");
         result.add("public <J> J toJson(JsonTC<J> jsonTc, ContextForJson context) {");
         result.add(Formating.indent + "return jsonTc.makeObject(" + fields.mapJoin(",", fd -> "\"" + fd.name + "\", " + toJson(fd)) + ");");
         result.add("}");

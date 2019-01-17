@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.IOpsServerCompanion;
@@ -30,9 +31,11 @@ public class OpsServerCompanionClassDom {
         result.add("import " + List.class.getName() + ";");
         result.add("import " + Arrays.class.getName() + ";");
         result.add("import " + Companion.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("import " + opsNames.entityNames.serverCompanion.asString() + ";");
         result.add("");
         result.add("//if you get a compilation error with mispelt items check if there was an earlier 'cannot find entity' warning in one of the inherited ops interfaces" );
+        result.add("@XingYiGenerated");
         result.add("public class " + companionName.className + " implements IOpsServerCompanion{");
         result.addAll(Formating.indent(createMainEntity()));
         result.addAll(Formating.indent(createReturnTypes()));
@@ -41,11 +44,11 @@ public class OpsServerCompanionClassDom {
     }
 
     List<String> createMainEntity() {
-        return Arrays.asList("public " + opsNames.entityNames.serverCompanion.className + " entityCompanion(){return " + opsNames.entityNames.serverCompanion.className + ".companion; }");
+        return Arrays.asList("@XingYiGenerated","public " + opsNames.entityNames.serverCompanion.className + " entityCompanion(){return " + opsNames.entityNames.serverCompanion.className + ".companion; }");
     }
     List<String> createReturnTypes() {
         List<String> returnTypes = fields.forInterfaceOnlyEntities(opsNames.opsServerInterface.className).map(fd -> fd.type.optEntityName.get().serverCompanion.asString() + ".companion");
-        return Arrays.asList("public List<Companion<?,?>> returnTypes(){return Arrays.asList(" + ListUtils.join(returnTypes, ",") + ");}");
+        return Arrays.asList("@XingYiGenerated","public List<Companion<?,?>> returnTypes(){return Arrays.asList(" + ListUtils.join(returnTypes, ",") + ");}");
 
     }
 }

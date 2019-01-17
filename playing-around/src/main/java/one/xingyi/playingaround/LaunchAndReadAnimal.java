@@ -9,18 +9,19 @@ import one.xingyi.restAnnotations.server.SimpleServer;
 
 import java.util.Map;
 public class LaunchAndReadAnimal {
-    static Animal animal = new Animal("someAnimal name");
-
+    static Animal animal = new Animal("someAnimal name", "4");
     static IEntityStore<Animal> animalStore = IEntityStore.map(Map.of("id1", animal));
 
     static int port = 9000;
     public static JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
-    public static EndPoint endPoints = PlayingServer.createEndpoints(jsonTC, animalStore);
+
+    public static EndPoint endPoints =EndPoint.printlnLog(PlayingServer.createEndpoints(jsonTC, animalStore));
 
     public static void main(String[] args) {
-        Client client = PlayingClient.client("http://localhost:" + port, JavaHttpClient.client);
+        Client client = PlayingClient.client("http://localhost:" + port, JavaHttpClient.client,LegsAndNameClientCompanion.companion);//, WholeThingClientCompanion.companion);
+
         SimpleServer.doAndThenStop(port, endPoints, server -> {
-            System.out.println(client.get(IAnimalName.class, "id1", e -> e.name() ).get());
+            System.out.println(client.get(ILegsAndName.class, "id1", e -> e.name()+"/"+ e.numberOfLegs() ).get());
 //            System.out.println(client.get(IAnimalName.class, "id1", e -> e.name() ).get());
         });
     }

@@ -18,7 +18,7 @@ public interface IPerson extends IPersonNameOps, IPersonLine12Ops, IPersonAddres
     IAddress address();
 
     //    @XingYiField(interfaces = Interfaces.personTelephoneOps)
-    Embedded<ITelephoneNumber> telephone();
+     Embedded<ITelephoneNumber> telephone();
 
 
     @XingYiField(deprecated = true)

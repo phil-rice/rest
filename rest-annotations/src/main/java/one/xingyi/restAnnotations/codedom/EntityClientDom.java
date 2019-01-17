@@ -2,6 +2,7 @@ package one.xingyi.restAnnotations.codedom;
 
 import one.xingyi.restAnnotations.LoggerAdapter;
 import one.xingyi.restAnnotations.annotations.InterfaceData;
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.javascript.IXingYi;
 import one.xingyi.restAnnotations.javascript.XingYiDomain;
@@ -40,12 +41,14 @@ public class EntityClientDom {
         result.add("import " + Lens.class.getName() + ";");
         result.add("import " + XingYiDomain.class.getName() + ";");
         result.add("import " + Embedded.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("import " + packageName + "." + interfaceName.className + ";");
         result.add("");
         result.add("//If you get a 'does not override error then:");
         result.add("//   first rebuild every thing (for example 'mvn clean install'. Incremental compilation sometimes goes wrong)");
         result.add("//   second check that the main interface actually declares every field in the inherited 'ops' interfaces. The field should be obvious from the error message");
         String interfaceString = interfaceName.asString() + (interfaceNames.isEmpty() ? "" : "," + ListUtils.mapJoin(interfaceNames, ",", i -> i.clientInterface.asString()));
+        result.add("@XingYiGenerated");
         result.add("public class " + clientImpl.className + " extends XingYiDomain implements " + interfaceString + "{");
         result.addAll(Formating.indent(createFields()));
         result.addAll(Formating.indent(createConstructor()));
@@ -55,7 +58,7 @@ public class EntityClientDom {
     }
 
     public List<String> createFields() {
-        return Arrays.asList("final IXingYi xingYi;");
+        return Arrays.asList("@XingYiGenerated", "final IXingYi xingYi;");
     }
 
     public List<String> createLens() {
@@ -65,6 +68,6 @@ public class EntityClientDom {
     }
 
     public List<String> createConstructor() {
-        return Arrays.asList("public " + clientImpl.className + "(Object mirror, IXingYi xingYi){ super(mirror); this.xingYi = xingYi;}");
+        return Arrays.asList("@XingYiGenerated", "public " + clientImpl.className + "(Object mirror, IXingYi xingYi){ super(mirror); this.xingYi = xingYi;}");
     }
 }

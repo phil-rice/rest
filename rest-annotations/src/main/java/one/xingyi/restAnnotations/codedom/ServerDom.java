@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 import one.xingyi.restAnnotations.access.IEntityRead;
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.endpoints.EndPoint;
 import one.xingyi.restAnnotations.endpoints.EndpointAcceptor0;
 import one.xingyi.restAnnotations.entity.EntityRegister;
@@ -33,11 +34,12 @@ public class ServerDom {
         result.add("import " + EntityRegister.class.getName() + ";");
         result.add("import " + EndpointAcceptor0.class.getName() + ";");
         result.add("import " + ServiceResponse.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("import one.xingyi.restcore.entity.SimpleEntityRegister;");
         result.add("import one.xingyi.restcore.entity.EntityDetailsEndpoint;");
         result.add("import one.xingyi.restcore.access.GetEntityEndpoint;");
         result.add("import one.xingyi.restcore.xingYiServer.EntityServerCompanion;");
-
+        result.add("@XingYiGenerated ");
         result.add("public class " + serverEntityName.serverImplementation.className + " implements " + serverEntityName.entityInterface.asString() + "{");
         result.addAll(Formating.indent(createCreateServerMethod()));
         result.add("");
@@ -68,6 +70,7 @@ public class ServerDom {
         List<String> result = new ArrayList<>();
         result.add("//anything with urlPattern set in it should appear as a parameter");
         result.add("//If you have a compilation error check you've done a full compile: there is an issue with the annotation processors");
+        result.add("@XingYiGenerated ");
         result.add("public static <J> EndPoint createEndpoints(JsonTC<J> jsonTC" + joining + createParameters() + ") {");
         result.add(Formating.indent + "EntityRegister register = SimpleEntityRegister.simple(EntityServerCompanion.companion, ");
         result.add(Formating.indent + register);
@@ -81,9 +84,9 @@ public class ServerDom {
 
     List<String> createOtherEndPoints() {
         List<String> result = new ArrayList<>();
-        result.add("public static EndPoint index = EndPoint.function(EndpointAcceptor0.exact(\"get\", \"/\"), sr -> ServiceResponse.html(200, \"made it: you sent\" + sr));");
-        result.add("public static EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact(\"get\", \"/keepalive\"), ServiceResponse.html(200, \"Alive\"));");
-        result.add("public static <J>EndPoint createWithHelpers(JsonTC<J> jsonTC" + joining + createParameters() + "){");
+        result.add("@XingYiGenerated public static EndPoint index = EndPoint.function(EndpointAcceptor0.exact(\"get\", \"/\"), sr -> ServiceResponse.html(200, \"made it: you sent\" + sr));");
+        result.add("@XingYiGenerated public static EndPoint keepalive = EndPoint.staticEndpoint(EndpointAcceptor0.exact(\"get\", \"/keepalive\"), ServiceResponse.html(200, \"Alive\"));");
+        result.add("@XingYiGenerated public static <J>EndPoint createWithHelpers(JsonTC<J> jsonTC" + joining + createParameters() + "){");
         result.add(Formating.indent + "return EndPoint.compose(index, keepalive, createEndpoints(jsonTC" + joining +
                 ListUtils.mapJoin(exposedEntityNames, ",", en -> en.serverImplementation.className.toLowerCase()) + "));");
         result.add("}");

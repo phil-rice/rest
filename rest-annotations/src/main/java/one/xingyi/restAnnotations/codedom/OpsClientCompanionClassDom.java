@@ -1,5 +1,6 @@
 package one.xingyi.restAnnotations.codedom;
 
+import one.xingyi.restAnnotations.annotations.XingYiGenerated;
 import one.xingyi.restAnnotations.entity.Companion;
 import one.xingyi.restAnnotations.entity.Embedded;
 import one.xingyi.restAnnotations.entity.IOpsClientCompanion;
@@ -31,7 +32,9 @@ public class OpsClientCompanionClassDom {
         result.add("import " + List.class.getName() + ";");
         result.add("import " + Arrays.class.getName() + ";");
         result.add("import " + Companion.class.getName() + ";");
+        result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("import " + opsNames.entityNames.clientCompanion.asString() + ";");
+        result.add("@XingYiGenerated");
         result.add("public class " + companionName.className + " implements IOpsClientCompanion{");
         result.add(Formating.indent + "final static public " + companionName.className + " companion=new " + companionName.className + "();");
 
@@ -43,10 +46,10 @@ public class OpsClientCompanionClassDom {
     }
 
     List<String> createMainEntity() {
-        return Arrays.asList("public " + opsNames.entityNames.clientCompanion.className + " entityCompanion(){return " + opsNames.entityNames.clientCompanion.className + ".companion; }");
+        return Arrays.asList("@XingYiGenerated","public " + opsNames.entityNames.clientCompanion.className + " entityCompanion(){return " + opsNames.entityNames.clientCompanion.className + ".companion; }");
     }
     List<String> createLensNames() {
         List<String> lensnames = fields.forInterfaceOnlyEntities(opsNames.opsServerInterface.className).map(fd -> "lens_"+fd.lensName);
-        return Arrays.asList("public List<String> lensNames(){return Arrays.asList(" + ListUtils.mapJoin(lensnames, ",", Strings::quote) + ");}");
+        return Arrays.asList("@XingYiGenerated","public List<String> lensNames(){return Arrays.asList(" + ListUtils.mapJoin(lensnames, ",", Strings::quote) + ");}");
     }
 }
