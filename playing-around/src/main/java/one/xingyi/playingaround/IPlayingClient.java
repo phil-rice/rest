@@ -5,6 +5,4 @@ import one.xingyi.restAnnotations.annotations.XingYiServer;
 
 @XingYiClient
 public interface IPlayingClient {
-
-
 }
