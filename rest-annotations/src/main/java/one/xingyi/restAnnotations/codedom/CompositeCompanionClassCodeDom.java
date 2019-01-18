@@ -118,7 +118,7 @@ public class CompositeCompanionClassCodeDom {
     List<String> createLens() {
         String children = ListUtils.mapJoin(parentClientInterfaceNames, ",", i -> names.clientCompanionName(i).asString() + ".companion.lensNames()");
    return Arrays.asList("@XingYiGenerated","public Set<String> lensNames() {",
-                Formating.indent + "return SetUtils.append(" + children + ");",
+                Formating.indent + "return SetUtils.appendKeepingOrder(" + children + ");",
                 "}");
     }
     List<String> createMakeImplementation() {

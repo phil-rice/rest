@@ -41,6 +41,7 @@ public class EntityServerCompanionDom {
         result.add("package " + packageName + ";");
         result.add("import " + Companion.class.getName() + ";");
         result.add("import " + Map.class.getName() + ";");
+        result.add("import " + LinkedHashMap.class.getName() + ";");
         result.add("import " + Set.class.getName() + ";");
         result.add("import " + XingYiGenerated.class.getName() + ";");
         result.add("@XingYiGenerated");
@@ -81,12 +82,13 @@ public class EntityServerCompanionDom {
     }
     List<String> makeJavascriptMap() {
         List<String> result = new ArrayList<>();
-        result.add("public Map<String,String> javascriptMap(){return Map.of(");
-        result.add(Formating.indent + fields.mapJoinWithDeprecated(",\n" + Formating.indent + Formating.indent, fd ->
-        {
+        result.add("public Map<String,String> javascriptMap(){");
+        result.add(Formating.indent + "Map<String,String> result = new LinkedHashMap<>();");
+        result.addAll(Formating.indent(fields.mapWithDeprecated(fd -> {
             String defaultJavascript = "function lens_" + fd.lensName + "(){ return lens('" + fd.name + "');};";
-            return Strings.quote(fd.lensName) + "," + Strings.quote(fd.javascript.orElse(defaultJavascript));
-        }) + ");//");
+            return "result.put(" + Strings.quote(fd.lensName) + "," + Strings.quote(fd.javascript.orElse(defaultJavascript))+ ");";
+        })));
+        result.add(Formating.indent+ "return result;");
         result.add("}");
         return result;
     }

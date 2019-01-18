@@ -22,7 +22,6 @@ public class SimpleEntityRegister implements EntityRegister<Entity> {
 
 
     final Map<String, EntityRegistrationDetails> register;
-    final String javascript;
 
     SimpleEntityRegister(List<EntityRegistrationDetails> details) {
         this.register = ListUtils.foldLeft(new LinkedHashMap<>(), details, (acc, rd) -> {
@@ -30,8 +29,7 @@ public class SimpleEntityRegister implements EntityRegister<Entity> {
             return acc;
         });
         String rootJavascript = Files.getText("header.js");
-        this.javascript = rootJavascript + ListUtils.aggLeft(new StringBuilder(), details, (acc, d) -> acc.append(d.companion.javascript() + "\n")).toString();
-        this.javascriptMap = MapUtils.append(ListUtils.add(ListUtils.map(List.copyOf(register.values()), r -> r.companion.javascriptMap()), Map.of("root", rootJavascript)));
+        this.javascriptMap = MapUtils.appendKeepingOrder(ListUtils.add(ListUtils.map(List.copyOf(register.values()), r -> r.companion.javascriptMap()), Map.of("root", rootJavascript)));
 
     }
 
@@ -47,7 +45,7 @@ public class SimpleEntityRegister implements EntityRegister<Entity> {
     @Override public String javascriptFor(String lens) {
         return Optional.ofNullable(javascriptMap.get(lens)).orElseThrow(()-> new RuntimeException("Asked for lens '"+ lens + "' legal values are " + register.keySet() ));
     }
-    @Override public String javascript() {
-        return javascript;
+    @Override public Set<String> allLens() {
+        return javascriptMap.keySet();
     }
 }

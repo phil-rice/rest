@@ -62,7 +62,7 @@ public class OpsClientCompanionClassDom {
     }
     static List<String> createAccept() {
         return Arrays.asList("@XingYiGenerated",
-                "final String acceptString= \"application/xingyi.\"+SetUtils.sortedString( lensNames(), \".\");",
+                "final String acceptString= \"application/xingyi.json.\"+SetUtils.sortedString( lensNames(), \".\");",
                 "@Override public String acceptString() {",
                 Formating.indent + "return acceptString;",
                 "}");

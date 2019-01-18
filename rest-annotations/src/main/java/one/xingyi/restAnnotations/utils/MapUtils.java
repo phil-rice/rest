@@ -1,8 +1,5 @@
 package one.xingyi.restAnnotations.utils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 public class MapUtils {
     public static <K, V> Map<K, V> append(Map<K, V>... maps) {
         Map<K, V> result = new HashMap<>();
@@ -10,8 +7,8 @@ public class MapUtils {
             result.putAll(map);
         return result;
     }
-    public static <K, V> Map<K, V> append(List<Map<K, V>> maps) {
-        Map<K, V> result = new HashMap<>();
+    public static <K, V> Map<K, V> appendKeepingOrder(List<Map<K, V>> maps) {
+        Map<K, V> result = new LinkedHashMap<>();
         for (Map<K, V> map : maps)
             result.putAll(map);
         return result;

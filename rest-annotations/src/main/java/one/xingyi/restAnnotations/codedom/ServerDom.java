@@ -10,17 +10,20 @@ import one.xingyi.restAnnotations.names.EntityNames;
 import one.xingyi.restAnnotations.utils.ListUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 public class ServerDom {
     final EntityNames serverEntityName;
     final List<EntityNames> entityNames;
     final List<EntityNames> exposedEntityNames;
-    private final String joining;
+    final String joining;
+    final Comparator<EntityNames> entityNamesComparator = (a, b) -> a.serverImplementation.className.compareTo(b.serverImplementation.className);
     public ServerDom(EntityNames serverEntityName, List<EntityDetails> entityNames) {
         this.serverEntityName = serverEntityName;
         this.entityNames = ListUtils.map(entityNames, e -> e.entityNames);
+        this.entityNames.sort(entityNamesComparator);
         this.exposedEntityNames = ListUtils.map(ListUtils.filter(entityNames, e -> e.hasUrlPattern), e -> e.entityNames);
-        this.exposedEntityNames.sort((a, b) -> a.serverImplementation.className.compareTo(b.serverImplementation.className));
+        this.exposedEntityNames.sort(entityNamesComparator);
         joining = exposedEntityNames.size() > 0 ? "," : "";
     }
 

@@ -1,7 +1,6 @@
 package one.xingyi.restAnnotations.utils;
 import one.xingyi.restAnnotations.functions.FunctionWithError;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +42,12 @@ public class ListUtils {
         List<T> result = new ArrayList<>(list.size() + 1);
         result.addAll(list);
         result.add(t);
+        return result;
+    }
+    public static <T> List<T> insert(T t, List<T> list) {
+        List<T> result = new ArrayList<>(list.size() + 1);
+        result.add(t);
+        result.addAll(list);
         return result;
     }
     public static <T> List<T> append(List<T>... lists) {

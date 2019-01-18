@@ -8,8 +8,8 @@ import java.util.function.Function;
 public class SetUtils {
 
 
-    public static <T> Set<T> append(Set<T>... lists) {
-        Set<T> result = new HashSet<>();
+    public static <T> Set<T> appendKeepingOrder(Set<T>... lists) {
+        Set<T> result = new LinkedHashSet<>();
         for (Set<T> list : lists)
             result.addAll(list);
         return result;
